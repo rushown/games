@@ -1,5 +1,7 @@
-# Only the built static site is deployed: index.html, assets/, games/
-src/
+# Deployed as Vercel services (see vercel.json): site/ (static) plus the two Next.js apps in src/.
+# Vercel installs dependencies and builds each service itself.
 node_modules/
+.next/
+src/*/preview/dist/
 *.zip
 animedraft.html

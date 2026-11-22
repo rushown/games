@@ -8,6 +8,11 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Deployed as a Vercel service mounted at /games/wheeldrafter/ (see the root vercel.json).
+  // Vercel doesn't strip the prefix, so the app has to live under it.
+  basePath: "/games/wheeldrafter",
+  // Match the rest of the site: canonical URLs end in a slash.
+  trailingSlash: true,
   reactStrictMode: true,
   poweredByHeader: false,
   async headers() {

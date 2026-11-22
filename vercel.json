@@ -1,6 +1,38 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
+  "services": {
+    "animedraft": {
+      "root": "src/animedraft-next",
+      "framework": "nextjs"
+    },
+    "wheeldrafter": {
+      "root": "src/wheeldrafter",
+      "framework": "nextjs"
+    },
+    "site": {
+      "root": "site"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/games/animedraft(/.*)?",
+      "destination": {
+        "service": "animedraft"
+      }
+    },
+    {
+      "source": "/games/wheeldrafter(/.*)?",
+      "destination": {
+        "service": "wheeldrafter"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "site"
+      }
+    }
+  ],
   "cleanUrls": true,
   "trailingSlash": true,
   "redirects": [
@@ -17,6 +49,11 @@
     {
       "source": "/:old(momodrop|momo-drop|momo){/}?",
       "destination": "/games/momodrop/",
+      "permanent": true
+    },
+    {
+      "source": "/:old(tictactoe|tic-tac-toe|ttt){/}?",
+      "destination": "/games/tictactoe/",
       "permanent": true
     },
     {
