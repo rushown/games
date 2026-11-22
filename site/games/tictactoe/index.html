@@ -10,7 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
-/* Palette and type match roshana.name.np: lime + orange on near-black, Bebas Neue display, DM Sans body. */
+/* Palette and type match roshana.name.np: lime + orange on near-black, Bebas Neue display, DM Sans body.
+   Blue + cream are the other slices of the arcade's wheel art, used only as small accents. */
 :root {
   color-scheme: dark;
   --bg: #060606;
@@ -21,8 +22,10 @@
   --mute: rgba(236, 233, 224, .58);
   --y: #e8ff47;   /* X */
   --o: #ff5e1a;   /* O */
-  --b: #5b6cff;   /* draws: the blue slice from the arcade's wheel art */
+  --b: #5b6cff;   /* draws */
   --display: "Bebas Neue", Impact, "Arial Narrow", sans-serif;
+  --gutter: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --gap: 2.4%;    /* board gap as a share of the board, so the win line math stays exact at any size */
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; }
@@ -32,7 +35,8 @@ body {
   font: 400 15px/1.5 "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   display: flex; flex-direction: column;
-  padding: 0 max(16px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(16px, env(safe-area-inset-left));
+  padding: env(safe-area-inset-top) var(--gutter) env(safe-area-inset-bottom);
+  overflow-x: hidden;
 }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
@@ -40,21 +44,44 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* glow behind the board, like the arcade hero */
 body::before {
-  content: ""; position: fixed; left: 50%; top: 52%; width: min(620px, 110vw); aspect-ratio: 1; transform: translate(-50%, -50%);
+  content: ""; position: fixed; left: 50%; top: 55%; width: min(640px, 120vw); aspect-ratio: 1; transform: translate(-50%, -50%);
   background: radial-gradient(closest-side at 38% 40%, rgba(232, 255, 71, .07), transparent), radial-gradient(closest-side at 64% 62%, rgba(91, 108, 255, .07), transparent);
   pointer-events: none; z-index: -1;
 }
 
-nav { width: 100%; max-width: 520px; margin: 0 auto; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+.top, main, footer { width: 100%; max-width: 560px; margin: 0 auto; }
+.top { height: 60px; display: flex; align-items: center; flex: none; }
 .back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 13px; color: var(--mute); transition: color .2s; }
 .back:hover { color: var(--txt); }
 .logo { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--y); color: var(--bg); font-size: 12px; font-weight: 600; }
 
-main { width: 100%; max-width: 520px; margin: 0 auto; flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 3vh, 22px); padding: clamp(4px, 2vh, 20px) 0 28px; }
-h1 { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 12vw, 64px); line-height: .9; letter-spacing: .02em; text-align: center; }
+/* ---------- layout ----------
+   Portrait / narrow: one column. The board takes whatever height is left after the rest of the UI (--chrome),
+   clamped between 220px and 480px, and never wider than the screen.
+   Landscape / short screens: board on the left, everything else stacked on the right (see the media query below). */
+main {
+  --chrome: 462px; /* height of everything in the column except the board, incl. the desktop key hint */
+  --min-board: 220px;
+  --board: min(100%, 480px, max(var(--min-board), calc(100dvh - var(--chrome))));
+  flex: 1 0 auto;
+  display: grid; justify-items: center; align-content: start;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "head" "controls" "score" "board" "status" "actions" "hint";
+  row-gap: clamp(12px, 2.2dvh, 20px);
+  padding: clamp(0px, 1dvh, 12px) 0 24px;
+}
+.head { grid-area: head; display: grid; justify-items: center; gap: 8px; }
+.controls { grid-area: controls; }
+.score { grid-area: score; }
+.board-wrap { grid-area: board; }
+.status { grid-area: status; }
+.actions { grid-area: actions; }
+.hint { grid-area: hint; }
+
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(40px, 11vw, 60px); line-height: .9; letter-spacing: .02em; text-align: center; white-space: nowrap; }
 h1 .x { color: var(--y); } h1 .o { color: var(--o); }
 /* thin four-colour strip, same slices as the wheel art on the arcade page */
-.wheelbar { display: flex; gap: 3px; width: 96px; height: 4px; margin-top: -6px; }
+.wheelbar { display: flex; gap: 3px; width: 96px; height: 4px; }
 .wheelbar i { flex: 1; border-radius: 2px; opacity: .85; }
 .wheelbar i:nth-child(1) { background: var(--y); } .wheelbar i:nth-child(2) { background: var(--o); }
 .wheelbar i:nth-child(3) { background: var(--b); } .wheelbar i:nth-child(4) { background: var(--txt); }
@@ -62,84 +89,136 @@ h1 .x { color: var(--y); } h1 .o { color: var(--o); }
 /* segmented controls */
 .controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .seg { display: inline-flex; padding: 3px; border: 1px solid var(--line2); border-radius: 999px; background: var(--card); }
-.seg button { min-height: 36px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--mute); transition: background .2s, color .2s; }
+.seg button { min-height: 38px; padding: 0 14px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--mute); white-space: nowrap; transition: background .2s, color .2s; }
 .seg button:hover { color: var(--txt); }
 .seg button[aria-pressed="true"] { background: var(--txt); color: var(--bg); }
 
 /* scoreboard */
-.score { width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; }
-.side { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 8px 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); transition: border-color .25s, box-shadow .25s; }
-.side .who { font-size: 12px; color: var(--mute); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.score { width: 100%; max-width: 480px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; }
+.side { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 9px 8px 7px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); transition: border-color .25s, box-shadow .25s; }
+.side .who { max-width: 100%; font-size: 12px; color: var(--mute); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.side .who span { overflow: hidden; text-overflow: ellipsis; }
 .side .who i { font-style: normal; font-family: var(--display); font-size: 18px; line-height: 1; }
-.side b { font-family: var(--display); font-weight: 400; font-size: 36px; line-height: 1; }
+.side b { font-family: var(--display); font-weight: 400; font-size: clamp(28px, 7vw, 36px); line-height: 1; font-variant-numeric: tabular-nums; }
 .side.x .who i { color: var(--y); } .side.o .who i { color: var(--o); }
-.side.draws { min-width: 72px; }
-.side.draws .who::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--b); }
-.side.draws.flash { border-color: rgba(91, 108, 255, .6); box-shadow: 0 0 24px -8px var(--b); }
+.side.draws { min-width: 68px; }
+.side.draws .who::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--b); flex: none; }
 .side.x.turn { border-color: rgba(232, 255, 71, .55); box-shadow: 0 0 24px -8px var(--y); }
 .side.o.turn { border-color: rgba(255, 94, 26, .6); box-shadow: 0 0 24px -8px var(--o); }
+.side.draws.flash { border-color: rgba(91, 108, 255, .6); box-shadow: 0 0 24px -8px var(--b); }
 
 /* board */
-.board-wrap { position: relative; flex: none; width: min(100%, 52vh, 400px); min-width: 240px; aspect-ratio: 1; }
-.board { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.board-wrap { position: relative; width: var(--board); aspect-ratio: 1; user-select: none; -webkit-user-select: none; }
+.board { position: absolute; inset: 0; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); gap: var(--gap); }
 .cell {
-  position: relative; border-radius: 16px; background: var(--card); border: 1px solid var(--line);
+  position: relative; min-width: 0; min-height: 0; border-radius: 14%; background: var(--card); border: 1px solid var(--line);
   display: grid; place-items: center; transition: border-color .2s, background .2s, opacity .3s;
 }
-.cell:not(:disabled):hover { border-color: var(--line2); background: #121212; }
-.cell:disabled { cursor: default; }
+.cell[aria-disabled="true"] { cursor: default; }
 .cell svg { width: 62%; height: 62%; overflow: visible; }
-.cell .mark { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .32s cubic-bezier(.3, .7, .3, 1) forwards; }
-.cell .mark.x { stroke: var(--y); filter: drop-shadow(0 0 10px rgba(232, 255, 71, .35)); }
-.cell .mark.x + .mark.x { animation-delay: .14s; }
-.cell .mark.o { stroke: var(--o); filter: drop-shadow(0 0 10px rgba(255, 94, 26, .35)); }
+/* dasharray "1 2" (not "1"): with round caps, "1" leaves a dot at the end of the path before it draws */
+.mark { fill: none; stroke-width: 12; stroke-linecap: round; stroke-dasharray: 1 2; stroke-dashoffset: 1; animation: draw .32s cubic-bezier(.3, .7, .3, 1) forwards; }
+.mark.x { stroke: var(--y); filter: drop-shadow(0 0 10px rgba(232, 255, 71, .35)); }
+.mark.x + .mark.x { animation-delay: .14s; }
+.mark.o { stroke: var(--o); filter: drop-shadow(0 0 10px rgba(255, 94, 26, .35)); }
 @keyframes draw { to { stroke-dashoffset: 0; } }
-/* ghost preview of the next mark on hover (mouse only) */
 @media (hover: hover) {
-  .board[data-turn="x"] .cell:not(:disabled):hover::after,
-  .board[data-turn="o"] .cell:not(:disabled):hover::after { content: ""; position: absolute; inset: 30%; border-radius: 50%; opacity: .14; }
-  .board[data-turn="x"] .cell:not(:disabled):hover::after { background: var(--y); }
-  .board[data-turn="o"] .cell:not(:disabled):hover::after { background: var(--o); }
+  .cell:not([aria-disabled="true"]):hover { border-color: var(--line2); background: #121212; }
+  /* ghost preview of whoever moves next */
+  .board[data-turn] .cell:not([aria-disabled="true"]):hover::after { content: ""; position: absolute; inset: 32%; border-radius: 50%; opacity: .14; }
+  .board[data-turn="x"] .cell:not([aria-disabled="true"]):hover::after { background: var(--y); }
+  .board[data-turn="o"] .cell:not([aria-disabled="true"]):hover::after { background: var(--o); }
 }
 .board.over .cell:not(.win) { opacity: .35; }
 .board[data-won="x"] .cell.win { border-color: rgba(232, 255, 71, .45); }
 .board[data-won="o"] .cell.win { border-color: rgba(255, 94, 26, .5); }
 .strike { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
-.strike line { stroke: var(--txt); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .4s .1s ease-out forwards; opacity: .9; }
+.strike line { stroke: var(--txt); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 1 2; stroke-dashoffset: 1; animation: draw .4s .1s ease-out forwards; opacity: .9; }
 
 .status { min-height: 1.5em; font-size: 16px; font-weight: 500; text-align: center; }
 .status .x { color: var(--y); } .status .o { color: var(--o); } .status .d { color: #8f9bff; }
 
 .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.btn { min-height: 44px; padding: 0 20px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid var(--line2); transition: border-color .2s, background .2s, transform .1s; }
+.btn { min-height: 44px; padding: 0 20px; border-radius: 999px; font-size: 14px; font-weight: 600; border: 1px solid var(--line2); white-space: nowrap; transition: border-color .2s, background .2s, transform .1s; }
 .btn:hover { border-color: rgba(236, 233, 224, .35); }
 .btn:active { transform: translateY(1px); }
 .btn.primary { background: var(--y); color: var(--bg); border-color: var(--y); }
 .btn.primary:hover { background: #f0ff7a; }
 
 .hint { font-size: 12px; color: var(--mute); text-align: center; }
-@media (hover: none) { .hint { display: none; } }
+@media (hover: none), (pointer: coarse) { .hint { display: none; } main { --chrome: 404px; } }
 
-footer { width: 100%; max-width: 520px; margin: 0 auto; border-top: 1px solid var(--line); padding: 16px 0 20px; display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--mute); }
+footer { border-top: 1px solid var(--line); padding: 16px 0 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--mute); flex: none; }
 footer a { display: inline-flex; align-items: center; min-height: 44px; margin: -12px 0; }
 footer a:hover { color: var(--y); }
 
-@media (max-height: 640px) { nav { height: 52px; } h1 { font-size: 40px; } .side b { font-size: 28px; } }
+/* small phones */
+@media (max-width: 360px) {
+  .seg button { padding: 0 11px; font-size: 12.5px; }
+  .side .who { font-size: 11px; gap: 4px; }
+  .btn { padding: 0 16px; }
+  main { --chrome: 446px; --min-board: 180px; } /* the two control groups wrap onto two rows here */
+}
+/* short portrait screens (small phones, browser chrome showing) */
+@media (max-height: 700px) and (orientation: portrait) {
+  .top { height: 50px; }
+  main { --chrome: 392px; row-gap: 10px; }
+  h1 { font-size: 40px; }
+}
+
+/* landscape phones and tablets, laptops and desktops: board left, panel right */
+@media (orientation: landscape) and (max-height: 620px), (orientation: landscape) and (min-width: 900px) {
+  .top { height: 48px; }
+  .top, main, footer { max-width: 980px; }
+  main {
+    --board: min(calc(100dvh - 48px - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom)), 52vw, 580px);
+    grid-template-columns: auto minmax(0, 380px);
+    /* empty 1fr rows above and below keep the panel vertically centred beside the board */
+    grid-template-rows: 1fr repeat(6, auto) 1fr;
+    grid-template-areas: "board ." "board head" "board controls" "board score" "board status" "board actions" "board hint" "board .";
+    column-gap: clamp(20px, 4vw, 56px); row-gap: 12px;
+    justify-content: center; align-content: center; justify-items: start;
+    padding: 0 0 20px;
+  }
+  .board-wrap { align-self: center; }
+  .head { justify-items: start; }
+  h1 { font-size: clamp(34px, 6dvh, 48px); }
+  .controls, .actions { justify-content: flex-start; justify-self: start; }
+  .status, .hint { justify-self: start; text-align: left; }
+  .score { max-width: none; }
+  .side { padding: 7px 6px 5px; }
+  .side b { font-size: 28px; }
+  footer { display: none; }
+}
+/* very short landscape (phones with big notches / browser bars) */
+@media (orientation: landscape) and (max-height: 400px) {
+  .wheelbar, .hint { display: none; }
+  main { row-gap: 6px; }
+  .top { height: 42px; }
+  h1 { font-size: 30px; }
+  .side { padding: 5px 6px 3px; }
+  .side b { font-size: 24px; }
+  .seg button { min-height: 34px; }
+  .btn { min-height: 40px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .cell .mark, .strike line { animation: none; stroke-dashoffset: 0; }
+  .mark, .strike line { animation: none; stroke-dashoffset: 0; }
   * { transition: none !important; }
 }
 </style>
 </head>
 <body>
 
-<nav aria-label="Main">
+<header class="top">
   <a class="back" href="../../"><span class="logo" aria-hidden="true">RA</span>← All games</a>
-</nav>
+</header>
 
 <main>
-  <h1>Tic <span class="x">Tac</span> <span class="o">Toe</span></h1>
-  <div class="wheelbar" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="head">
+    <h1>Tic <span class="x">Tac</span> <span class="o">Toe</span></h1>
+    <div class="wheelbar" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  </div>
 
   <div class="controls">
     <div class="seg" role="group" aria-label="Mode">
@@ -152,7 +231,7 @@ footer a:hover { color: var(--y); }
     </div>
   </div>
 
-  <div class="score">
+  <div class="score" aria-label="Score">
     <div class="side x" id="sideX"><span class="who"><i>X</i><span id="nameX">You</span></span><b id="scoreX">0</b></div>
     <div class="side draws" id="sideD"><span class="who">Draws</span><b id="scoreD">0</b></div>
     <div class="side o" id="sideO"><span class="who"><i>O</i><span id="nameO">Computer</span></span><b id="scoreO">0</b></div>
@@ -180,31 +259,42 @@ footer a:hover { color: var(--y); }
 (function () {
   const $ = (id) => document.getElementById(id);
   const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  const KEY = "ttt-v1";
+  const KEY = "ttt-v2";
+  const ZERO = () => ({ x: 0, o: 0, d: 0 });
 
-  // settings + score survive reloads; storage can be blocked, so every access is guarded
+  // settings + a separate score per mode (2 players / easy / unbeatable) survive reloads;
+  // storage can be blocked (private mode), so every access is guarded
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) {}
   const st = {
     mode: saved.mode === "pvp" ? "pvp" : "cpu",
     diff: saved.diff === "easy" ? "easy" : "hard",
-    score: Object.assign({ x: 0, o: 0, d: 0 }, saved.score),
+    scores: (saved.scores && typeof saved.scores === "object") ? saved.scores : {},
     starter: "x",      // alternates every round
     board: Array(9).fill(null),
     turn: "x",
     over: false,
     token: 0,          // bumps on every new round so a pending computer move can't land on the next board
   };
-  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify({ mode: st.mode, diff: st.diff, score: st.score })); } catch (e) {} };
+  const slot = () => st.mode === "pvp" ? "pvp" : "cpu-" + st.diff;
+  const score = () => (st.scores[slot()] = Object.assign(ZERO(), st.scores[slot()]));
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify({ mode: st.mode, diff: st.diff, scores: st.scores })); } catch (e) {} };
+
+  // remember whether the player is using the keyboard, so focus is only moved around for keyboard players
+  let keyboardUser = false;
+  document.addEventListener("keydown", () => { keyboardUser = true; }, true);
+  document.addEventListener("pointerdown", () => { keyboardUser = false; }, true);
 
   /* ---------- board ---------- */
   const boardEl = $("board");
   const cells = [];
   for (let i = 0; i < 9; i++) {
+    // filled squares use aria-disabled, not disabled: a disabled button drops focus and can't be reached with
+    // the arrow keys, which broke keyboard play after the first move
     const b = document.createElement("button");
     b.type = "button"; b.className = "cell"; b.dataset.i = i;
     b.setAttribute("role", "gridcell");
-    b.tabIndex = i === 0 ? 0 : -1;
+    b.tabIndex = i === 4 ? 0 : -1;
     b.addEventListener("click", () => humanMove(i));
     boardEl.appendChild(b); cells.push(b);
   }
@@ -213,8 +303,8 @@ footer a:hover { color: var(--y); }
   boardEl.parentNode.appendChild(strike);
 
   const markSVG = (p) => p === "x"
-    ? '<svg viewBox="0 0 100 100" aria-hidden="true"><path class="mark x" pathLength="1" d="M18 18L82 82"/><path class="mark x" pathLength="1" d="M82 18L18 82"/></svg>'
-    : '<svg viewBox="0 0 100 100" aria-hidden="true"><circle class="mark o" pathLength="1" cx="50" cy="50" r="34" transform="rotate(-90 50 50)"/></svg>';
+    ? '<svg viewBox="0 0 100 100" aria-hidden="true"><path class="mark x" pathLength="1" d="M20 20L80 80"/><path class="mark x" pathLength="1" d="M80 20L20 80"/></svg>'
+    : '<svg viewBox="0 0 100 100" aria-hidden="true"><circle class="mark o" pathLength="1" cx="50" cy="50" r="33" transform="rotate(-90 50 50)"/></svg>';
 
   const winner = (b) => {
     for (const l of LINES) if (b[l[0]] && b[l[0]] === b[l[1]] && b[l[0]] === b[l[2]]) return { p: b[l[0]], line: l };
@@ -253,45 +343,54 @@ footer a:hover { color: var(--y); }
     return picks[Math.floor(Math.random() * picks.length)];
   }
   const cpuTurn = () => st.mode === "cpu" && st.turn === "o" && !st.over;
+  function queueCpu(delay) {
+    const tok = st.token;
+    setTimeout(() => { if (tok === st.token && cpuTurn()) place(cpuPick(), "o"); }, delay);
+  }
 
   /* ---------- moves ---------- */
   function place(i, p) {
+    if (st.board[i]) return;
     st.board[i] = p;
-    const c = cells[i]; c.innerHTML = markSVG(p); c.disabled = true;
+    cells[i].innerHTML = markSVG(p);
     const w = winner(st.board);
     if (w) return finish(w);
     st.turn = p === "x" ? "o" : "x";
     render();
-    if (cpuTurn()) {
-      const tok = st.token;
-      setTimeout(() => { if (tok === st.token && cpuTurn()) place(cpuPick(), "o"); }, 420 + Math.random() * 260);
-    }
+    if (cpuTurn()) queueCpu(420 + Math.random() * 260);
   }
   function humanMove(i) {
     if (st.over || st.board[i] || cpuTurn()) return;
     place(i, st.turn);
   }
+  // centre of square i in the strike overlay's 300×300 space, accounting for the gap between squares
+  function centre(i) {
+    const g = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--gap")) / 100 * 300 || 0;
+    const size = (300 - 2 * g) / 3;
+    return [(i % 3) * (size + g) + size / 2, Math.floor(i / 3) * (size + g) + size / 2];
+  }
   function finish(w) {
     st.over = true;
+    score()[w.p || "d"]++;
     if (w.p) {
-      st.score[w.p]++;
       w.line.forEach((i) => cells[i].classList.add("win"));
-      const c = (i) => [50 + (i % 3) * 100, 50 + Math.floor(i / 3) * 100];
-      const [a, b] = [c(w.line[0]), c(w.line[2])];
-      const dx = (b[0] - a[0]) * .18, dy = (b[1] - a[1]) * .18;
+      const a = centre(w.line[0]), b = centre(w.line[2]);
+      const dx = (b[0] - a[0]) * .2, dy = (b[1] - a[1]) * .2;
       strike.innerHTML = `<line pathLength="1" x1="${a[0] - dx}" y1="${a[1] - dy}" x2="${b[0] + dx}" y2="${b[1] + dy}"/>`;
-    } else st.score.d++;
+    }
     persist(); render();
-    setTimeout(() => { if (st.over) $("again").focus({ preventScroll: true }); }, 50);
+    if (keyboardUser) setTimeout(() => { if (st.over) $("again").focus({ preventScroll: true }); }, 50);
   }
   function newRound(keepStarter) {
     st.token++;
     if (!keepStarter) st.starter = st.starter === "x" ? "o" : "x";
     st.board = Array(9).fill(null); st.turn = st.starter; st.over = false;
-    cells.forEach((c) => { c.innerHTML = ""; c.disabled = false; c.classList.remove("win"); });
+    cells.forEach((c) => { c.innerHTML = ""; c.classList.remove("win"); });
     strike.innerHTML = "";
+    // a keyboard player who started the round from the buttons lands back on the board
+    if (keyboardUser && !cells.includes(document.activeElement) && document.activeElement === $("again")) focusCell(4);
     render();
-    if (cpuTurn()) { const tok = st.token; setTimeout(() => { if (tok === st.token && cpuTurn()) place(cpuPick(), "o"); }, 500); }
+    if (cpuTurn()) queueCpu(500);
   }
 
   /* ---------- UI ---------- */
@@ -301,60 +400,61 @@ footer a:hover { color: var(--y); }
     document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === st.mode));
     document.querySelectorAll("[data-diff]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.diff === st.diff));
     $("diff").hidden = st.mode !== "cpu";
+    const sc = score();
     $("nameX").textContent = label("x"); $("nameO").textContent = label("o");
-    $("scoreX").textContent = st.score.x; $("scoreO").textContent = st.score.o; $("scoreD").textContent = st.score.d;
+    $("scoreX").textContent = sc.x; $("scoreO").textContent = sc.o; $("scoreD").textContent = sc.d;
+
+    const w = st.over && winner(st.board);
+    const busy = cpuTurn();
     $("sideX").classList.toggle("turn", !st.over && st.turn === "x");
     $("sideO").classList.toggle("turn", !st.over && st.turn === "o");
-    const w0 = st.over && winner(st.board);
-    boardEl.dataset.turn = st.over || cpuTurn() ? "" : st.turn;
+    $("sideD").classList.toggle("flash", !!(w && !w.p));
+    if (st.over || busy) delete boardEl.dataset.turn; else boardEl.dataset.turn = st.turn;
+    boardEl.dataset.won = w && w.p ? w.p : "";
     boardEl.classList.toggle("over", st.over);
-    boardEl.dataset.won = w0 && w0.p ? w0.p : "";
-    $("sideD").classList.toggle("flash", !!(w0 && !w0.p));
-    const busy = cpuTurn();
     boardEl.setAttribute("aria-busy", busy);
     cells.forEach((c, i) => {
       const v = st.board[i];
-      c.disabled = !!v || st.over;
+      c.setAttribute("aria-disabled", !!v || st.over || busy);
       c.setAttribute("aria-label", `Row ${Math.floor(i / 3) + 1}, column ${i % 3 + 1}, ${v ? v.toUpperCase() : "empty"}`);
     });
 
-    const w = st.over && winner(st.board);
     let s;
-    if (w && w.p) s = st.mode === "cpu" ? (w.p === "x" ? span("x", "You win!") : span("o", "Computer wins.") + " Try again?") : span(w.p, label(w.p) + " wins!");
+    if (w && w.p) s = st.mode === "cpu" ? (w.p === "x" ? span("x", "You win!") : span("o", "Computer wins.") + " Go again?") : span(w.p, label(w.p) + " wins!");
     else if (w) s = span("d", "It's a draw.");
     else if (busy) s = span("o", "Computer") + " is thinking…";
     else s = st.mode === "cpu" ? span("x", "Your turn") : span(st.turn, label(st.turn) + "'s turn");
     $("status").innerHTML = s;
   }
 
+  // switching mode or difficulty starts a fresh round; each keeps its own score
   document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => {
     if (st.mode === b.dataset.mode) return;
-    st.mode = b.dataset.mode; st.score = { x: 0, o: 0, d: 0 }; st.starter = "x"; persist(); newRound(true);
+    st.mode = b.dataset.mode; st.starter = "x"; persist(); newRound(true);
   }));
   document.querySelectorAll("[data-diff]").forEach((b) => b.addEventListener("click", () => {
     if (st.diff === b.dataset.diff) return;
-    st.diff = b.dataset.diff; st.score = { x: 0, o: 0, d: 0 }; st.starter = "x"; persist(); newRound(true);
+    st.diff = b.dataset.diff; st.starter = "x"; persist(); newRound(true);
   }));
   $("again").addEventListener("click", () => newRound(false));
-  $("reset").addEventListener("click", () => { st.score = { x: 0, o: 0, d: 0 }; st.starter = "x"; persist(); newRound(true); });
+  $("reset").addEventListener("click", () => { st.scores[slot()] = ZERO(); st.starter = "x"; persist(); newRound(true); });
 
-  // keyboard: 1-9 like a phone keypad layout (top-left = 1), arrows move focus across the grid
+  /* ---------- keyboard ---------- */
+  function focusCell(j) { cells.forEach((x, k) => x.tabIndex = k === j ? 0 : -1); cells[j].focus({ preventScroll: true }); }
   document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (/^[1-9]$/.test(e.key)) { humanMove(+e.key - 1); return; }
-    if (e.key === "n" || e.key === "N") { newRound(false); return; }
+    if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+    if (/^[1-9]$/.test(e.key)) { e.preventDefault(); humanMove(+e.key - 1); return; }
+    if (e.key === "n" || e.key === "N") { if (st.over || !st.board.some(Boolean)) newRound(false); return; } // never abandons a game in progress
     const i = cells.indexOf(document.activeElement);
     if (i < 0) return;
-    const d = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -3, ArrowDown: 3 }[e.key];
-    if (d === undefined) return;
+    const d = { ArrowLeft: [0, -1], ArrowRight: [0, 1], ArrowUp: [-1, 0], ArrowDown: [1, 0] }[e.key];
+    if (!d) return;
     e.preventDefault();
-    let j = i + d;
-    if (d === -1 && i % 3 === 0) j = i + 2; else if (d === 1 && i % 3 === 2) j = i - 2;
-    j = (j + 9) % 9;
-    cells[i].tabIndex = -1; cells[j].tabIndex = 0; cells[j].focus();
+    const r = (Math.floor(i / 3) + d[0] + 3) % 3, c = (i % 3 + d[1] + 3) % 3;
+    focusCell(r * 3 + c);
   });
-  // keep the roving tab stop on whichever cell was clicked or focused
-  boardEl.addEventListener("focusin", (e) => { const c = e.target.closest(".cell"); if (!c) return; cells.forEach((x) => x.tabIndex = x === c ? 0 : -1); });
+  // keep the roving tab stop on whichever square was clicked or focused
+  boardEl.addEventListener("focusin", (e) => { const c = e.target.closest(".cell"); if (c) cells.forEach((x) => x.tabIndex = x === c ? 0 : -1); });
 
   $("yr").textContent = new Date().getFullYear();
   newRound(true);
