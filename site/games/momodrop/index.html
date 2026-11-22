@@ -145,6 +145,10 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(stars))}catch(e){}};
 /* ---------- audio ---------- */
 let ac=null,t=0,lastBounce=0,lastThud=0;
 function tone(f,d=.12,type='sine',v=.15,slide=0){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;o.type=type;o.frequency.setValueAtTime(f,n);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,f+slide),n+d);g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.connect(g).connect(ac.destination);o.start(n);o.stop(n+d+.02)}catch(e){}}
+// Creating the AudioContext costs ~140ms the first time. Do it on the player's first tap/key (normally on the
+// menu, where a pause is invisible) rather than inside the first sound, which used to land mid-drop and stutter the physics.
+function audioInit(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(e){}}
+addEventListener('pointerdown',audioInit,{once:true,capture:true});addEventListener('keydown',audioInit,{once:true,capture:true});
 const sfx={drop:()=>tone(520,.25,'triangle',.15,-300),pop:()=>tone(900,.06,'sine',.08),
  thud:v=>{if(t-lastThud>.08){lastThud=t;tone(140+v*6,.08,'sine',Math.min(.18,.03+v*.012))}},
  bounce:()=>{if(t-lastBounce>.15){lastBounce=t;tone(300,.15,'sine',.2,250)}},
