@@ -1,0 +1,5 @@
+# Only the built static site is deployed: index.html, animedraft/, wheeldrafter/
+src/
+node_modules/
+*.zip
+animedraft.html

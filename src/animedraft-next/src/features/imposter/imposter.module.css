@@ -1,0 +1,357 @@
+.names {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (min-width: 520px) {
+  .names {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.lb {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ink2);
+  margin-top: 6px;
+  font-weight: 700;
+}
+.lb span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lb span:last-child {
+  font-family: var(--mono);
+  color: var(--gold);
+}
+
+/* ---------- reveal ---------- */
+.pass {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pass > :first-child {
+  align-self: flex-start;
+}
+.passTo {
+  font-size: clamp(26px, 8vw, 42px);
+  margin-top: 6px;
+}
+.passTo em,
+.discussTitle em {
+  font-style: normal;
+  color: var(--gold);
+}
+.swipe {
+  position: relative;
+  width: min(80vw, 310px);
+  aspect-ratio: 3 / 4.3;
+  margin: 18px auto;
+  border-radius: 22px;
+  overflow: hidden;
+  touch-action: none;
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  container-type: inline-size;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+.under {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+  gap: 4px;
+}
+.cover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 22px;
+  cursor: grab;
+  background: linear-gradient(160deg, #ff3d2e, #7a0d06);
+  box-shadow: 0 -6px 30px rgba(0, 0, 0, 0.6);
+  transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
+  touch-action: none;
+}
+.cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: radial-gradient(rgba(0, 0, 0, 0.3) 1.3px, transparent 1.7px) 0 0 / 8px 8px;
+}
+.coverQ {
+  position: absolute;
+  top: 20%;
+  left: 0;
+  right: 0;
+  font-family: var(--disp);
+  font-size: 30cqw;
+  color: var(--gold);
+  text-shadow: 4px 4px 0 #000;
+  text-align: center;
+}
+.coverHint {
+  position: relative;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-size: 12.5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.arrow {
+  font-size: 28px;
+  animation: bob 1.2s infinite;
+}
+@keyframes bob {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.youAre {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.secretCard {
+  width: 64cqw;
+  max-width: 220px;
+}
+.secretTitle {
+  font-size: 18px;
+  margin-top: 8px;
+  line-height: 1.2;
+}
+.impWord {
+  font-family: var(--disp);
+  font-size: min(42px, 12cqw);
+  color: var(--red);
+  text-shadow: 3px 3px 0 #000;
+  transform: rotate(-4deg);
+  white-space: nowrap;
+}
+.impSub {
+  font-weight: 700;
+  margin: 10px 0 0;
+}
+.hintBox {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hintRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-width: 0;
+}
+.clue {
+  font-family: var(--disp);
+  font-size: 26px;
+  color: var(--gold);
+  overflow-wrap: anywhere;
+}
+
+.secretPoster {
+  width: 46cqw;
+  max-width: 170px;
+}
+.faces {
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  gap: 8px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+/* ---------- discuss ---------- */
+.discussTitle {
+  font-size: clamp(24px, 7vw, 34px);
+  margin: 8px 0;
+}
+.order {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  max-width: 460px;
+}
+.orderItem {
+  width: 100%;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  font-weight: 700;
+  text-align: left;
+}
+.orderNum {
+  flex: 0 0 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--ink2);
+  color: var(--mute);
+}
+.orderName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.current {
+  border-color: var(--gold);
+  background: rgba(255, 194, 51, 0.1);
+}
+.current .orderNum {
+  background: var(--gold);
+  color: var(--ink);
+}
+.spoken {
+  opacity: 0.45;
+}
+.timeText {
+  font-family: var(--disp);
+  font-size: 40px;
+}
+
+/* ---------- vote ---------- */
+.plist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (min-width: 640px) {
+  .plist {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.pbtn {
+  min-height: 58px;
+  border-radius: 14px;
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  font-weight: 900;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-width: 0;
+}
+.pbtn.on {
+  border-color: var(--red);
+  background: rgba(255, 61, 46, 0.14);
+}
+.pbtn:disabled {
+  opacity: 0.32;
+  text-decoration: line-through;
+}
+.av {
+  flex: 0 0 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-family: var(--disp);
+  font-size: 14px;
+  color: var(--ink);
+}
+.pn {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.outName {
+  font-size: clamp(30px, 9vw, 50px);
+  margin: 12px 0;
+}
+.verdict {
+  font-family: var(--disp);
+  font-size: clamp(24px, 8vw, 36px);
+  text-shadow: 3px 3px 0 #000;
+  transform: rotate(-3deg);
+}
+.good {
+  color: var(--jade);
+}
+.bad {
+  color: var(--red);
+}
+
+/* ---------- guess ---------- */
+.guessGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.guessSeries {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ---------- end ---------- */
+.endReveal {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 18px 0 8px;
+  flex-wrap: wrap;
+}
+.endCol {
+  width: min(44%, 200px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  container-type: inline-size;
+}
+.endCol .secretCard,
+.endCol .secretPoster {
+  width: 100%;
+  max-width: none;
+}

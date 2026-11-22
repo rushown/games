@@ -1,0 +1,121 @@
+.duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin: 12px 0;
+}
+.fighter {
+  max-width: 240px;
+  width: 100%;
+  justify-self: center;
+}
+.vs {
+  font-family: var(--disp);
+  font-size: 26px;
+  color: var(--red);
+  transform: rotate(-8deg);
+  text-shadow: 2px 2px 0 var(--gold);
+}
+.score {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+.score b {
+  font-size: 26px;
+  font-family: var(--disp);
+  font-weight: 400;
+}
+.ask {
+  text-align: center;
+  font-size: 22px;
+  margin-top: 6px;
+}
+.verdict {
+  font-family: var(--disp);
+  font-size: 22px;
+  text-align: center;
+  margin: 2px 0 6px;
+}
+.pickrow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--pc);
+}
+.pickrow button {
+  min-height: 52px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-weight: 900;
+  font-size: 14px;
+  padding: 4px 8px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.lbl {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 900;
+  font-size: 14px;
+}
+.lockTag {
+  color: var(--jade);
+}
+.locked button {
+  opacity: 0.3;
+}
+.flip {
+  transform: rotate(180deg);
+}
+.prog {
+  height: 6px;
+  border-radius: 4px;
+  background: var(--panel);
+  overflow: hidden;
+  margin: 10px 0;
+}
+.prog i {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  transition: width 0.3s;
+}
+
+.profiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.profiles > div {
+  min-width: 0;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+.profiles .pWin {
+  border-color: var(--jade);
+}
+.pName {
+  font-family: var(--disp);
+  font-size: 14px;
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 520px) {
+  .profiles {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,401 @@
+/* ============ Tokens ============ */
+:root {
+  --ink: #0e0c0b;
+  --ink2: #171311;
+  --panel: #1d1816;
+  --line: #33291f;
+  --paper: #f3ead8;
+  --mute: #a8998a;
+  --red: #ff3d2e;
+  --red2: #c41e12;
+  --gold: #ffc233;
+  --gold2: #b58300;
+  --jade: #2ee6a6;
+  --pink: #ff5fa2;
+  --p0: var(--red);
+  --p1: var(--gold);
+  --r: 16px;
+  --disp: "Dela Gothic One", system-ui, sans-serif;
+  --body: "Zen Kaku Gothic New", system-ui, sans-serif;
+  --mono: "Space Mono", ui-monospace, monospace;
+  --tabbar: 64px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+html,
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.45;
+}
+body {
+  min-height: 100dvh;
+  overflow-x: clip;
+  background:
+    radial-gradient(1200px 500px at 110% -10%, rgba(255, 61, 46, 0.16), transparent 60%),
+    radial-gradient(900px 500px at -20% 110%, rgba(255, 194, 51, 0.1), transparent 60%), var(--ink);
+}
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+a {
+  color: var(--gold);
+}
+h1,
+h2,
+h3 {
+  font-family: var(--disp);
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: 0.3px;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ============ Layout helpers ============ */
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.narrow {
+  max-width: 620px;
+  margin: 0 auto;
+}
+.two {
+  display: grid;
+  gap: 14px;
+}
+.two > * {
+  min-width: 0;
+}
+@media (min-width: 760px) {
+  .two {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: start;
+  }
+}
+.stack > * + * {
+  margin-top: 14px;
+}
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.center {
+  text-align: center;
+}
+.muted {
+  color: var(--mute);
+}
+.note {
+  font-size: 13px;
+  color: var(--mute);
+  margin: 6px 0 0;
+}
+.kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.page-title {
+  font-size: clamp(32px, 9vw, 44px);
+  margin: 6px 0 4px;
+}
+.lead {
+  color: var(--mute);
+  margin: 0 0 16px;
+}
+
+/* ============ Controls ============ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 0 20px;
+  border-radius: 14px;
+  font-weight: 900;
+  font-size: 16px;
+  text-align: center;
+  line-height: 1.15;
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 4px 0 var(--red2);
+  transition:
+    transform 0.08s,
+    box-shadow 0.08s,
+    opacity 0.15s;
+  user-select: none;
+}
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--red2);
+}
+.btn.gold {
+  background: var(--gold);
+  color: var(--ink);
+  box-shadow: 0 4px 0 var(--gold2);
+}
+.btn.ghost {
+  background: var(--panel);
+  color: var(--paper);
+  box-shadow: 0 4px 0 #000;
+  border: 1px solid var(--line);
+}
+.btn.jade {
+  background: var(--jade);
+  color: var(--ink);
+  box-shadow: 0 4px 0 #128a62;
+}
+.btn.block {
+  width: 100%;
+}
+.btn.sm {
+  min-height: 40px;
+  font-size: 14px;
+  padding: 0 14px;
+  border-radius: 11px;
+}
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.32;
+  pointer-events: none;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--ink2);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mute);
+  white-space: nowrap;
+}
+.chip.on {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--paper);
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px;
+}
+label.field,
+.field-label {
+  display: block;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--mute);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--ink2);
+  outline: none;
+  font-size: 16px; /* stops iOS zoom */
+}
+.input:focus {
+  border-color: var(--gold);
+}
+.backlink {
+  display: inline-flex;
+  gap: 6px;
+  color: var(--mute);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 12px;
+  min-height: 32px;
+  align-items: center;
+}
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--pc, var(--gold));
+  flex: 0 0 auto;
+}
+.p0 {
+  --pc: var(--p0);
+}
+.p1 {
+  --pc: var(--p1);
+}
+.money {
+  font-family: var(--mono);
+  font-weight: 700;
+}
+
+/* ============ How-to list ============ */
+.howto {
+  display: grid;
+  gap: 10px;
+  counter-reset: s;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.howto li {
+  counter-increment: s;
+  position: relative;
+  padding-left: 34px;
+  font-size: 14px;
+  min-height: 24px;
+}
+.howto li::before {
+  content: counter(s);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: var(--red);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+/* ============ Banner ============ */
+.banner {
+  text-align: center;
+  padding: 22px 16px;
+  border-radius: 20px;
+  background: linear-gradient(140deg, var(--pc, var(--gold)), #2a1a10);
+  position: relative;
+  overflow: hidden;
+}
+.banner h2 {
+  font-size: clamp(28px, 8.5vw, 54px);
+}
+.banner::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: repeating-conic-gradient(rgba(255, 255, 255, 0.08) 0 5deg, transparent 5deg 15deg);
+  animation: spin 30s linear infinite;
+}
+.banner > * {
+  position: relative;
+}
+
+/* ============ FX ============ */
+.fx-confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  overflow: hidden;
+}
+.fx-confetti i {
+  position: absolute;
+  top: -20px;
+  width: 9px;
+  height: 14px;
+  animation: fall linear forwards;
+}
+.pop {
+  animation: pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.slide-in {
+  opacity: 0;
+  animation: slidein 0.4s forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(720deg);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+@keyframes slidein {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes up {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+  }
+}
+
+/* Player-coloured text (names, inline highlights) */
+span.p0,
+span.p1,
+b.p0,
+b.p1 {
+  color: var(--pc);
+}

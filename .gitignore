@@ -1,0 +1,7 @@
+node_modules/
+.next/
+src/*/preview/dist/
+.vercel/
+*.zip
+*.tsbuildinfo
+.env*

@@ -1,0 +1,318 @@
+.names {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.wheelList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+/* ---------- full-screen stage ---------- */
+.stageLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--bg);
+  overflow: hidden;
+}
+.stage {
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: calc(12px + env(safe-area-inset-top)) 20px calc(18px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}
+/* duel: the whole screen turns to face player 2 */
+.flipped {
+  transform: rotate(180deg);
+}
+.topRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+}
+.quit {
+  flex: 0 0 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line2);
+  color: var(--mute);
+  font-size: 13px;
+}
+.progress {
+  flex: 1;
+  height: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.progress i {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+  transition: width 0.4s ease;
+}
+.stepNo {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--mute);
+  min-width: 36px;
+  text-align: right;
+}
+.grid {
+  flex: 1;
+  display: grid;
+  gap: 16px;
+  align-content: center;
+  margin-top: 8px;
+}
+.wheelCol {
+  text-align: center;
+  min-width: 0;
+}
+.sideCol {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  transition: opacity 0.28s;
+}
+.enter {
+  animation: wheelIn 0.42s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.leave {
+  opacity: 0;
+  transform: scale(0.97);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
+}
+@keyframes wheelIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+.turn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink2);
+  margin-bottom: 2px;
+  max-width: 100%;
+}
+.wheelName {
+  font-size: clamp(36px, 10.5vw, 56px);
+}
+.ask {
+  margin: 4px 0 0;
+  color: var(--mute);
+  font-size: 15px;
+  min-height: 24px;
+}
+.fortune {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+}
+
+/* ---------- result ---------- */
+.result {
+  position: relative;
+  min-height: 118px;
+  border-radius: var(--r);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 16px 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+.result > div {
+  width: 100%;
+}
+.resIdle {
+  color: var(--mute);
+  font-size: 15px;
+}
+.resTier {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.resLabel {
+  font-family: var(--serif);
+  font-size: clamp(30px, 8.5vw, 44px);
+  line-height: 1;
+  margin: 10px 0 6px;
+  overflow-wrap: anywhere;
+}
+.resDesc {
+  color: var(--mute);
+  font-size: 14.5px;
+}
+.jackpot {
+  margin-top: 10px;
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--accent);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+/* auto-continue timer */
+.countdown {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--ink);
+  transform-origin: left;
+  animation-name: drain;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes drain {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+.actions {
+  display: grid;
+  gap: 8px;
+}
+.twoBtn {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.oddsTop {
+  flex: 0 0 auto;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line2);
+  font-size: 13px;
+  color: var(--ink2);
+}
+.oddsInline {
+  display: none;
+}
+
+/* ---------- duel turn card ---------- */
+.turnCard {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  background: rgba(244, 242, 237, 0.94);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fade 0.25s;
+}
+.turnName {
+  font-family: var(--serif);
+  font-size: clamp(48px, 14vw, 88px);
+  line-height: 1;
+  margin: 10px 0 8px;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 960px) {
+  .grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: center;
+    gap: 44px;
+  }
+  .oddsTop {
+    display: none;
+  }
+  .oddsInline {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 12px 14px;
+    max-height: 46dvh;
+    overflow: auto;
+  }
+}
+
+/* short phones: wheel, result and buttons always fit on one screen */
+@media (max-height: 780px) and (max-width: 959px) {
+  .wheelName {
+    font-size: 30px;
+  }
+  .ask {
+    font-size: 13px;
+    min-height: 20px;
+  }
+  .result {
+    min-height: 80px;
+    padding: 10px 12px 13px;
+  }
+  .resLabel {
+    font-size: 27px;
+    margin: 6px 0 3px;
+  }
+  .resDesc {
+    font-size: 13px;
+  }
+  .jackpot {
+    margin-top: 6px;
+  }
+  .grid {
+    gap: 10px;
+    margin-top: 4px;
+  }
+  .sideCol {
+    gap: 10px;
+  }
+}
+@media (max-height: 640px) and (max-width: 959px) {
+  .resDesc {
+    display: none;
+  }
+  .wheelName {
+    font-size: 26px;
+  }
+  .stage {
+    padding-top: calc(8px + env(safe-area-inset-top));
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+}

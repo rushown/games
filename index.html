@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Games · Roshan Adhikari</title>
+<meta name="description" content="Free browser games by Roshan Adhikari: AnimeDraft (anime draft, duels and imposter) and WheelDrafter (spin the wheels of fate). No sign-up.">
+<meta name="theme-color" content="#060606">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Games · Roshan Adhikari">
+<meta property="og:description" content="AnimeDraft and WheelDrafter: free party games that run in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23060606'/%3E%3Ccircle cx='16' cy='11' r='5' fill='%23e8ff47'/%3E%3Crect x='15' y='14' width='2' height='8' fill='%23ece9e0'/%3E%3Crect x='7' y='21' width='18' height='5' rx='2' fill='%23ece9e0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060606;
+  --card: #0d0d0d;
+  --line: rgba(255, 255, 255, .08);
+  --line2: rgba(255, 255, 255, .14);
+  --txt: #ece9e0;
+  --mute: rgba(236, 233, 224, .58);
+  --y: #e8ff47;
+  --o: #ff5e1a;
+  --pad: clamp(16px, 4vw, 40px);
+  --max: 1040px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; flex-direction: column;
+  background: var(--bg); color: var(--txt);
+  font: 400 15px/1.6 "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--y); outline-offset: 3px; border-radius: 6px; }
+.wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--pad); }
+
+/* nav */
+nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; letter-spacing: .02em; }
+.logo i { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--y); color: #060606; font-style: normal; font-size: 12px; font-weight: 600; }
+.nav-link { font-size: 13px; color: var(--mute); transition: color .2s; display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; margin-right: -4px; }
+.nav-link:hover { color: var(--txt); }
+
+/* hero */
+.hero .wrap {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+  align-items: center; gap: 24px;
+  padding-top: clamp(16px, 4vw, 40px); padding-bottom: clamp(8px, 3vw, 32px);
+}
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.eyebrow::before { content: ""; width: 18px; height: 1px; background: var(--y); }
+h1 { margin-top: 12px; font-size: clamp(28px, 4.2vw, 40px); line-height: 1.15; font-weight: 600; letter-spacing: -.02em; }
+h1 span { color: var(--y); }
+.lead { margin-top: 12px; max-width: 440px; color: var(--mute); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.facts li { list-style: none; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line2); border-radius: 999px; color: var(--mute); }
+
+.stage { position: relative; width: 100%; aspect-ratio: 1 / .95; max-width: 400px; justify-self: center; perspective: 900px; }
+.stage::before {
+  content: ""; position: absolute; inset: 10%; border-radius: 50%; z-index: -1;
+  background: radial-gradient(circle, rgba(232, 255, 71, .12), transparent 65%);
+}
+.pad {
+  position: absolute; left: 50%; top: 52%; width: 74%;
+  transform: translate(-50%, -50%) rotateX(var(--rx, 12deg)) rotateY(var(--ry, -10deg));
+  transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+  transform-style: preserve-3d;
+}
+.ctrl { width: 100%; height: auto; display: block; animation: float 6s ease-in-out infinite; filter: drop-shadow(0 18px 30px rgba(0, 0, 0, .6)); overflow: visible; }
+.stickL { animation: wiggle 5s ease-in-out infinite; }
+.stickR { animation: wiggle 5s ease-in-out infinite reverse; }
+@keyframes float { 50% { transform: translateY(-8px); } }
+@keyframes wiggle { 0%, 100% { transform: translate(0, 0); } 30% { transform: translate(2px, -2px); } 60% { transform: translate(-2px, 1px); } }
+
+.chip {
+  position: absolute; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  animation: bob 5s ease-in-out infinite; animation-delay: var(--d);
+}
+.chip img {
+  width: clamp(44px, 13vw, 64px); height: auto; aspect-ratio: 1; border-radius: 50%; object-fit: cover; object-position: center 15%;
+  border: 2px solid var(--c); background: #151515;
+  box-shadow: 0 0 0 3px rgba(6, 6, 6, .9), 0 8px 20px rgba(0, 0, 0, .5), 0 0 22px -4px var(--c);
+  transition: transform .25s;
+}
+.chip span { font-size: 10.5px; font-weight: 500; color: var(--mute); background: rgba(6, 6, 6, .75); padding: 1px 7px; border-radius: 999px; }
+.chip:hover img { transform: scale(1.12) rotate(-4deg); }
+.chip:hover span { color: var(--txt); }
+.chip small { display: block; font-size: 9px; line-height: 1.1; opacity: .7; text-align: center; }
+.chip span { text-align: center; line-height: 1.25; padding: 2px 8px; }
+.ds2 { left: -2%; top: 2%; }
+.ds3 { right: -2%; top: 0; }
+.ds4 { left: -3%; bottom: 6%; }
+.ds5 { right: -2%; bottom: 8%; }
+@keyframes bob { 50% { transform: translateY(-7px); } }
+
+/* games */
+main { flex: 1; }
+.games { padding: clamp(16px, 4vw, 32px) 0 clamp(40px, 7vw, 72px); }
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+h2 { font-size: 16px; font-weight: 600; }
+.count { font-size: 12px; color: var(--mute); }
+.list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; list-style: none; }
+.game {
+  display: flex; flex-direction: column; height: 100%;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  transition: border-color .25s, transform .25s;
+}
+.game:hover { border-color: rgba(232, 255, 71, .35); transform: translateY(-2px); }
+.art { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-bottom: 1px solid var(--line); }
+.body { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px 18px; flex: 1; }
+.title { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.badge { font-size: 11px; color: var(--mute); white-space: nowrap; }
+.game p { font-size: 14px; color: var(--mute); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.tags span { font-size: 11px; padding: 2px 8px; border-radius: 6px; background: rgba(255, 255, 255, .05); color: var(--mute); }
+.play {
+  margin-top: auto; padding-top: 10px; align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--y);
+}
+.play b { transition: transform .2s; font-weight: 600; }
+.game:hover .play b { transform: translateX(3px); }
+
+/* card art: AnimeDraft (fanned character cards) */
+.ad { background: radial-gradient(120% 100% at 30% 10%, #2a1408, #0d0d0d 65%); display: flex; align-items: center; justify-content: center; }
+.ad .c { width: 22%; aspect-ratio: 3 / 4; border-radius: 8px; margin: 0 -2.5%; border: 1px solid rgba(255, 255, 255, .18); box-shadow: 0 10px 24px rgba(0, 0, 0, .5); position: relative; overflow: hidden; }
+.ad .c::before { content: ""; position: absolute; left: 50%; top: 20%; width: 44%; aspect-ratio: 1; border-radius: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, .22); }
+.ad .c::after { content: ""; position: absolute; left: 50%; top: 52%; width: 74%; height: 60%; border-radius: 50% 50% 0 0; transform: translateX(-50%); background: rgba(255, 255, 255, .14); }
+.ad .c1 { background: linear-gradient(160deg, #ff5e1a, #7a1f05); transform: rotate(-10deg) translateY(5%); }
+.ad .c2 { background: linear-gradient(160deg, #e8ff47, #4c5c00); transform: translateY(-4%); z-index: 1; }
+.ad .c3 { background: linear-gradient(160deg, #5b6cff, #1b1f55); transform: rotate(10deg) translateY(5%); }
+
+/* card art: WheelDrafter (spinning wheel) */
+.wd { background: radial-gradient(110% 100% at 70% 20%, #1d2208, #0d0d0d 65%); display: flex; align-items: center; justify-content: center; }
+.wd .wheel { position: relative; height: 72%; aspect-ratio: 1; }
+.wd svg { width: 100%; height: 100%; animation: spin 24s linear infinite; }
+.wd .pin { position: absolute; left: 50%; top: -5px; transform: translateX(-50%); border: 7px solid transparent; border-top: 12px solid var(--txt); border-bottom: 0; z-index: 1; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { border-top: 1px solid var(--line); }
+footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding-top: 20px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); font-size: 12px; color: var(--mute); }
+footer a { display: inline-flex; align-items: center; min-height: 44px; margin: -12px 0; }
+footer a:hover { color: var(--y); }
+
+@media (max-width: 760px) {
+  .hero .wrap { grid-template-columns: 1fr; gap: 4px; }
+  .stage { max-width: 320px; order: -1; margin-bottom: 8px; }
+  .list { grid-template-columns: 1fr; }
+  .art { aspect-ratio: 2 / 1; }
+}
+@media (max-width: 380px) {
+  body { font-size: 14px; }
+  .stage { max-width: 270px; }
+  .body { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wd svg, .ctrl, .stickL, .stickR, .chip { animation: none; }
+  .pad { transition: none; }
+  .game, .play b { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<nav aria-label="Main">
+  <div class="wrap">
+    <a href="https://www.roshana.name.np/" class="logo" aria-label="Roshan Adhikari, portfolio"><i>RA</i>Games</a>
+    <a href="https://www.roshana.name.np/" class="nav-link">Portfolio ↗</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Arcade</p>
+      <h1>Small games, <span>big arguments.</span></h1>
+      <p class="lead">Party games I build for fun, with more on the way. Draft anime legends with friends or spin the wheels of fate. They run right in your browser.</p>
+      <ul class="facts">
+        <li>Exciting games</li>
+        <li>Free</li>
+        <li>No sign-up</li>
+        <li>Works on phones</li>
+      </ul>
+    </div>
+    <div class="stage" id="stage">
+      <div class="pad" aria-hidden="true">
+        <svg class="ctrl" viewBox="0 0 400 260" role="img" aria-label="Game controller">
+          <defs>
+            <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#34343a"/><stop offset=".55" stop-color="#1d1d21"/><stop offset="1" stop-color="#121214"/>
+            </linearGradient>
+            <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="rgba(255,255,255,.28)"/><stop offset=".4" stop-color="rgba(255,255,255,.04)"/>
+            </linearGradient>
+            <radialGradient id="cap" cx=".4" cy=".35" r=".7">
+              <stop offset="0" stop-color="#3b3b42"/><stop offset="1" stop-color="#141416"/>
+            </radialGradient>
+            <radialGradient id="btn" cx=".35" cy=".3" r=".8">
+              <stop offset="0" stop-color="#2c2c31"/><stop offset="1" stop-color="#0d0d0f"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="200" cy="250" rx="150" ry="8" fill="rgba(0,0,0,.55)"/>
+          <path d="M120 38H280C330 38 356 60 369 100L392 190C402 228 382 252 352 246C330 242 316 222 300 196L284 172H116L100 196C84 222 70 242 48 246C18 252-2 228 8 190L31 100C44 60 70 38 120 38Z" fill="url(#body)"/>
+          <path d="M120 38H280C330 38 356 60 369 100L392 190C402 228 382 252 352 246C330 242 316 222 300 196L284 172H116L100 196C84 222 70 242 48 246C18 252-2 228 8 190L31 100C44 60 70 38 120 38Z" fill="none" stroke="url(#rim)" stroke-width="2"/>
+          <!-- light bar + touchpad -->
+          <rect x="146" y="43" width="108" height="4" rx="2" fill="#e8ff47" opacity=".85"/>
+          <rect x="146" y="52" width="108" height="62" rx="12" fill="#18181b" stroke="rgba(255,255,255,.08)"/>
+          <!-- share / options -->
+          <rect x="122" y="58" width="8" height="18" rx="4" fill="#0e0e10"/>
+          <rect x="270" y="58" width="8" height="18" rx="4" fill="#0e0e10"/>
+          <!-- d-pad -->
+          <g fill="url(#btn)" stroke="rgba(255,255,255,.06)">
+            <rect x="85" y="78" width="20" height="24" rx="4"/><rect x="85" y="118" width="20" height="24" rx="4"/>
+            <rect x="61" y="100" width="24" height="20" rx="4"/><rect x="105" y="100" width="24" height="20" rx="4"/>
+          </g>
+          <!-- face buttons -->
+          <g stroke="rgba(0,0,0,.4)">
+            <circle cx="305" cy="84" r="12" fill="url(#btn)"/><circle cx="305" cy="136" r="12" fill="url(#btn)"/>
+            <circle cx="279" cy="110" r="12" fill="url(#btn)"/><circle cx="331" cy="110" r="12" fill="url(#btn)"/>
+          </g>
+          <circle cx="305" cy="84" r="4.5" fill="#e8ff47"/><circle cx="305" cy="136" r="4.5" fill="#5b8cff"/>
+          <circle cx="279" cy="110" r="4.5" fill="#ff5fa2"/><circle cx="331" cy="110" r="4.5" fill="#ff5e1a"/>
+          <!-- home -->
+          <circle cx="200" cy="140" r="8" fill="#0e0e10" stroke="rgba(232,255,71,.6)"/>
+          <!-- sticks -->
+          <g class="stickL"><circle cx="146" cy="158" r="27" fill="#0b0b0c"/><circle cx="146" cy="158" r="20" fill="url(#cap)"/><circle cx="146" cy="158" r="13" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="3"/></g>
+          <g class="stickR"><circle cx="254" cy="158" r="27" fill="#0b0b0c"/><circle cx="254" cy="158" r="20" fill="url(#cap)"/><circle cx="254" cy="158" r="13" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="3"/></g>
+        </svg>
+      </div>
+      <a class="chip ds2" href="animedraft/#roster" style="--c:#b98cff;--d:0s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-1.webp" alt="Shinobu laughing" width="64" height="64" decoding="async"><span>Shinobu<small>Cheerful</small></span></a>
+      <a class="chip ds3" href="animedraft/#roster" style="--c:#8f7bff;--d:-1.3s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-2.webp" alt="Shinobu waving" width="64" height="64" decoding="async"><span>Shinobu<small>Peace</small></span></a>
+      <a class="chip ds4" href="animedraft/#roster" style="--c:#d39bff;--d:-2.6s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-3.webp" alt="Shinobu smiling calmly" width="64" height="64" decoding="async"><span>Shinobu<small>Calm</small></span></a>
+      <a class="chip ds5" href="animedraft/#roster" style="--c:#ff5f7a;--d:-3.9s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-4.webp" alt="Shinobu in battle" width="64" height="64" decoding="async"><span>Shinobu<small>Furious</small></span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="games" aria-labelledby="games-title">
+    <div class="wrap">
+      <div class="head">
+        <h2 id="games-title">Games</h2>
+        <span class="count">More coming soon</span>
+      </div>
+      <ul class="list">
+        <li>
+          <a class="game" href="animedraft/">
+            <div class="art ad" aria-hidden="true">
+              <div class="c c1"></div><div class="c c2"></div><div class="c c3"></div>
+            </div>
+            <div class="body">
+              <div class="title"><h3>AnimeDraft</h3><span class="badge">2–15 players</span></div>
+              <p>Auction-draft anime's strongest, settle who-wins debates with real power scaling, or find the imposter.</p>
+              <div class="tags"><span>Auction</span><span>Duels</span><span>Party</span></div>
+              <span class="play">Play now <b aria-hidden="true">→</b></span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="game" href="wheeldrafter/">
+            <div class="art wd" aria-hidden="true">
+              <div class="wheel">
+                <span class="pin"></span>
+                <svg viewBox="-100 -100 200 200">
+                  <g stroke="#0d0d0d" stroke-width="2">
+                    <path d="M0 0 L0 -96 A96 96 0 0 1 83.1 -48 Z" fill="#e8ff47"/>
+                    <path d="M0 0 L83.1 -48 A96 96 0 0 1 83.1 48 Z" fill="#2a2a2a"/>
+                    <path d="M0 0 L83.1 48 A96 96 0 0 1 24.8 92.7 Z" fill="#ff5e1a"/>
+                    <path d="M0 0 L24.8 92.7 A96 96 0 0 1 -67.9 67.9 Z" fill="#ece9e0"/>
+                    <path d="M0 0 L-67.9 67.9 A96 96 0 0 1 -92.7 -24.8 Z" fill="#1a1a1a"/>
+                    <path d="M0 0 L-92.7 -24.8 A96 96 0 0 1 -33 -90.2 Z" fill="#5b6cff"/>
+                    <path d="M0 0 L-33 -90.2 A96 96 0 0 1 0 -96 Z" fill="#e8ff47"/>
+                  </g>
+                  <circle r="14" fill="#0d0d0d" stroke="#e8ff47" stroke-width="2"/>
+                </svg>
+              </div>
+            </div>
+            <div class="body">
+              <div class="title"><h3>WheelDrafter</h3><span class="badge">1–2 players</span></div>
+              <p>Spin for race, stats, powers and a weapon to build a one-of-a-kind legend, then duel a friend.</p>
+              <div class="tags"><span>Spin</span><span>Solo</span><span>Duel</span></div>
+              <span class="play">Play now <b aria-hidden="true">→</b></span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Roshan Adhikari</span>
+    <a href="https://www.roshana.name.np/">roshana.name.np</a>
+  </div>
+</footer>
+
+<script>
+document.getElementById("yr").textContent = new Date().getFullYear();
+
+/* Controller tilts toward the pointer (desktop only); light and paused for reduced motion. */
+(function () {
+  const stage = document.getElementById("stage");
+  const pad = stage && stage.querySelector(".pad");
+  if (!pad || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let raf = 0;
+  window.addEventListener("pointermove", (e) => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
+      const r = stage.getBoundingClientRect();
+      const x = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2)));
+      const y = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (window.innerHeight / 2)));
+      pad.style.setProperty("--ry", `${x * 18}deg`);
+      pad.style.setProperty("--rx", `${12 - y * 12}deg`);
+    });
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

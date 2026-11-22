@@ -1,0 +1,896 @@
+/* ---------- full-screen stage ---------- */
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100dvh;
+  background:
+    radial-gradient(600px 300px at 50% 50%, rgba(255, 194, 51, 0.08), transparent 70%),
+    var(--ink);
+}
+.top,
+.bottom {
+  min-width: 0;
+}
+.center {
+  position: relative;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+.centerBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+}
+.exit {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-size: 16px;
+  color: var(--mute);
+}
+.lotNo {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--gold);
+}
+
+/* ---------- lot ---------- */
+.lotRow {
+  display: grid;
+  grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+}
+.lotCard {
+  max-width: 180px;
+  width: 100%;
+  justify-self: end;
+}
+.lotInfo {
+  min-width: 0;
+}
+.label {
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--mute);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.charName {
+  font-family: var(--disp);
+  font-size: clamp(17px, 5vw, 24px);
+  line-height: 1.1;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+.bigBid {
+  font-family: var(--disp);
+  font-size: clamp(38px, 12vw, 56px);
+  line-height: 1;
+  color: var(--pc, var(--paper));
+  animation: pop 0.3s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.leader {
+  font-weight: 900;
+  font-size: 14px;
+  margin-top: 4px;
+  min-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.timerBar {
+  height: 6px;
+  border-radius: 4px;
+  background: var(--panel);
+  overflow: hidden;
+  margin-top: 10px;
+}
+.timerBar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--gold));
+  transition: width 0.1s linear;
+}
+.callout {
+  font-family: var(--disp);
+  font-size: 15px;
+  color: var(--gold);
+  margin-top: 6px;
+  min-height: 20px;
+}
+.choiceWhy {
+  font-size: 14px;
+  margin: 8px 0 0;
+  color: var(--mute);
+}
+.choiceWhy b {
+  color: var(--pc);
+}
+
+/* ---------- host bar ---------- */
+.hostBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+}
+.hostBump,
+.hostTool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 11px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-weight: 900;
+  font-size: 13px;
+  max-width: 100%;
+}
+.hostBump {
+  border-color: var(--pc);
+}
+.hostBump:disabled,
+.hostTool:disabled {
+  opacity: 0.3;
+}
+.hammer {
+  flex: 1 1 120px;
+}
+.choiceBar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+}
+.single {
+  grid-template-columns: 1fr;
+}
+.choiceBar p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+/* ---------- host entry ---------- */
+.entry {
+  display: grid;
+  gap: 8px;
+  max-width: 460px;
+  width: 100%;
+  margin: 0 auto;
+}
+.entryLabel {
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.entryWho {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.whoBtn {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  text-align: left;
+  min-height: 52px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+}
+.whoBtn b {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.whoBtn small {
+  grid-column: 2;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mute);
+}
+.whoBtn:disabled {
+  opacity: 0.35;
+}
+.whoOn {
+  border-color: var(--pc);
+  background: color-mix(in srgb, var(--pc) 18%, var(--panel));
+  box-shadow: 0 0 24px -10px var(--pc);
+}
+.amountRow {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  gap: 8px;
+}
+.amtStep {
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-size: 24px;
+  font-weight: 900;
+  min-height: 52px;
+}
+.amtStep:disabled {
+  opacity: 0.3;
+}
+.amtBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 12px;
+  background: var(--ink2);
+  border: 1.5px solid var(--gold);
+  font-family: var(--disp);
+  font-size: 30px;
+  color: var(--gold);
+  min-width: 0;
+}
+.amtBox input {
+  width: 3.2ch;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  outline: none;
+}
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.quick button {
+  flex: 1 1 0;
+  min-width: 48px;
+  min-height: 34px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.quick .quickOn {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+}
+.entryErr {
+  margin: 0;
+  min-height: 1.4em;
+}
+.entryTools {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.ledger {
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+.ledger summary {
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.ledger summary span {
+  color: var(--mute);
+}
+.ledger ol {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  display: grid;
+  gap: 4px;
+  padding-right: 8px;
+}
+.ledger li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: baseline;
+}
+.ledger li b {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ledger li span:last-child {
+  color: var(--pc, var(--mute));
+  font-family: var(--mono);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.ledgerNo {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mute);
+}
+
+/* ---------- outcome flash ---------- */
+.flash {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(14, 12, 11, 0.9);
+  animation: fade 0.15s;
+  text-align: center;
+}
+.flashCard {
+  width: 84px;
+  animation: pop 0.35s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.flashText {
+  font-family: var(--disp);
+  font-size: clamp(20px, 6vw, 30px);
+  line-height: 1.15;
+  max-width: 420px;
+}
+.flashText span {
+  color: var(--pc);
+}
+
+/* ---------- bidder panel ---------- */
+.bidder {
+  background: var(--ink2);
+  border-top: 3px solid var(--pc);
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  display: grid;
+  gap: 8px;
+  transition: box-shadow 0.2s;
+}
+.top .bidder {
+  padding-bottom: 10px;
+}
+.flipped {
+  transform: rotate(180deg);
+}
+.leading {
+  box-shadow: inset 0 3px 0 var(--pc), 0 0 40px -12px var(--pc);
+}
+.bHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.bName {
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.status {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--pc);
+  color: var(--ink);
+}
+.budget {
+  margin-left: auto;
+  font-family: var(--disp);
+  font-size: 26px;
+  line-height: 1;
+  color: var(--pc);
+}
+.budget small {
+  font-size: 15px;
+  margin-right: 1px;
+}
+.team {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 48px));
+  gap: 6px;
+}
+.slot {
+  position: relative;
+  aspect-ratio: 3 / 4;
+}
+.slot > * {
+  position: absolute;
+  inset: 0;
+}
+.empty {
+  border: 1.5px dashed #4a3c30;
+  border-radius: 10px;
+}
+.price {
+  position: absolute;
+  z-index: 3;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  border-radius: 5px;
+  line-height: 1.4;
+}
+.actions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.bidBtn,
+.skipBtn {
+  min-height: 46px;
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 1.05;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  user-select: none;
+  touch-action: manipulation;
+}
+.bidBtn {
+  background: var(--pc);
+  color: var(--ink);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+}
+.bidBtn small {
+  font-size: 10px;
+  opacity: 0.75;
+  font-family: var(--mono);
+}
+.bidBtn:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+.bidBtn:disabled {
+  opacity: 0.25;
+}
+.allIn {
+  background: var(--paper);
+}
+.skipBtn {
+  grid-column: span 1;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--mute);
+  font-size: 12px;
+}
+.actions > .skipBtn:only-child {
+  grid-column: 1 / -1;
+  min-height: 40px;
+}
+.skipBtn.armed {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+  animation: pop 0.25s;
+}
+.skipBtn:disabled {
+  opacity: 0.35;
+}
+
+/* ---------- short phones: compact stage ---------- */
+@media (max-height: 720px) and (max-width: 1099px) {
+  .bidder,
+  .top .bidder {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    gap: 6px;
+  }
+  .bottom .bidder {
+    padding-bottom: calc(6px + env(safe-area-inset-bottom));
+  }
+  .team {
+    grid-template-columns: repeat(5, minmax(0, 34px));
+  }
+  .bidBtn,
+  .skipBtn {
+    min-height: 40px;
+  }
+  .budget {
+    font-size: 22px;
+  }
+  .center {
+    gap: 4px;
+    padding: 2px 12px;
+  }
+  .centerBar {
+    min-height: 30px;
+  }
+  .exit {
+    width: 30px;
+    height: 30px;
+  }
+  .lotCard {
+    max-width: 104px;
+  }
+  .bigBid {
+    font-size: 34px;
+  }
+  .timerBar {
+    margin-top: 6px;
+  }
+  .hostBump,
+  .hostTool {
+    min-height: 36px;
+  }
+  .whoBtn,
+  .amtStep {
+    min-height: 44px;
+  }
+  .amtBox {
+    font-size: 24px;
+  }
+  .ledger ol {
+    max-height: 96px;
+  }
+}
+
+/* ---------- wide screens: players on the sides ---------- */
+@media (min-width: 1100px) {
+  .stage {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 460px) minmax(0, 1fr);
+  }
+  .bottom {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .center {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .top {
+    grid-column: 3;
+    grid-row: 1;
+  }
+  .top,
+  .bottom {
+    display: flex;
+    align-items: center;
+    padding: 24px;
+  }
+  .bidder,
+  .top .bidder {
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--pc);
+    padding: 16px;
+    gap: 14px;
+  }
+  .flipped {
+    transform: none;
+  }
+  .team {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .actions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .skipBtn {
+    grid-column: 1 / -1;
+    min-height: 40px;
+  }
+  .bidBtn {
+    min-height: 56px;
+  }
+}
+
+/* ---------- results ---------- */
+.teams {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+@media (min-width: 760px) {
+  .teams {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.teamBox {
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--pc);
+  border-radius: 16px;
+  padding: 12px;
+}
+.teamBox h3 {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+.teamGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+.tag {
+  position: absolute;
+  z-index: 3;
+  right: 4px;
+  top: 4px;
+  font-family: var(--mono);
+  font-size: max(9px, 9cqw);
+  padding: 0 5px;
+  border-radius: 5px;
+  background: var(--ink);
+  color: var(--gold);
+}
+.teamMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--mute);
+}
+.teamMeta b {
+  color: var(--paper);
+  font-family: var(--mono);
+}
+.awards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.award {
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  min-width: 0;
+}
+.award .label {
+  white-space: normal;
+}
+.award b {
+  display: block;
+  font-size: 14px;
+  margin-top: 2px;
+  overflow-wrap: anywhere;
+}
+.award span {
+  font-size: 12px;
+  color: var(--mute);
+}
+
+/* host entry: content can be taller than the screen, so start at the top */
+.centerEntry {
+  justify-content: flex-start;
+}
+.scale {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--gold);
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+/* ---------- records ---------- */
+.standings {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+.standings th {
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--mute);
+  text-align: right;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line);
+}
+.standings td {
+  padding: 6px;
+  text-align: right;
+  font-family: var(--mono);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.standings th:first-child,
+.standings td:first-child {
+  text-align: left;
+  font-family: var(--body);
+  font-weight: 900;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+.histItem {
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+.histItem summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 10px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 13px;
+}
+.histItem summary::-webkit-details-marker {
+  display: none;
+}
+.histDate {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mute);
+}
+.histLine {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+  font-family: var(--mono);
+}
+.histLine b {
+  font-family: var(--body);
+  color: var(--pc);
+}
+.histWin {
+  grid-column: 1 / -1;
+  font-weight: 900;
+  font-size: 12px;
+}
+.histTeam {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+.histCards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 44px));
+  gap: 5px;
+}
+.histCards > * {
+  position: relative;
+}
+
+/* ---------- bouts ---------- */
+.bouts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.bout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+.boutCards {
+  display: grid;
+  grid-template-columns: 44px auto 44px;
+  gap: 6px;
+  align-items: center;
+}
+.boutVs {
+  font-family: var(--disp);
+  font-size: 11px;
+  color: var(--red);
+}
+.bWin {
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px var(--jade);
+}
+.bLose {
+  filter: grayscale(0.9) brightness(0.6);
+}
+.boutText {
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+  min-width: 0;
+}
+.boutText b {
+  color: var(--pc);
+}
+.boutText b .muted {
+  font-weight: 400;
+}
+.boutText > span {
+  color: var(--mute);
+  line-height: 1.4;
+}
+
+/* host entry on phones/tablets: give the host's controls the room */
+@media (max-width: 1099px) {
+  .entryStage .bidder,
+  .entryStage .top .bidder,
+  .entryStage .bottom .bidder {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    gap: 6px;
+  }
+  .entryStage .bottom .bidder {
+    padding-bottom: calc(6px + env(safe-area-inset-bottom));
+  }
+  .entryStage .team {
+    grid-template-columns: repeat(5, minmax(0, 30px));
+  }
+  .entryStage .budget {
+    font-size: 20px;
+  }
+  .entryStage .skipBtn {
+    min-height: 32px;
+  }
+  .entryStage .lotRow {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+  .entryStage .lotCard {
+    max-width: 92px;
+  }
+}
