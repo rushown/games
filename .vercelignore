@@ -1,4 +1,4 @@
-# Only the built static site is deployed: index.html, animedraft/, wheeldrafter/
+# Only the built static site is deployed: index.html, assets/, games/
 src/
 node_modules/
 *.zip

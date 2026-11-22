@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Games · Roshan Adhikari</title>
-<meta name="description" content="Free browser games by Roshan Adhikari: AnimeDraft (anime draft, duels and imposter) and WheelDrafter (spin the wheels of fate). No sign-up.">
+<meta name="description" content="Free browser games by Roshan Adhikari: AnimeDraft (anime draft, duels and imposter), WheelDrafter (spin the wheels of fate) and Momo Drop (physics puzzle). No sign-up.">
 <meta name="theme-color" content="#060606">
 <meta name="color-scheme" content="dark">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Games · Roshan Adhikari">
-<meta property="og:description" content="AnimeDraft and WheelDrafter: free party games that run in your browser.">
+<meta property="og:description" content="AnimeDraft, WheelDrafter and Momo Drop: free games that run in your browser.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23060606'/%3E%3Ccircle cx='16' cy='11' r='5' fill='%23e8ff47'/%3E%3Crect x='15' y='14' width='2' height='8' fill='%23ece9e0'/%3E%3Crect x='7' y='21' width='18' height='5' rx='2' fill='%23ece9e0'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -106,7 +106,7 @@ main { flex: 1; }
 .head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 h2 { font-size: 16px; font-weight: 600; }
 .count { font-size: 12px; color: var(--mute); }
-.list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; list-style: none; }
+.list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 16px; list-style: none; }
 .game {
   display: flex; flex-direction: column; height: 100%;
   background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
@@ -128,6 +128,12 @@ h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
 }
 .play b { transition: transform .2s; font-weight: 600; }
 .game:hover .play b { transform: translateX(3px); }
+
+/* card art: Momo Drop (momo rolling down a drawn line into a bowl) */
+.md { background: radial-gradient(110% 100% at 50% 0%, #3a1d10, #0d0d0d 70%); display: flex; align-items: center; justify-content: center; }
+.md svg { width: 82%; height: auto; overflow: visible; }
+.md .momo { animation: roll 3.2s cubic-bezier(.5, 0, .7, 1) infinite; }
+@keyframes roll { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 8% { opacity: 1; } 70% { transform: translate(150px, 52px) rotate(300deg); opacity: 1; } 82%, 100% { transform: translate(176px, 82px) rotate(320deg); opacity: 0; } }
 
 /* card art: AnimeDraft (fanned character cards) */
 .ad { background: radial-gradient(120% 100% at 30% 10%, #2a1408, #0d0d0d 65%); display: flex; align-items: center; justify-content: center; }
@@ -162,7 +168,7 @@ footer a:hover { color: var(--y); }
   .body { padding: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .wd svg, .ctrl, .stickL, .stickR, .chip { animation: none; }
+  .wd svg, .ctrl, .stickL, .stickR, .chip, .md .momo { animation: none; }
   .pad { transition: none; }
   .game, .play b { transition: none; }
 }
@@ -182,7 +188,7 @@ footer a:hover { color: var(--y); }
     <div>
       <p class="eyebrow">Arcade</p>
       <h1>Small games, <span>big arguments.</span></h1>
-      <p class="lead">Party games I build for fun, with more on the way. Draft anime legends with friends or spin the wheels of fate. They run right in your browser.</p>
+      <p class="lead">Games I build for fun, with more on the way. Draft anime legends with friends, spin the wheels of fate, or guide a falling momo into its bowl. They run right in your browser.</p>
       <ul class="facts">
         <li>Exciting games</li>
         <li>Free</li>
@@ -235,10 +241,10 @@ footer a:hover { color: var(--y); }
           <g class="stickR"><circle cx="254" cy="158" r="27" fill="#0b0b0c"/><circle cx="254" cy="158" r="20" fill="url(#cap)"/><circle cx="254" cy="158" r="13" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="3"/></g>
         </svg>
       </div>
-      <a class="chip ds2" href="animedraft/#roster" style="--c:#b98cff;--d:0s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-1.webp" alt="Shinobu laughing" width="64" height="64" decoding="async"><span>Shinobu<small>Cheerful</small></span></a>
-      <a class="chip ds3" href="animedraft/#roster" style="--c:#8f7bff;--d:-1.3s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-2.webp" alt="Shinobu waving" width="64" height="64" decoding="async"><span>Shinobu<small>Peace</small></span></a>
-      <a class="chip ds4" href="animedraft/#roster" style="--c:#d39bff;--d:-2.6s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-3.webp" alt="Shinobu smiling calmly" width="64" height="64" decoding="async"><span>Shinobu<small>Calm</small></span></a>
-      <a class="chip ds5" href="animedraft/#roster" style="--c:#ff5f7a;--d:-3.9s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-4.webp" alt="Shinobu in battle" width="64" height="64" decoding="async"><span>Shinobu<small>Furious</small></span></a>
+      <a class="chip ds2" href="games/animedraft/#roster" style="--c:#b98cff;--d:0s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-1.webp" alt="Shinobu laughing" width="64" height="64" decoding="async"><span>Shinobu<small>Cheerful</small></span></a>
+      <a class="chip ds3" href="games/animedraft/#roster" style="--c:#8f7bff;--d:-1.3s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-2.webp" alt="Shinobu waving" width="64" height="64" decoding="async"><span>Shinobu<small>Peace</small></span></a>
+      <a class="chip ds4" href="games/animedraft/#roster" style="--c:#d39bff;--d:-2.6s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-3.webp" alt="Shinobu smiling calmly" width="64" height="64" decoding="async"><span>Shinobu<small>Calm</small></span></a>
+      <a class="chip ds5" href="games/animedraft/#roster" style="--c:#ff5f7a;--d:-3.9s" title="Shinobu · Demon Slayer"><img src="assets/hero/shinobu-4.webp" alt="Shinobu in battle" width="64" height="64" decoding="async"><span>Shinobu<small>Furious</small></span></a>
     </div>
   </div>
 </header>
@@ -252,7 +258,7 @@ footer a:hover { color: var(--y); }
       </div>
       <ul class="list">
         <li>
-          <a class="game" href="animedraft/">
+          <a class="game" href="games/animedraft/">
             <div class="art ad" aria-hidden="true">
               <div class="c c1"></div><div class="c c2"></div><div class="c c3"></div>
             </div>
@@ -265,7 +271,7 @@ footer a:hover { color: var(--y); }
           </a>
         </li>
         <li>
-          <a class="game" href="wheeldrafter/">
+          <a class="game" href="games/wheeldrafter/">
             <div class="art wd" aria-hidden="true">
               <div class="wheel">
                 <span class="pin"></span>
@@ -287,6 +293,33 @@ footer a:hover { color: var(--y); }
               <div class="title"><h3>WheelDrafter</h3><span class="badge">1–2 players</span></div>
               <p>Spin for race, stats, powers and a weapon to build a one-of-a-kind legend, then duel a friend.</p>
               <div class="tags"><span>Spin</span><span>Solo</span><span>Duel</span></div>
+              <span class="play">Play now <b aria-hidden="true">→</b></span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="game" href="games/momodrop/">
+            <div class="art md" aria-hidden="true">
+              <svg viewBox="0 0 300 160">
+                <path d="M30 40 L210 104" stroke="#9a6440" stroke-width="9" stroke-linecap="round"/>
+                <path d="M30 37 L210 101" stroke="rgba(255,240,220,.3)" stroke-width="2" stroke-linecap="round"/>
+                <ellipse cx="236" cy="113" rx="44" ry="8" fill="#00276b"/>
+                <ellipse cx="236" cy="117" rx="37" ry="6" fill="#e5762a"/>
+                <path d="M192 113 A44 8 0 0 0 280 113 Q278 136 262 140 H210 Q194 136 192 113Z" fill="#003893"/>
+                <rect x="197" y="124" width="78" height="4" fill="#dc143c"/>
+                <path d="M192 113 A44 8 0 0 0 280 113" stroke="#f7fbff" stroke-width="2.5" fill="none"/>
+                <g class="momo" style="transform-origin: 54px 30px">
+                  <path d="M40 32 Q39 17 54 15 Q69 17 68 32 Q68 44 54 44 Q40 44 40 32Z" fill="#fffaf0" stroke="#d9bf9c" stroke-width="1.5"/>
+                  <path d="M54 16 Q51 22 47 28 M54 16 Q54 22 54 28 M54 16 Q57 22 61 28" stroke="#d9bf9c" stroke-width="1.2" fill="none"/>
+                  <circle cx="49" cy="33" r="1.8" fill="#3a2418"/><circle cx="59" cy="33" r="1.8" fill="#3a2418"/>
+                  <path d="M52 37 Q54 39 56 37" stroke="#3a2418" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+                </g>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="title"><h3>Momo Drop</h3><span class="badge">1 player</span></div>
+              <p>Draw lines to guide a falling momo into its bowl of jhol. Dodge the chilies across 15 levels.</p>
+              <div class="tags"><span>Puzzle</span><span>Physics</span><span>Solo</span></div>
               <span class="play">Play now <b aria-hidden="true">→</b></span>
             </div>
           </a>

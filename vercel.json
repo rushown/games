@@ -5,18 +5,33 @@
   "trailingSlash": true,
   "redirects": [
     {
+      "source": "/:old(animedraft|anime){/}?",
+      "destination": "/games/animedraft/",
+      "permanent": true
+    },
+    {
+      "source": "/:old(wheeldrafter|wheel){/}?",
+      "destination": "/games/wheeldrafter/",
+      "permanent": true
+    },
+    {
+      "source": "/:old(momodrop|momo-drop|momo){/}?",
+      "destination": "/games/momodrop/",
+      "permanent": true
+    },
+    {
       "source": "/animedraft.html",
-      "destination": "/animedraft/",
+      "destination": "/games/animedraft/",
       "permanent": true
     },
     {
-      "source": "/anime",
-      "destination": "/animedraft/",
+      "source": "/momo-drop.html",
+      "destination": "/games/momodrop/",
       "permanent": true
     },
     {
-      "source": "/wheel",
-      "destination": "/wheeldrafter/",
+      "source": "/games{/}?",
+      "destination": "/",
       "permanent": true
     }
   ],
