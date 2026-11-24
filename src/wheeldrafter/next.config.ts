@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
   basePath: "/games/wheeldrafter",
   // Match the rest of the site: canonical URLs end in a slash.
   trailingSlash: true,
+  // Dev only: let phones on the local network load the dev server (Next blocks other origins by default).
+  allowedDevOrigins: ["192.168.*.*"],
   reactStrictMode: true,
   poweredByHeader: false,
   async headers() {
