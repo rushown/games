@@ -126,13 +126,13 @@ const Face = memo(function Face({ wheel, slices, landedIndex }: { wheel: Wheel; 
         const dim = landedIndex >= 0 && landedIndex !== sl.index;
         return (
           <g key={seg.id} opacity={dim ? 0.35 : 1}>
-            <path d={slicePath(R, sl.start, sl.end)} fill={sliceColor(seg, sl.index)} stroke="#fbfaf7" strokeWidth={0.5} />
-            {sl.sweep >= 7 && <Label text={seg.short} mid={sl.mid} sweep={sl.sweep} color={seg.tier < 0 ? "#15130f" : textOnTier(seg.tier)} />}
+            <path d={slicePath(R, sl.start, sl.end)} fill={sliceColor(seg, sl.index)} stroke="#060606" strokeWidth={0.5} />
+            {sl.sweep >= 7 && <Label text={seg.short} mid={sl.mid} sweep={sl.sweep} color={seg.tier < 0 ? "#ece9e0" : textOnTier(seg.tier)} />}
           </g>
         );
       })}
       {landedIndex >= 0 && (
-        <path d={slicePath(R, slices[landedIndex].start, slices[landedIndex].end)} fill="none" stroke="#15130f" strokeWidth="1.6" />
+        <path d={slicePath(R, slices[landedIndex].start, slices[landedIndex].end)} fill="none" stroke="#ece9e0" strokeWidth="1.6" />
       )}
     </svg>
   );

@@ -282,23 +282,23 @@ export function segmentOf(wheel: WheelId, id: string): Segment {
   return s;
 }
 
-/** Monochrome ramp per tier: paper → ink. Only Boundless gets colour (the accent). */
+/** Monochrome ramp per tier: near-black → cream. Divine is orange, Boundless lime (the accent). */
 export const TIER_COLORS = [
-  "#ece8df",
-  "#e0dbd0",
-  "#d2cbbd",
-  "#c1b8a7",
-  "#aca290",
-  "#958a78",
-  "#7b7062",
-  "#62584d",
-  "#4a423a",
-  "#332d28",
-  "#1d1a17",
-  "#c6f432",
+  "#161616",
+  "#1e1e1e",
+  "#282827",
+  "#343431",
+  "#43423d",
+  "#56544d",
+  "#706d64",
+  "#8e8b81",
+  "#b0ada3",
+  "#d4d1c7",
+  "#ff5e1a",
+  "#e8ff47",
 ];
 /** Path wheel (no tiers) alternates these. */
-export const PATH_COLORS = ["#f6f4ef", "#e7e3da"];
+export const PATH_COLORS = ["#141414", "#1d1d1d"];
 
 export const TIER_NAMES = [
   "Common",
@@ -316,4 +316,4 @@ export const TIER_NAMES = [
 ];
 
 export const sliceColor = (seg: Segment, i: number) => (seg.tier < 0 ? PATH_COLORS[i % 2] : TIER_COLORS[seg.tier]);
-export const textOnTier = (tier: number) => (tier === 11 || tier < 5 ? "#15130f" : "#fbfaf7");
+export const textOnTier = (tier: number) => (tier < 7 ? "#ece9e0" : "#060606");

@@ -4,7 +4,7 @@ import { confetti } from "@/lib/fx";
 import { canGuess, secretName, winCheck, type ImposterState } from "./engine";
 import s from "./imposter.module.css";
 
-const AVATAR = ["#ff3d2e", "#ffc233", "#2ee6a6", "#ff5fa2", "#ff8a00", "#c77dff", "#f3ead8", "#8fbf6a"];
+const AVATAR = ["#ff5e1a", "#e8ff47", "#2ee6a6", "#ff5fa2", "#ff8a00", "#c77dff", "#ece9e0", "#8fbf6a"];
 
 export function VotePhase({
   state,

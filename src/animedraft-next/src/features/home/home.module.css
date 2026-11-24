@@ -121,15 +121,15 @@
   font-size: 26px;
 }
 .g1 {
-  background: linear-gradient(140deg, #ff3d2e, #8f1209);
+  background: linear-gradient(140deg, #ff5e1a, #7a2600);
 }
 .g2 {
-  background: linear-gradient(140deg, #ffc233, #e46b00);
+  background: linear-gradient(140deg, #e8ff47, #8fa300);
   color: var(--ink);
 }
 .g3 {
-  background: linear-gradient(140deg, #2b2320, #0e0c0b);
-  border-color: #4a3a2e;
+  background: linear-gradient(140deg, #161616, #060606);
+  border-color: #333333;
 }
 .g3 h2 {
   color: var(--pink);

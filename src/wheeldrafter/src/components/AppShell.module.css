@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(244, 242, 237, 0.88);
+  background: rgba(6, 6, 6, 0.86);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
@@ -55,7 +55,7 @@
   z-index: 30;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  background: rgba(251, 250, 247, 0.94);
+  background: rgba(13, 13, 13, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--line);

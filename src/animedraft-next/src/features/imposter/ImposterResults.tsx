@@ -22,7 +22,7 @@ export default function ImposterResults({ state, scores, onAgain, onSettings }: 
 
   return (
     <div className="narrow">
-      <div className="banner" style={{ ["--pc" as string]: crew ? "#1c9e72" : "#ff3d2e" }}>
+      <div className="banner" style={{ ["--pc" as string]: crew ? "#1c9e72" : "#ff5e1a" }}>
         <div className="kicker" style={{ color: "#fff" }}>
           {state.how === "guessed" ? "Correct guess. Win stolen!" : state.how === "outnumbered" ? "Imposters took over" : "All imposters caught"}
         </div>

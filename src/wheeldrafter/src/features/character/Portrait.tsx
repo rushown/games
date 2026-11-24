@@ -24,25 +24,25 @@ interface Props {
 
 /** Pale paper tint per race (minimal: the silhouette and line work do the talking). */
 const RACE_TINT: Record<string, [string, string]> = {
-  human: ["#f3f0ea", "#e7e2d8"],
-  beastkin: ["#f2ede2", "#e5ddcc"],
-  elf: ["#eef1e9", "#dfe5d9"],
-  android: ["#eff0f0", "#dfe1e2"],
-  vampire: ["#f3ecec", "#e6d9da"],
-  demon: ["#f3ebe6", "#e7d8cf"],
-  dragonborn: ["#f3ede5", "#e8dccd"],
-  spirit: ["#f1f2f2", "#e3e6e6"],
-  angel: ["#f6f3ea", "#ece4cf"],
-  titan: ["#f1eee8", "#e2dbcf"],
-  eldritch: ["#edefe9", "#dde1d6"],
-  celestial: ["#f0eef3", "#e1dde8"],
-  primordial: ["#f5f1e6", "#e9e0c9"],
-  abstract: ["#f4f4f4", "#e4e4e4"],
+  human: ["#1a1a19", "#121211"],
+  beastkin: ["#1c1a16", "#13110e"],
+  elf: ["#181b16", "#10130e"],
+  android: ["#181a1b", "#0f1112"],
+  vampire: ["#1d1717", "#140e0f"],
+  demon: ["#1d1815", "#140f0c"],
+  dragonborn: ["#1d1915", "#14100c"],
+  spirit: ["#181a1a", "#0f1111"],
+  angel: ["#1d1c17", "#14130e"],
+  titan: ["#1b1a17", "#12110e"],
+  eldritch: ["#181a16", "#0f110d"],
+  celestial: ["#19181c", "#100f13"],
+  primordial: ["#1d1b15", "#14120c"],
+  abstract: ["#1a1a1a", "#111111"],
 };
 
-const INK = "#15130f";
-const PAPER = "#fbfaf7";
-const ACCENT = "#c6f432";
+const INK = "#ece9e0";
+const PAPER = "#0d0d0d";
+const ACCENT = "#e8ff47";
 const BODY = INK;
 
 export default function Portrait({ roll, seed, level, className }: Props) {
@@ -87,7 +87,7 @@ function build(p: CompleteRoll, seed: number, level: number, uid: string): React
       key={i}
       d={superformulaPath(200, 235, 120 + i * 34, sf, (i * Math.PI) / (sf.m * 2) + rng() * 0.3)}
       fill="none"
-      stroke={rare && i === rings - 1 ? "#7fa800" : INK}
+      stroke={rare && i === rings - 1 ? "#e8ff47" : INK}
       strokeWidth={1.1}
       opacity={(0.32 + level * 0.05) * (1 - i * 0.12)}
     />
@@ -176,7 +176,7 @@ function build(p: CompleteRoll, seed: number, level: number, uid: string): React
   /* weapon */
   const weapon = p.weapon;
   const wColor = INK;
-  const wGlow = tier("weapon") >= 10 ? "#7fa800" : INK;
+  const wGlow = tier("weapon") >= 10 ? "#e8ff47" : INK;
   const W: Record<string, ReactNode> = {
     katana: (
       <g>
@@ -303,7 +303,7 @@ function build(p: CompleteRoll, seed: number, level: number, uid: string): React
   const halo = race === "angel" || race === "celestial" || p.alignment === "rogue";
   if (halo) {
     features.push(
-      <ellipse key="halo" cx="200" cy="150" rx="58" ry="13" fill="none" stroke={rare ? "#7fa800" : INK} strokeWidth="2.4" opacity={p.alignment === "fallen" ? 0.35 : 1} />,
+      <ellipse key="halo" cx="200" cy="150" rx="58" ry="13" fill="none" stroke={rare ? "#e8ff47" : INK} strokeWidth="2.4" opacity={p.alignment === "fallen" ? 0.35 : 1} />,
     );
   }
 

@@ -1,15 +1,15 @@
 /* ============ Tokens ============ */
 :root {
-  --ink: #0e0c0b;
-  --ink2: #171311;
-  --panel: #1d1816;
-  --line: #33291f;
-  --paper: #f3ead8;
-  --mute: #a8998a;
-  --red: #ff3d2e;
-  --red2: #c41e12;
-  --gold: #ffc233;
-  --gold2: #b58300;
+  --ink: #060606;
+  --ink2: #0d0d0d;
+  --panel: #121212;
+  --line: #262626;
+  --paper: #ece9e0;
+  --mute: #9b988f;
+  --red: #ff5e1a;
+  --red2: #c23d00;
+  --gold: #e8ff47;
+  --gold2: #8fa300;
   --jade: #2ee6a6;
   --pink: #ff5fa2;
   --p0: var(--red);
@@ -40,8 +40,8 @@ body {
   min-height: 100dvh;
   overflow-x: clip;
   background:
-    radial-gradient(1200px 500px at 110% -10%, rgba(255, 61, 46, 0.16), transparent 60%),
-    radial-gradient(900px 500px at -20% 110%, rgba(255, 194, 51, 0.1), transparent 60%), var(--ink);
+    radial-gradient(1200px 500px at 110% -10%, rgba(255, 94, 26, 0.16), transparent 60%),
+    radial-gradient(900px 500px at -20% 110%, rgba(232, 255, 71, 0.1), transparent 60%), var(--ink);
 }
 button,
 input,
@@ -303,7 +303,7 @@ label.field,
   text-align: center;
   padding: 22px 16px;
   border-radius: 20px;
-  background: linear-gradient(140deg, var(--pc, var(--gold)), #2a1a10);
+  background: linear-gradient(140deg, var(--pc, var(--gold)), #0d0d0d);
   position: relative;
   overflow: hidden;
 }

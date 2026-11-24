@@ -130,7 +130,7 @@
   padding: 3px 10px;
   border-radius: 999px;
   background: var(--accent);
-  color: var(--ink);
+  color: var(--on-accent);
 }
 
 /* ---------- result ---------- */
@@ -162,7 +162,7 @@
   text-transform: uppercase;
   padding: 3px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 .resLabel {
   font-family: var(--serif);
@@ -183,6 +183,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   background: var(--accent);
+  color: var(--on-accent);
   padding: 4px 10px;
   border-radius: 999px;
 }
@@ -240,7 +241,7 @@
   justify-content: center;
   text-align: center;
   padding: 24px;
-  background: rgba(244, 242, 237, 0.94);
+  background: rgba(6, 6, 6, 0.94);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   animation: fade 0.25s;

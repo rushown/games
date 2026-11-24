@@ -151,8 +151,8 @@ export function Ring({ fraction, size = 200, stroke = 12, children }: { fraction
       <svg viewBox={`0 0 ${size} ${size}`} aria-hidden>
         <defs>
           <linearGradient id="ringGrad">
-            <stop offset="0" stopColor="#ff3d2e" />
-            <stop offset="1" stopColor="#ffc233" />
+            <stop offset="0" stopColor="#ff5e1a" />
+            <stop offset="1" stopColor="#e8ff47" />
           </linearGradient>
         </defs>
         <circle cx={size / 2} cy={size / 2} r={r} stroke="#2c2522" strokeWidth={stroke} fill="none" />

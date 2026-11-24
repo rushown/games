@@ -2,23 +2,26 @@
    WheelDrafter: minimal paper + ink, one accent (lime) reserved for the rarest results.
    ========================================================= */
 :root {
-  --bg: #f4f2ed;
-  --surface: #fbfaf7;
-  --line: #e2ded5;
-  --line2: #d2cdc2;
-  --ink: #15130f;
-  --ink2: #3a3631;
-  --mute: #7a746c;
-  --accent: #c6f432;
-  --accent-ink: #5a7d00;
-  --p0: #15130f;
-  --p1: #6f9a00;
+  /* TEST: roshana.name.np dark palette (lime + orange on near-black). --ink is the text colour, --surface the card colour. */
+  --bg: #060606;
+  --surface: #0d0d0d;
+  --line: rgba(255, 255, 255, 0.08);
+  --line2: rgba(255, 255, 255, 0.16);
+  --ink: #ece9e0;
+  --ink2: rgba(236, 233, 224, 0.82);
+  --mute: rgba(236, 233, 224, 0.58);
+  --accent: #e8ff47;
+  --on-accent: #060606;
+  --mark: rgba(255, 94, 26, 0.55);
+  --accent-ink: #e8ff47;
+  --p0: #ff5e1a;
+  --p1: #e8ff47;
   --r: 14px;
   --serif: "Instrument Serif", ui-serif, Georgia, serif;
   --sans: "Geist Sans", system-ui, -apple-system, sans-serif;
   --mono: "Geist Mono", ui-monospace, monospace;
   --tabbar: 58px;
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 *,
@@ -162,7 +165,7 @@ h3 {
 .btn.gold,
 .btn.jade {
   background: var(--accent);
-  color: var(--ink);
+  color: var(--on-accent);
   border-color: var(--accent);
 }
 .btn.ghost {

@@ -84,7 +84,7 @@
   justify-content: flex-end;
   padding: 22px;
   cursor: grab;
-  background: linear-gradient(160deg, #ff3d2e, #7a0d06);
+  background: linear-gradient(160deg, #ff5e1a, #6b2100);
   box-shadow: 0 -6px 30px rgba(0, 0, 0, 0.6);
   transition: transform 0.35s cubic-bezier(0.3, 1.4, 0.5, 1);
   touch-action: none;
@@ -239,7 +239,7 @@
 }
 .current {
   border-color: var(--gold);
-  background: rgba(255, 194, 51, 0.1);
+  background: rgba(232, 255, 71, 0.1);
 }
 .current .orderNum {
   background: var(--gold);
@@ -279,7 +279,7 @@
 }
 .pbtn.on {
   border-color: var(--red);
-  background: rgba(255, 61, 46, 0.14);
+  background: rgba(255, 94, 26, 0.14);
 }
 .pbtn:disabled {
   opacity: 0.32;

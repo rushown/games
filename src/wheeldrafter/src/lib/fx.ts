@@ -8,7 +8,7 @@ export function buzz(pattern: number | number[] = 15): void {
   }
 }
 
-const COLORS = ["#15130f", "#c6f432", "#d2cdc2", "#15130f", "#c6f432"];
+const COLORS = ["#ff5e1a", "#e8ff47", "#ece9e0", "#5b6cff", "#e8ff47"];
 
 export function confetti(pieces = 70): void {
   if (typeof document === "undefined") return;
