@@ -57,6 +57,11 @@
       "permanent": true
     },
     {
+      "source": "/:old(krillion|kr){/}?",
+      "destination": "/games/krillion/",
+      "permanent": true
+    },
+    {
       "source": "/:old(quizduel|quiz-duel|quiz){/}?",
       "destination": "/games/quizduel/",
       "permanent": true

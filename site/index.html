@@ -129,6 +129,16 @@ h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
 .play b { transition: transform .2s; font-weight: 600; }
 .game:hover .play b { transform: translateX(3px); }
 
+/* card art: One in a Krillion (prize ladder with a climbing marker) */
+.kr { background: radial-gradient(110% 100% at 30% 0%, #14182e, #0d0d0d 68%); display: flex; align-items: center; justify-content: center; gap: 8%; }
+.kr .coin { width: 22%; aspect-ratio: 1; border-radius: 50%; background: #e8ff47; color: #060606; display: grid; place-items: center; font-size: clamp(22px, 5vw, 34px); font-weight: 600; line-height: 1; box-shadow: 0 0 40px -6px rgba(232, 255, 71, .55); }
+.kr ol { list-style: none; display: grid; gap: 4px; width: 34%; }
+.kr li { height: 9px; border-radius: 5px; background: rgba(255, 255, 255, .08); }
+.kr li.s { background: rgba(91, 108, 255, .45); }
+.kr li.on { animation: climb 4.5s infinite; }
+.kr li:nth-child(5) { animation-delay: 0s; } .kr li:nth-child(4) { animation-delay: .9s; } .kr li:nth-child(3) { animation-delay: 1.8s; } .kr li:nth-child(2) { animation-delay: 2.7s; } .kr li:nth-child(1) { animation-delay: 3.6s; }
+@keyframes climb { 0%, 18% { background: #e8ff47; box-shadow: 0 0 12px rgba(232, 255, 71, .6); } 22%, 100% { background: rgba(255, 255, 255, .08); box-shadow: none; } }
+
 /* card art: Quiz Duel (countdown ring between two groups) */
 .qd { background: radial-gradient(110% 100% at 50% 10%, #1c2010, #0d0d0d 68%); display: flex; align-items: center; justify-content: center; }
 .qd svg { width: 86%; height: auto; overflow: visible; }
@@ -332,6 +342,20 @@ footer a:hover { color: var(--y); }
               <div class="title"><h3>Momo Drop</h3><span class="badge">1 player</span></div>
               <p>Draw lines to guide a falling momo into its bowl of jhol. Dodge the chilies across 15 levels.</p>
               <div class="tags"><span>Puzzle</span><span>Physics</span><span>Solo</span></div>
+              <span class="play">Play now <b aria-hidden="true">→</b></span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="game" href="games/krillion/">
+            <div class="art kr" aria-hidden="true">
+              <div class="coin">K</div>
+              <ol><li class="on"></li><li class="on"></li><li class="on s"></li><li class="on"></li><li class="on"></li></ol>
+            </div>
+            <div class="body">
+              <div class="title"><h3>One in a Krillion</h3><span class="badge">1–2 players</span></div>
+              <p>Climb 15 quiz questions to a krillion points with 50:50, Crowd and Swap lifelines. Go solo or duel a friend.</p>
+              <div class="tags"><span>Quiz</span><span>Solo</span><span>Duel</span></div>
               <span class="play">Play now <b aria-hidden="true">→</b></span>
             </div>
           </a>

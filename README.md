@@ -1,13 +1,14 @@
 # Games
 
 Small games, big arguments. A little arcade of free browser games by [Roshan Adhikari](https://www.roshana.name.np/):
-party games for one phone passed around a room, a physics puzzle, and a classic. No sign-up, no install, works on phones.
+party games for one phone passed around a room, a physics puzzle, a quiz ladder, and a classic. No sign-up, no install, works on phones.
 
 | Game | Players | In one line |
 | --- | --- | --- |
 | [AnimeDraft](#animedraft) | 2–15 | Auction-draft anime's strongest, settle who-wins debates, or find the imposter |
 | [WheelDrafter](#wheeldrafter) | 1–2 | Spin wheels of fate to build a one-of-a-kind legend, then duel a friend |
 | [Momo Drop](#momo-drop) | 1 | Draw lines so a falling momo lands in its bowl of jhol |
+| [One in a Krillion](#one-in-a-krillion) | 1–2 | Climb 15 quiz questions to a krillion points, solo or in a duel |
 | [Quiz Duel](#quiz-duel) | 2–6 groups | A timed classroom quiz: 900 easy questions across 9 rounds |
 | [Tic Tac Toe](#tic-tac-toe) | 1–2 | The classic, against a friend or a computer that never loses |
 
@@ -54,6 +55,25 @@ rolls along them under real physics ([Matter.js](https://brm.io/matter-js/)). La
 - **Controls:** drag to draw · `Space`/`Enter` to drop or reset · `Ctrl+Z` undo · `Esc` levels menu.
 - Progress is saved in the browser (`localStorage`).
 
+### One in a Krillion
+`site/games/krillion/` · a single HTML file
+
+A quiz ladder. Answer 15 multiple-choice questions, each worth more than the last, from 100 points up to
+**1 Krillion** (1,000,000). Questions get harder every four rungs: easy → medium → hard → expert.
+
+- **Lock it in:** pick an answer, then lock it. A wrong answer or running out of time ends the climb.
+- **Safe havens** at question 5 (1,000) and 10 (32,000): once passed, a miss can't drop you below them.
+  **Walk away** at any time to keep what you've banked.
+- **Lifelines**, one use each: **50:50** removes two wrong answers, **Crowd** shows an audience poll (less reliable on
+  harder questions), **Swap** trades the question for another of the same difficulty.
+- **Duel:** two players take turns on one device, each on their own ladder with their own lifelines. Most points
+  banked wins. Rematches keep a running match score and total points per player.
+- **Question bank:** about 245 built-in questions, with a mix of general knowledge and Nepal. Seen questions are
+  remembered so they don't repeat until a tier runs out. You can add your own questions at any difficulty.
+- The timer (30–60 s by difficulty) is optional and pauses when the tab is hidden.
+- **Keys:** `A`–`D` or `1`–`4` pick · `Enter` lock in · `W` walk away.
+- Scores, seen questions and custom questions are saved in the browser (`localStorage`).
+
 ### Quiz Duel
 `site/games/quizduel/` · one HTML file plus a question bank in `questions/`
 
@@ -97,7 +117,7 @@ One Vercel project, deployed as three **[services](https://vercel.com/docs/servi
 | --- | --- | --- | --- |
 | `animedraft` | `src/animedraft-next/` | `/games/animedraft/…` | Next.js app (pages plus a read-only `/api/characters` endpoint) |
 | `wheeldrafter` | `src/wheeldrafter/` | `/games/wheeldrafter/…` | Next.js app (fully static pages) |
-| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, Quiz Duel |
+| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, One in a Krillion, Quiz Duel |
 
 ```
 site/
@@ -106,6 +126,7 @@ site/
   games/momodrop/        hand-written single-file game
   games/tictactoe/       hand-written single-file game
   games/quizduel/        hand-written game + questions/ (one file per round)
+  games/krillion/        hand-written single-file game
 src/
   animedraft-next/       Next.js app, basePath /games/animedraft
   wheeldrafter/          Next.js app, basePath /games/wheeldrafter
@@ -164,6 +185,7 @@ headers, no caching for pages (updates show up straight away), one-day caching f
 | `/momo`, `/momodrop`, `/momo-drop` | `/games/momodrop/` |
 | `/ttt`, `/tictactoe`, `/tic-tac-toe` | `/games/tictactoe/` |
 | `/quiz`, `/quizduel`, `/quiz-duel` | `/games/quizduel/` |
+| `/krillion`, `/kr` | `/games/krillion/` |
 | `/games` | `/` |
 
 To deploy, run `vercel --prod` from the repo root, or connect the GitHub repo in Vercel. Services are a Vercel beta
