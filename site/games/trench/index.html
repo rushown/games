@@ -160,15 +160,51 @@ form.answer .btn { min-height: 54px; }
   display: grid; grid-template-rows: repeat(5, 1fr);
   background: linear-gradient(180deg, #1d2a12 0%, #0b2a35 22%, #0e1438 46%, #160d2c 70%, #0a0606 100%);
 }
-.band { position: relative; border-top: 1px dashed rgba(255, 255, 255, .08); display: flex; align-items: flex-end; justify-content: flex-start; padding: 6px 8px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--z); opacity: .75; }
-.band:first-child { border-top: 0; }
+.band { position: relative; border-top: 0; display: flex; align-items: flex-end; justify-content: flex-start; padding: 6px 8px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--z); opacity: .75; }
+.band { transition: opacity .4s, background .6s; }
 .band.hit { opacity: 1; background: linear-gradient(90deg, color-mix(in srgb, var(--z) 20%, transparent), transparent); }
+/* level lines: one at the top of every zone below the surface, with its depth marked on the right */
+.band:not(:first-child)::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--z) 70%, transparent), color-mix(in srgb, var(--z) 25%, transparent));
+  transform-origin: left center;
+}
+.band:not(:first-child)::after {
+  content: attr(data-m); position: absolute; right: 6px; top: 3px; font-size: 9px; letter-spacing: .06em;
+  color: var(--z); opacity: .6; font-variant-numeric: tabular-nums; text-transform: none;
+}
+.band.cross::before { animation: lineFlash .7s ease-out; }
+.band.cross::after { animation: markFlash .7s ease-out; }
+@keyframes lineFlash {
+  0% { height: 3px; background: var(--z); box-shadow: 0 0 14px 2px var(--z); transform: scaleX(.2); }
+  35% { transform: scaleX(1); }
+  100% { height: 1px; box-shadow: 0 0 0 0 transparent; transform: scaleX(1); }
+}
+@keyframes markFlash { 0% { opacity: 1; transform: scale(1.35); } 100% { opacity: .6; transform: scale(1); } }
 .band span { font-variant-numeric: tabular-nums; }
 .token {
   position: absolute; left: 50%; top: 0; transform: translate(-50%, -110%); width: 46px; height: 46px; border-radius: 50%;
   display: grid; place-items: center; background: var(--z); color: var(--bg); font-weight: 600; font-size: 13px;
-  box-shadow: 0 0 24px var(--z); transition: top 1.6s cubic-bezier(.3, .1, .3, 1), transform 1.6s cubic-bezier(.3, .1, .3, 1);
+  box-shadow: 0 0 24px var(--z); z-index: 2; will-change: top, transform;
 }
+.token .dm {
+  position: absolute; left: 50%; top: calc(100% + 4px); transform: translateX(-50%); white-space: nowrap;
+  font-size: 10px; font-weight: 500; color: var(--txt); opacity: .85; font-variant-numeric: tabular-nums; pointer-events: none;
+}
+.token.z4 .dm { top: auto; bottom: calc(100% + 4px); } /* the bottom zone has no room below */
+.token.landed { animation: land .5s ease-out; }
+.token.landed::after {
+  content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--z);
+  animation: ring .9s ease-out forwards; pointer-events: none;
+}
+@keyframes land { 0% { scale: 1; } 30% { scale: 1.18 .86; } 60% { scale: .94 1.06; } 100% { scale: 1; } }
+@keyframes ring { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(2.3); } }
+.bubble {
+  position: absolute; width: var(--s, 6px); height: var(--s, 6px); border-radius: 50%; pointer-events: none; z-index: 1;
+  border: 1px solid rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .08);
+  transform: translate(-50%, -50%); animation: bub var(--d, 1.2s) ease-out forwards;
+}
+@keyframes bub { to { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% - 46px)) scale(.4); } }
 .token.miss { background: var(--card2); color: var(--mute); box-shadow: none; border: 1px solid var(--line2); }
 .rcard { padding: 22px; display: grid; gap: 14px; align-content: start; }
 .rcard .q { font-size: 13px; color: var(--mute); }
@@ -230,6 +266,7 @@ details.chart summary:hover { color: var(--txt); }
   .reveal { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; }
   .column { min-height: 320px; }
   .band { font-size: 0; padding: 4px; }
+  .band:not(:first-child)::after { font-size: 8px; right: 4px; }
   .band span { font-size: 10px; }
   .token { width: 38px; height: 38px; font-size: 11px; }
   .rcard { padding: 16px; }
@@ -479,6 +516,7 @@ function tone(freq, dur, type = "sine", vol = .08, when = 0, slide) {
 }
 const sfx = {
   tap: () => tone(520, .06, "triangle", .07),
+  tick: z => tone(700 - z * 90, .09, "sine", .045),
   sink: z => { tone(600, 1.2 + z * .2, "sine", .07, 0, 120 - z * 15); [0, 1, 2].forEach(i => tone(900 + i * 140, .05, "triangle", .03, .1 + i * .12)); },
   zone: z => [392, 440, 523, 659, 784].slice(0, z + 1).forEach((f, i) => tone(f * (z === 4 ? 1.5 : 1), .25, "triangle", .08, 1.5 + i * .08)),
   miss: () => { tone(220, .35, "sawtooth", .05); tone(160, .45, "square", .04, .1); },
@@ -643,8 +681,8 @@ function reveal() {
 
   // the ocean column, with a token per player that sinks to its zone
   const hitZones = new Set(mine.filter(pk => pk.a).map(pk => pk.a.z));
-  $("column").innerHTML = ZONES.map((z, i) => `<div class="band z${i}${hitZones.has(i) ? " hit" : ""}">${z.name} <span>&nbsp;${z.pts}</span></div>`).join("") +
-    mine.map((pk, i) => `<div class="token ${pk.a ? "z" + pk.a.z : "miss"}" data-i="${i}" style="left:${duel ? (i ? 70 : 30) : 50}%">${duel ? "P" + (i + 1) : pk.a ? "+" + pk.pts : "0"}</div>`).join("");
+  $("column").innerHTML = ZONES.map((z, i) => `<div class="band z${i}" data-m="${i ? fmtM((ZONES[i - 1].pts + ZONES[i].pts) / 2) : ""}">${z.name} <span>&nbsp;${z.pts}</span></div>`).join("") +
+    mine.map((pk, i) => `<div class="token ${pk.a ? "z" + pk.a.z : "miss"}" data-i="${i}" style="left:${duel ? (i ? 70 : 30) : 50}%">${duel ? "P" + (i + 1) : pk.a ? "+" + pk.pts : "0"}<span class="dm">0 m</span></div>`).join("");
 
   // two rare answers the player didn't give, from the deepest zones
   const given = new Set(mine.map(pk => pk.a));
@@ -683,16 +721,78 @@ function reveal() {
   $("nextBtn").onclick = () => { sfx.tap(); advance(); };
   $("nextBtn").focus({ preventScroll: true });
 
-  // sink the tokens on the next frame so the transition runs
-  const tokens = [...$("column").querySelectorAll(".token")];
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    tokens.forEach(t => {
-      const pk = mine[+t.dataset.i];
-      t.style.top = pk.a ? zoneDepthPct(pk.a.z) + "%" : "4%";
-      t.style.transform = "translate(-50%, -50%)";
-    });
-  }));
-  if (deepest) { sfx.sink(deepest.a.z); sfx.zone(deepest.a.z); } else sfx.miss();
+  sinkTokens(mine, hitZones, deepest);
+}
+
+/* Sink each token through the column: it drifts down with a slow sway, sheds bubbles, flashes every level line
+   it passes, counts its depth and settles with a splash ring in its zone. */
+let sinkGen = 0;
+function sinkTokens(mine, hitZones, deepest) {
+  const gen = ++sinkGen, col = $("column");
+  const bands = [...col.querySelectorAll(".band")];
+  const tokens = [...col.querySelectorAll(".token")];
+  const N = ZONES.length, centre = z => (z + .5) / N;
+  // depth in metres at a fraction of the column: 0 at the surface, each zone's depth at its centre
+  const metres = f => {
+    if (f <= centre(0)) return f / centre(0) * ZONES[0].pts * M_PER_PT;
+    const z = Math.min(N - 2, Math.floor(f * N - .5)), k = (f - centre(z)) / (centre(z + 1) - centre(z));
+    return (ZONES[z].pts + (ZONES[z + 1].pts - ZONES[z].pts) * Math.min(1, k)) * M_PER_PT;
+  };
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const flash = i => { const b = bands[i]; b.classList.remove("cross"); void b.offsetWidth; b.classList.add("cross"); };
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; // ease in-out cubic
+  const bob = t => Math.sin(t * Math.PI) * .5 + Math.min(1, t * 2) * .5; // a miss dips in and floats back up a little
+  const meterText = f => (Math.round(metres(Math.max(0, f)) / 5) * 5).toLocaleString() + " m";
+
+  if (deepest) sfx.sink(deepest.a.z); else sfx.miss();
+  let pending = tokens.length;
+  const landed = () => {
+    if (--pending || gen !== sinkGen) return;
+    hitZones.forEach(z => bands[z].classList.add("hit"));
+    if (deepest) sfx.zone(deepest.a.z);
+  };
+
+  tokens.forEach((t, n) => {
+    const pk = mine[+t.dataset.i], dm = t.querySelector(".dm");
+    const end = pk.a ? centre(pk.a.z) : .04;
+    const dur = pk.a ? 900 + pk.a.z * 520 : 700;
+    const delay = n * 180, phase = n * 1.7;
+    let passed = 0, lastBub = 0, t0 = 0;
+    const place = f => { t.style.top = f * 100 + "%"; };
+    const finish = () => {
+      place(end); t.style.transform = "translate(-50%, -50%)";
+      dm.textContent = pk.a ? fmtM(ZONES[pk.a.z].pts) : "0 m";
+      t.classList.add("landed"); landed();
+    };
+    if (still) { finish(); return; }
+    const frame = now => {
+      if (gen !== sinkGen || !t.isConnected) return;
+      if (!t0) t0 = now + delay;
+      const raw = Math.max(0, Math.min(1, (now - t0) / dur));
+      const f = -.06 + (end + .06) * (pk.a ? ease(raw) : bob(raw));
+      const sway = Math.sin((now - t0) / 260 + phase) * 7 * (1 - raw), tilt = Math.sin((now - t0) / 260 + phase + .6) * 8 * (1 - raw);
+      place(f);
+      t.style.transform = `translate(calc(-50% + ${sway.toFixed(1)}px), -50%) rotate(${tilt.toFixed(1)}deg)`;
+      if (pk.a) dm.textContent = meterText(f);
+      // level lines: band i's top edge sits at i / N of the column
+      while (passed + 1 < N && f >= (passed + 1) / N) { passed++; flash(passed); sfx.tick(passed); }
+      if (raw > 0 && raw < .92 && now - lastBub > 70) {
+        lastBub = now;
+        const b = document.createElement("i");
+        b.className = "bubble";
+        b.style.left = `calc(${t.style.left} + ${(sway + (Math.random() - .5) * 16).toFixed(1)}px)`;
+        b.style.top = `calc(${(f * 100).toFixed(2)}% - 18px)`;
+        b.style.setProperty("--s", (3 + Math.random() * 6).toFixed(1) + "px");
+        b.style.setProperty("--d", (.8 + Math.random() * .7).toFixed(2) + "s");
+        b.style.setProperty("--dx", ((Math.random() - .5) * 20).toFixed(1) + "px");
+        b.addEventListener("animationend", () => b.remove());
+        col.appendChild(b);
+      }
+      if (raw < 1) requestAnimationFrame(frame); else finish();
+    };
+    place(-.06);
+    requestAnimationFrame(frame);
+  });
 }
 
 function advance() {
