@@ -8,6 +8,7 @@ party games for one phone passed around a room, a physics puzzle, and a classic.
 | [AnimeDraft](#animedraft) | 2–15 | Auction-draft anime's strongest, settle who-wins debates, or find the imposter |
 | [WheelDrafter](#wheeldrafter) | 1–2 | Spin wheels of fate to build a one-of-a-kind legend, then duel a friend |
 | [Momo Drop](#momo-drop) | 1 | Draw lines so a falling momo lands in its bowl of jhol |
+| [Quiz Duel](#quiz-duel) | 2–6 groups | A timed classroom quiz: 900 easy questions across 9 rounds |
 | [Tic Tac Toe](#tic-tac-toe) | 1–2 | The classic, against a friend or a computer that never loses |
 
 ---
@@ -53,6 +54,27 @@ rolls along them under real physics ([Matter.js](https://brm.io/matter-js/)). La
 - **Controls:** drag to draw · `Space`/`Enter` to drop or reset · `Ctrl+Z` undo · `Esc` levels menu.
 - Progress is saved in the browser (`localStorage`).
 
+### Quiz Duel
+`site/games/quizduel/` · one HTML file plus a question bank in `questions/`
+
+A group quiz in the style of a Nepali school quiz contest, for a classroom, a projector or friends round one screen.
+
+- **Groups:** 2 to 6, each with its own name and colour.
+- **Rounds:** pick any of Mathematics, Science, Astronomy, Geography, Animals, Plants, Chemistry, Human Body and
+  Nepal. Each has **100 questions**. Maths is class 5–7 level with Nepali context (rupees, Bikram Sambat); the rest
+  are simple general knowledge.
+- **Timer:** maths gives the group **20 s**, other rounds **18 s**. A pass, a wrong answer or running out of time sends
+  the question to the next group with **10 s**. A direct answer scores **10**, a passed one **5**. Each round starts
+  with a different group, and questions rotate through the groups.
+- **Answer styles:** *Pick from 4 choices* (groups tap an answer; a wrong pick is crossed out before the pass, and a
+  question passes at most twice) or *Quizmaster checks* (groups answer out loud, the host reveals and marks it, and a
+  question can pass round every group).
+- **No repeats:** every question shown is remembered in the browser (`localStorage`), so later games draw new ones
+  until a round's 100 are used up. Then that round starts over. *Reset used questions* clears the history.
+- **Keys:** `1`–`4`/`A`–`D` answer · `P` pass · `Space` pause · `Enter` next. Quizmaster mode: `S` show, `C` correct, `W` wrong.
+
+Each file in `questions/` holds one round as `[question, answer, wrong, wrong, wrong]`. The game shuffles the options.
+
 ### Tic Tac Toe
 `site/games/tictactoe/` · a single HTML file
 
@@ -75,7 +97,7 @@ One Vercel project, deployed as three **[services](https://vercel.com/docs/servi
 | --- | --- | --- | --- |
 | `animedraft` | `src/animedraft-next/` | `/games/animedraft/…` | Next.js app (pages plus a read-only `/api/characters` endpoint) |
 | `wheeldrafter` | `src/wheeldrafter/` | `/games/wheeldrafter/…` | Next.js app (fully static pages) |
-| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe |
+| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, Quiz Duel |
 
 ```
 site/
@@ -83,6 +105,7 @@ site/
   assets/hero/           images for the home page hero
   games/momodrop/        hand-written single-file game
   games/tictactoe/       hand-written single-file game
+  games/quizduel/        hand-written game + questions/ (one file per round)
 src/
   animedraft-next/       Next.js app, basePath /games/animedraft
   wheeldrafter/          Next.js app, basePath /games/wheeldrafter
@@ -140,6 +163,7 @@ headers, no caching for pages (updates show up straight away), one-day caching f
 | `/wheel`, `/wheeldrafter` | `/games/wheeldrafter/` |
 | `/momo`, `/momodrop`, `/momo-drop` | `/games/momodrop/` |
 | `/ttt`, `/tictactoe`, `/tic-tac-toe` | `/games/tictactoe/` |
+| `/quiz`, `/quizduel`, `/quiz-duel` | `/games/quizduel/` |
 | `/games` | `/` |
 
 To deploy, run `vercel --prod` from the repo root, or connect the GitHub repo in Vercel. Services are a Vercel beta

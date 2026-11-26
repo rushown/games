@@ -57,6 +57,11 @@
       "permanent": true
     },
     {
+      "source": "/:old(quizduel|quiz-duel|quiz){/}?",
+      "destination": "/games/quizduel/",
+      "permanent": true
+    },
+    {
       "source": "/animedraft.html",
       "destination": "/games/animedraft/",
       "permanent": true

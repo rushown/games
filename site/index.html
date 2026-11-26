@@ -129,6 +129,12 @@ h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
 .play b { transition: transform .2s; font-weight: 600; }
 .game:hover .play b { transform: translateX(3px); }
 
+/* card art: Quiz Duel (countdown ring between two groups) */
+.qd { background: radial-gradient(110% 100% at 50% 10%, #1c2010, #0d0d0d 68%); display: flex; align-items: center; justify-content: center; }
+.qd svg { width: 86%; height: auto; overflow: visible; }
+.qd .ring { stroke-dasharray: 1 1; animation: countdown 6s linear infinite; }
+@keyframes countdown { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -1; } }
+
 /* card art: Tic Tac Toe (mini board mid-game) */
 .tt { background: radial-gradient(110% 100% at 40% 10%, #14182e, #0d0d0d 68%); display: flex; align-items: center; justify-content: center; }
 .tt svg { height: 74%; width: auto; overflow: visible; }
@@ -174,7 +180,7 @@ footer a:hover { color: var(--y); }
   .body { padding: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .wd svg, .ctrl, .stickL, .stickR, .chip, .md .momo, .tt .win { animation: none; }
+  .wd svg, .ctrl, .stickL, .stickR, .chip, .md .momo, .tt .win, .qd .ring { animation: none; }
   .pad { transition: none; }
   .game, .play b { transition: none; }
 }
@@ -326,6 +332,27 @@ footer a:hover { color: var(--y); }
               <div class="title"><h3>Momo Drop</h3><span class="badge">1 player</span></div>
               <p>Draw lines to guide a falling momo into its bowl of jhol. Dodge the chilies across 15 levels.</p>
               <div class="tags"><span>Puzzle</span><span>Physics</span><span>Solo</span></div>
+              <span class="play">Play now <b aria-hidden="true">→</b></span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="game" href="games/quizduel/">
+            <div class="art qd" aria-hidden="true">
+              <svg viewBox="0 0 300 160">
+                <circle cx="150" cy="80" r="46" fill="none" stroke="rgba(236,233,224,.14)" stroke-width="8"/>
+                <circle class="ring" cx="150" cy="80" r="46" fill="none" stroke="#e8ff47" stroke-width="8" stroke-linecap="round" pathLength="1" transform="rotate(-90 150 80)"/>
+                <text x="150" y="98" text-anchor="middle" font-family="Bebas Neue, Impact, sans-serif" font-size="52" fill="#ece9e0">?</text>
+                <rect x="28" y="56" width="62" height="48" rx="12" fill="#151515" stroke="#e8ff47" stroke-opacity=".6"/>
+                <text x="59" y="90" text-anchor="middle" font-family="Bebas Neue, Impact, sans-serif" font-size="30" fill="#e8ff47">A</text>
+                <rect x="210" y="56" width="62" height="48" rx="12" fill="#151515" stroke="#ff5e1a" stroke-opacity=".6"/>
+                <text x="241" y="90" text-anchor="middle" font-family="Bebas Neue, Impact, sans-serif" font-size="30" fill="#ff5e1a">B</text>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="title"><h3>Quiz Duel</h3><span class="badge">2–6 groups</span></div>
+              <p>A group quiz for class or friends. Name your groups, pick rounds from maths to Nepal, and beat the clock. Questions don't repeat.</p>
+              <div class="tags"><span>Quiz</span><span>Groups</span><span>Classroom</span></div>
               <span class="play">Play now <b aria-hidden="true">→</b></span>
             </div>
           </a>
