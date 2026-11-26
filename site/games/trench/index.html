@@ -24,11 +24,11 @@
   --y: #e8ff47;
   --o: #ff5e1a;
   /* ocean zones, shallow to deep */
-  --z0: #e8ff47;  /* Sunlight */
-  --z1: #47d7ff;  /* Twilight */
-  --z2: #5b6cff;  /* Midnight */
-  --z3: #b06bff;  /* Abyss */
-  --z4: #ff5e1a;  /* Hadal: the lure in the dark */
+  --z0: #e8ff47;  /* Rushallow */
+  --z1: #47d7ff;  /* Rushtide */
+  --z2: #5b6cff;  /* Rushgloom */
+  --z3: #b06bff;  /* Rushownland */
+  --z4: #ff5e1a;  /* Rushllion: the lure in the dark */
   --display: "Bebas Neue", Impact, "Arial Narrow", sans-serif;
   --gutter: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
 }
@@ -295,7 +295,7 @@ details.chart summary:hover { color: var(--txt); }
     <div class="stats">
       <div class="panel stat"><b class="num" id="stDives">0</b><span>dives</span></div>
       <div class="panel stat"><b class="num" id="stBest">0 m</b><span>deepest dive</span></div>
-      <div class="panel stat"><b class="num" id="stHadal">0</b><span>Hadal finds</span></div>
+      <div class="panel stat"><b class="num" id="stHadal">0</b><span>Rushllion finds</span></div>
     </div>
 
     <div class="panel zones">
@@ -358,11 +358,11 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;"
 
 /* ================= Zones ================= */
 const ZONES = [
-  { name: "Sunlight", pts: 10, blurb: "The answer everyone gives first. Still counts." },
-  { name: "Twilight", pts: 25, blurb: "A step past the obvious. The light starts to fade." },
-  { name: "Midnight", pts: 50, blurb: "No sunlight down here. Most players never get this far." },
-  { name: "Abyss", pts: 75, blurb: "A real deep cut. Hardly anyone thinks of this one." },
-  { name: "Hadal", pts: 100, blurb: "The bottom of the trench. Very few people would ever say that." }
+  { name: "Rushallow", pts: 10, blurb: "The answer everyone gives first. Still counts." },
+  { name: "Rushtide", pts: 25, blurb: "A step past the obvious. The light starts to fade." },
+  { name: "Rushgloom", pts: 50, blurb: "No sunlight down here. Most players never get this far." },
+  { name: "Rushownland", pts: 75, blurb: "A real deep cut. Hardly anyone thinks of this one." },
+  { name: "Rushllion", pts: 100, blurb: "The bottom of the trench. Very few people would ever say that." }
 ];
 const PER_DIVE = 7, TIME = 25, M_PER_PT = 10;
 const CATS = { animals: "Animals", gk: "General knowledge", geography: "Geography", food: "Food", science: "Science", sports: "Sports" };
@@ -706,7 +706,7 @@ function finish() {
   const duel = G.mode === "duel";
   const totals = G.players.map((_, i) => total(i));
   const finds = G.picks.flat().filter(pk => pk.a && pk.a.z === 4).length;
-  // stats: duels count towards dives and Hadal finds, and either player can set the deepest dive
+  // stats: duels count towards dives and Rushllion finds, and either player can set the deepest dive
   S.dives++; S.hadal += finds; S.best = Math.max(S.best, ...totals);
   if (G.mode === "daily" && G.scored) S.daily[today()] = { pts: totals[0], z: G.picks[0].map(pk => pk.a ? pk.a.z : -1) };
   save();

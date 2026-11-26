@@ -1,7 +1,7 @@
 /* Trench Dive prompt bank.
    Each prompt: [category, prompt, sunlight, twilight, midnight, abyss, hadal]
    A zone string lists answers separated by "|"; alternative spellings of one answer are separated by "/"
-   (the first spelling is the one shown). Sunlight answers are the ones nearly everyone gives; Hadal answers are
+   (the first spelling is the one shown). Rushallow answers are the ones nearly everyone gives; Rushllion answers are
    the rare, satisfying finds. Every listed answer is valid. Answers not on the list score nothing. */
 window.PROMPTS = [
 

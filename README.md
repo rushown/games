@@ -63,11 +63,11 @@ answer that fits. Correct answers are ranked by how rare they are, from five oce
 
 | Zone | Points | Depth |
 |---|---|---|
-| Sunlight (the obvious answers) | 10 | 100 m |
-| Twilight | 25 | 250 m |
-| Midnight | 50 | 500 m |
-| Abyss | 75 | 750 m |
-| Hadal (the rare, satisfying finds) | 100 | 1,000 m |
+| Rushallow (the obvious answers) | 10 | 100 m |
+| Rushtide | 25 | 250 m |
+| Rushgloom | 50 | 500 m |
+| Rushownland | 75 | 750 m |
+| Rushllion (the rare, satisfying finds) | 100 | 1,000 m |
 
 - **A dive is 7 prompts.** Every point is 10 m, so a perfect dive reaches 7,000 m. An answer that isn't on the chart,
   a skip or running out of time scores 0.
