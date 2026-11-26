@@ -129,15 +129,13 @@ h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
 .play b { transition: transform .2s; font-weight: 600; }
 .game:hover .play b { transform: translateX(3px); }
 
-/* card art: One in a Krillion (prize ladder with a climbing marker) */
-.kr { background: radial-gradient(110% 100% at 30% 0%, #14182e, #0d0d0d 68%); display: flex; align-items: center; justify-content: center; gap: 8%; }
-.kr .coin { width: 22%; aspect-ratio: 1; border-radius: 50%; background: #e8ff47; color: #060606; display: grid; place-items: center; font-size: clamp(22px, 5vw, 34px); font-weight: 600; line-height: 1; box-shadow: 0 0 40px -6px rgba(232, 255, 71, .55); }
-.kr ol { list-style: none; display: grid; gap: 4px; width: 34%; }
-.kr li { height: 9px; border-radius: 5px; background: rgba(255, 255, 255, .08); }
-.kr li.s { background: rgba(91, 108, 255, .45); }
-.kr li.on { animation: climb 4.5s infinite; }
-.kr li:nth-child(5) { animation-delay: 0s; } .kr li:nth-child(4) { animation-delay: .9s; } .kr li:nth-child(3) { animation-delay: 1.8s; } .kr li:nth-child(2) { animation-delay: 2.7s; } .kr li:nth-child(1) { animation-delay: 3.6s; }
-@keyframes climb { 0%, 18% { background: #e8ff47; box-shadow: 0 0 12px rgba(232, 255, 71, .6); } 22%, 100% { background: rgba(255, 255, 255, .08); box-shadow: none; } }
+/* card art: Trench Dive (ocean zones with an answer sinking through them) */
+.td { background: linear-gradient(180deg, #1d2a12 0%, #0b2a35 30%, #0e1438 58%, #0a0606 100%); display: flex; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
+.td ol { list-style: none; display: grid; grid-template-rows: repeat(5, 1fr); width: 100%; }
+.td li { border-top: 1px dashed rgba(255, 255, 255, .09); padding: 0 6%; display: flex; align-items: center; justify-content: flex-end; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.td li:first-child { border-top: 0; }
+.td .tok { position: absolute; left: 38%; top: 10%; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; background: #ff5e1a; box-shadow: 0 0 22px #ff5e1a; animation: sinkdown 4.5s cubic-bezier(.3, .1, .3, 1) infinite; }
+@keyframes sinkdown { 0% { top: -12%; background: #e8ff47; box-shadow: 0 0 22px #e8ff47; } 20% { background: #47d7ff; box-shadow: 0 0 22px #47d7ff; } 40% { background: #5b6cff; box-shadow: 0 0 22px #5b6cff; } 60% { background: #b06bff; box-shadow: 0 0 22px #b06bff; } 75%, 92% { top: 90%; background: #ff5e1a; box-shadow: 0 0 22px #ff5e1a; opacity: 1; } 100% { top: 90%; opacity: 0; } }
 
 /* card art: Quiz Duel (countdown ring between two groups) */
 .qd { background: radial-gradient(110% 100% at 50% 10%, #1c2010, #0d0d0d 68%); display: flex; align-items: center; justify-content: center; }
@@ -347,15 +345,15 @@ footer a:hover { color: var(--y); }
           </a>
         </li>
         <li>
-          <a class="game" href="games/krillion/">
-            <div class="art kr" aria-hidden="true">
-              <div class="coin">K</div>
-              <ol><li class="on"></li><li class="on"></li><li class="on s"></li><li class="on"></li><li class="on"></li></ol>
+          <a class="game" href="games/trench/">
+            <div class="art td" aria-hidden="true">
+              <ol><li style="color:#e8ff47">Sunlight</li><li style="color:#47d7ff">Twilight</li><li style="color:#5b6cff">Midnight</li><li style="color:#b06bff">Abyss</li><li style="color:#ff5e1a">Hadal</li></ol>
+              <span class="tok"></span>
             </div>
             <div class="body">
-              <div class="title"><h3>One in a Krillion</h3><span class="badge">1–2 players</span></div>
-              <p>Climb 15 quiz questions to a krillion points with 50:50, Crowd and Swap lifelines. Go solo or duel a friend.</p>
-              <div class="tags"><span>Quiz</span><span>Solo</span><span>Duel</span></div>
+              <div class="title"><h3>Trench Dive</h3><span class="badge">1–2 players</span></div>
+              <p>Name anything that fits the prompt. The rarer your answer, the deeper you sink. A daily dive, free play, or a duel.</p>
+              <div class="tags"><span>Words</span><span>Daily</span><span>Duel</span></div>
               <span class="play">Play now <b aria-hidden="true">→</b></span>
             </div>
           </a>
@@ -375,7 +373,7 @@ footer a:hover { color: var(--y); }
             </div>
             <div class="body">
               <div class="title"><h3>Quiz Duel</h3><span class="badge">2–6 groups</span></div>
-              <p>A group quiz for class or friends. Name your groups, pick rounds from maths to Nepal, and beat the clock. Questions don't repeat.</p>
+              <p>A group quiz for class or friends. Name your groups, pick subjects from maths to Nepal, and take turns against the clock. Questions don't repeat.</p>
               <div class="tags"><span>Quiz</span><span>Groups</span><span>Classroom</span></div>
               <span class="play">Play now <b aria-hidden="true">→</b></span>
             </div>

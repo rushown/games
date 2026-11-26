@@ -8,8 +8,8 @@ party games for one phone passed around a room, a physics puzzle, a quiz ladder,
 | [AnimeDraft](#animedraft) | 2–15 | Auction-draft anime's strongest, settle who-wins debates, or find the imposter |
 | [WheelDrafter](#wheeldrafter) | 1–2 | Spin wheels of fate to build a one-of-a-kind legend, then duel a friend |
 | [Momo Drop](#momo-drop) | 1 | Draw lines so a falling momo lands in its bowl of jhol |
-| [One in a Krillion](#one-in-a-krillion) | 1–2 | Climb 15 quiz questions to a krillion points, solo or in a duel |
-| [Quiz Duel](#quiz-duel) | 2–6 groups | A timed classroom quiz: 900 easy questions across 9 rounds |
+| [Trench Dive](#trench-dive) | 1–2 | Name anything that fits; the rarer your answer, the deeper you sink |
+| [Quiz Duel](#quiz-duel) | 2–6 groups | A timed classroom quiz: 900 easy questions across 9 subjects, turn by turn |
 | [Tic Tac Toe](#tic-tac-toe) | 1–2 | The classic, against a friend or a computer that never loses |
 
 ---
@@ -55,24 +55,36 @@ rolls along them under real physics ([Matter.js](https://brm.io/matter-js/)). La
 - **Controls:** drag to draw · `Space`/`Enter` to drop or reset · `Ctrl+Z` undo · `Esc` levels menu.
 - Progress is saved in the browser (`localStorage`).
 
-### One in a Krillion
-`site/games/krillion/` · a single HTML file
+### Trench Dive
+`site/games/trench/` · one HTML file plus the prompt bank in `prompts.js`
 
-A quiz ladder. Answer 15 multiple-choice questions, each worth more than the last, from 100 points up to
-**1 Krillion** (1,000,000). Questions get harder every four rungs: easy → medium → hard → expert.
+An open-answer word game. Each prompt is a category ("Name an animal that lives in Africa"), and you type any one
+answer that fits. Correct answers are ranked by how rare they are, from five ocean zones:
 
-- **Lock it in:** pick an answer, then lock it. A wrong answer or running out of time ends the climb.
-- **Safe havens** at question 5 (1,000) and 10 (32,000): once passed, a miss can't drop you below them.
-  **Walk away** at any time to keep what you've banked.
-- **Lifelines**, one use each: **50:50** removes two wrong answers, **Crowd** shows an audience poll (less reliable on
-  harder questions), **Swap** trades the question for another of the same difficulty.
-- **Duel:** two players take turns on one device, each on their own ladder with their own lifelines. Most points
-  banked wins. Rematches keep a running match score and total points per player.
-- **Question bank:** about 245 built-in questions, with a mix of general knowledge and Nepal. Seen questions are
-  remembered so they don't repeat until a tier runs out. You can add your own questions at any difficulty.
-- The timer (30–60 s by difficulty) is optional and pauses when the tab is hidden.
-- **Keys:** `A`–`D` or `1`–`4` pick · `Enter` lock in · `W` walk away.
-- Scores, seen questions and custom questions are saved in the browser (`localStorage`).
+| Zone | Points | Depth |
+|---|---|---|
+| Sunlight (the obvious answers) | 10 | 100 m |
+| Twilight | 25 | 250 m |
+| Midnight | 50 | 500 m |
+| Abyss | 75 | 750 m |
+| Hadal (the rare, satisfying finds) | 100 | 1,000 m |
+
+- **A dive is 7 prompts.** Every point is 10 m, so a perfect dive reaches 7,000 m. An answer that isn't on the chart,
+  a skip or running out of time scores 0.
+- **Matching:** case, accents, punctuation, a leading "the", plurals and listed alternative names are ignored, and a
+  small typo is forgiven on longer answers (1 letter from 5 letters, 2 from 9). A fuzzy tie goes to the shallower
+  answer. After each prompt you can open the full chart of answers.
+- **Daily dive:** the same 7 prompts for everyone on a date (seeded by the date, at most 2 per category). Only the
+  first try counts; replays are marked unscored. **Copy result** shares a coloured grid of your zones.
+- **Free dive:** 7 random prompts from the categories you pick. Prompts don't repeat until a category runs out.
+- **Duel:** pass-and-play. Both players answer the same prompt in secret, then both answers sink side by side. If
+  you both give the same answer, each gets half points.
+- **Prompts:** 47 prompts across Animals, General knowledge, Geography, Food, Science and Sports, each with
+  roughly 30 to 120 accepted answers. To add one, append a line to `prompts.js`:
+  `[category, prompt, sunlight, twilight, midnight, abyss, hadal]`, with answers separated by `|` and alternative
+  spellings by `/`.
+- The 25-second timer is optional and pauses when the tab is hidden. Stats, settings and daily results are saved in
+  the browser (`localStorage`).
 
 ### Quiz Duel
 `site/games/quizduel/` · one HTML file plus a question bank in `questions/`
@@ -80,20 +92,21 @@ A quiz ladder. Answer 15 multiple-choice questions, each worth more than the las
 A group quiz in the style of a Nepali school quiz contest, for a classroom, a projector or friends round one screen.
 
 - **Groups:** 2 to 6, each with its own name and colour.
-- **Rounds:** pick any of Mathematics, Science, Astronomy, Geography, Animals, Plants, Chemistry, Human Body and
+- **Subjects:** tick any of Mathematics, Science, Astronomy, Geography, Animals, Plants, Chemistry, Human Body and
   Nepal. Each has **100 questions**. Maths is class 5–7 level with Nepali context (rupees, Bikram Sambat); the rest
   are simple general knowledge.
-- **Timer:** maths gives the group **20 s**, other rounds **18 s**. A pass, a wrong answer or running out of time sends
-  the question to the next group with **10 s**. A direct answer scores **10**, a passed one **5**. Each round starts
-  with a different group, and questions rotate through the groups.
+- **Timer:** maths gives the group **20 s**, other subjects **18 s**. A pass, a wrong answer or running out of time sends
+  the question to the next group with **10 s**. A direct answer scores **10**, a passed one **5**.
+- **Turns, not rounds:** questions go to the groups in order (A, B, C, A, B…), each from a random ticked subject,
+  and keep coming until the quizmaster presses *End quiz*. The final scores show how many questions each group got.
 - **Answer styles:** *Pick from 4 choices* (groups tap an answer; a wrong pick is crossed out before the pass, and a
   question passes at most twice) or *Quizmaster checks* (groups answer out loud, the host reveals and marks it, and a
   question can pass round every group).
 - **No repeats:** every question shown is remembered in the browser (`localStorage`), so later games draw new ones
-  until a round's 100 are used up. Then that round starts over. *Reset used questions* clears the history.
+  until a subject's 100 are used up. Then that subject starts over. *Reset used questions* clears the history.
 - **Keys:** `1`–`4`/`A`–`D` answer · `P` pass · `Space` pause · `Enter` next. Quizmaster mode: `S` show, `C` correct, `W` wrong.
 
-Each file in `questions/` holds one round as `[question, answer, wrong, wrong, wrong]`. The game shuffles the options.
+Each file in `questions/` holds one subject as `[question, answer, wrong, wrong, wrong]`. The game shuffles the options.
 
 ### Tic Tac Toe
 `site/games/tictactoe/` · a single HTML file
@@ -117,7 +130,7 @@ One Vercel project, deployed as three **[services](https://vercel.com/docs/servi
 | --- | --- | --- | --- |
 | `animedraft` | `src/animedraft-next/` | `/games/animedraft/…` | Next.js app (pages plus a read-only `/api/characters` endpoint) |
 | `wheeldrafter` | `src/wheeldrafter/` | `/games/wheeldrafter/…` | Next.js app (fully static pages) |
-| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, One in a Krillion, Quiz Duel |
+| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, Trench Dive, Quiz Duel |
 
 ```
 site/
@@ -126,7 +139,7 @@ site/
   games/momodrop/        hand-written single-file game
   games/tictactoe/       hand-written single-file game
   games/quizduel/        hand-written game + questions/ (one file per round)
-  games/krillion/        hand-written single-file game
+  games/trench/          hand-written game + prompts.js (the answer charts)
 src/
   animedraft-next/       Next.js app, basePath /games/animedraft
   wheeldrafter/          Next.js app, basePath /games/wheeldrafter
@@ -185,7 +198,7 @@ headers, no caching for pages (updates show up straight away), one-day caching f
 | `/momo`, `/momodrop`, `/momo-drop` | `/games/momodrop/` |
 | `/ttt`, `/tictactoe`, `/tic-tac-toe` | `/games/tictactoe/` |
 | `/quiz`, `/quizduel`, `/quiz-duel` | `/games/quizduel/` |
-| `/krillion`, `/kr` | `/games/krillion/` |
+| `/trench`, `/dive`, `/krillion`, `/kr` | `/games/trench/` |
 | `/games` | `/` |
 
 To deploy, run `vercel --prod` from the repo root, or connect the GitHub repo in Vercel. Services are a Vercel beta

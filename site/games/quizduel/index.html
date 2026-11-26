@@ -4,8 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Quiz Duel · Roshan Adhikari</title>
-<meta name="description" content="A group quiz for classrooms and friends. Name your groups, pick rounds like maths, science, astronomy and Nepal, and race the clock. Questions never repeat. Free, no sign-up.">
+<meta name="description" content="A group quiz for classrooms and friends. Name your groups, pick subjects like maths, science, astronomy and Nepal, and take turns against the clock. Questions never repeat. Free, no sign-up.">
 <meta name="theme-color" content="#060606">
+<script>
+// The question bank loads from relative paths (questions/*.js), so the page has to sit under /quizduel/, not /quizduel.
+if (location.protocol !== "file:" && !/\/$|\.html$/.test(location.pathname)) location.replace(location.pathname + "/" + location.search + location.hash);
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
@@ -198,7 +202,7 @@ h2 { font-family: var(--display); font-weight: 400; font-size: clamp(30px, 7vw, 
 }
 #play { padding-bottom: 0; }
 
-/* round intro + final */
+/* final */
 .center { text-align: center; display: grid; gap: 10px; justify-items: center; }
 .kicker { font-size: 12px; color: var(--mute); text-transform: uppercase; letter-spacing: .12em; }
 .big-ic { font-size: 56px; line-height: 1; }
@@ -264,7 +268,7 @@ body.playing footer { display: none; }
   .board { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
   .team { padding: 3px 9px; }
   .team b { font-size: 20px; }
-  .progress, #playHint { display: none; }
+  #playHint { display: none; }
   .turn-who small { display: none; }
   .btn.big { min-height: 44px; }
   #playActions { padding-top: 6px; padding-bottom: max(6px, env(safe-area-inset-bottom)); }
@@ -298,7 +302,7 @@ body.playing footer { display: none; }
       <h1>Quiz <span class="y">D</span><span class="o">uel</span></h1>
       <div class="wheelbar" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
     </div>
-    <p class="lead">Name your groups, pick the rounds, and race the clock. Pass a question you don't know and the next group gets a shot.</p>
+    <p class="lead">Name your groups, tick the subjects, and take turns against the clock. Questions keep coming group by group until you end the quiz. Pass one you don't know and the next group gets a shot.</p>
 
     <div class="panel">
       <div class="panel-head"><h3>Groups</h3><span class="note" id="groupNote">2 to 6 groups</span></div>
@@ -308,7 +312,7 @@ body.playing footer { display: none; }
 
     <div class="panel">
       <div class="panel-head">
-        <h3>Rounds</h3>
+        <h3>Subjects</h3>
         <span class="note"><button type="button" class="link" id="allCats">Select all</button> · <button type="button" class="link" id="resetSeen">Reset used questions</button></span>
       </div>
       <div class="cats" id="cats"></div>
@@ -316,14 +320,6 @@ body.playing footer { display: none; }
 
     <div class="panel">
       <div class="opts-row">
-        <div class="opt-group">
-          <span>Questions per group, each round</span>
-          <div class="seg" role="group" aria-label="Questions per group" id="perSeg">
-            <button type="button" data-per="3">3</button>
-            <button type="button" data-per="5">5</button>
-            <button type="button" data-per="10">10</button>
-          </div>
-        </div>
         <div class="opt-group">
           <span>How groups answer</span>
           <div class="seg" role="group" aria-label="Answer style" id="styleSeg">
@@ -334,7 +330,8 @@ body.playing footer { display: none; }
       </div>
       <div class="rules">
         <span><b>Maths:</b> 20 seconds, then 10 seconds for the group it's passed to.</span>
-        <span><b>Every other round:</b> 18 seconds, then 10 seconds when passed.</span>
+        <span><b>Every other subject:</b> 18 seconds, then 10 seconds when passed.</span>
+        <span><b>Turns:</b> questions go to each group in order (A, B, C, A…) and mix the ticked subjects. Play goes on until you press <b>End quiz</b>.</span>
         <span><b>Points:</b> 10 for a direct answer, 5 for a passed one. A wrong answer or running out of time passes it on.</span>
         <span id="styleNote"></span>
       </div>
@@ -344,27 +341,13 @@ body.playing footer { display: none; }
     <div class="actions"><button type="button" class="btn primary big" id="startBtn">Start the quiz</button></div>
   </section>
 
-  <!-- ======== ROUND INTRO ======== -->
-  <section id="intro" hidden>
-    <div class="center fade-in">
-      <span class="kicker" id="introKicker">Round 1 of 3</span>
-      <span class="big-ic" id="introIcon" aria-hidden="true"></span>
-      <h2 id="introName"></h2>
-      <div class="chips" id="introChips"></div>
-    </div>
-    <div class="standings" id="introStand"></div>
-    <div class="actions"><button type="button" class="btn primary big" id="roundBtn">Start round</button></div>
-    <p class="hint">Enter to start</p>
-  </section>
-
   <!-- ======== PLAY ======== -->
   <section id="play" hidden>
     <div class="board" id="board" aria-label="Scores"></div>
     <div class="meta">
-      <span class="round"><span id="playIcon" aria-hidden="true"></span><b id="playCat"></b><span id="playRound"></span></span>
+      <span class="round"><span id="playIcon" aria-hidden="true"></span><b id="playCat"></b></span>
       <span id="playQ"></span>
     </div>
-    <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
 
     <div class="qcard" id="qcard">
       <div class="turn">
@@ -461,7 +444,6 @@ body.playing footer { display: none; }
   const settings = Object.assign({
     groups: ["Group A", "Group B"],
     cats: ["math", "science", "geography"],
-    per: 5,
     style: "choices",
     muted: false,
   }, store.get("settings", {}));
@@ -474,8 +456,8 @@ body.playing footer { display: none; }
   function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   const replay = (node, cls) => { node.classList.remove(cls); void node.offsetWidth; node.classList.add(cls); };
   function show(id) {
-    for (const s of ["setup", "intro", "play", "final"]) $(s).hidden = s !== id;
-    const inGame = id === "intro" || id === "play";
+    for (const s of ["setup", "play", "final"]) $(s).hidden = s !== id;
+    const inGame = id === "play";
     $("quitBtn").hidden = !inGame;
     $("pauseBtn").hidden = id !== "play";
     document.body.classList.toggle("playing", inGame);
@@ -531,26 +513,44 @@ body.playing footer { display: none; }
     const inputs = $("groups").querySelectorAll("input"); inputs[inputs.length - 1].select();
   };
 
-  function renderCats() {
+  // The subject buttons are built once and then only updated, so a tap or key press never lands on a button
+  // that was just replaced (which lost keyboard focus and could swallow taps on phones).
+  const catBtns = {};
+  function buildCats() {
     const box = $("cats"); box.textContent = "";
+    if (!CATS.length) {
+      box.append(el("p", "err", "The question bank didn't load. Check your connection and reload the page."));
+      $("allCats").disabled = true; $("startBtn").disabled = true;
+      return;
+    }
     for (const c of CATS) {
       const b = el("button", "cat"); b.type = "button";
-      b.setAttribute("aria-pressed", settings.cats.includes(c.id));
       const ic = el("span", "ic", c.icon); ic.setAttribute("aria-hidden", "true");
-      const txt = el("span"); txt.append(el("b", "", c.name), el("small", "", `${freshCount(c.id)} of ${QUIZ[c.id].length} unused · ${c.first}s`));
+      const small = el("small");
+      const txt = el("span"); txt.append(el("b", "", c.name), small);
       b.append(ic, txt);
-      b.onclick = () => {
+      b.addEventListener("click", () => {
         const i = settings.cats.indexOf(c.id);
         if (i >= 0) settings.cats.splice(i, 1); else settings.cats.push(c.id);
-        // keep rounds in the bank's order, so maths always comes first if chosen
+        // keep subjects in the bank's order
         settings.cats.sort((a, z) => CATS.findIndex((x) => x.id === a) - CATS.findIndex((x) => x.id === z));
         saveSettings(); renderCats(); $("setupErr").textContent = "";
-      };
+      });
+      catBtns[c.id] = { b, small };
       box.append(b);
     }
-    $("allCats").textContent = settings.cats.length === CATS.length ? "Clear all" : "Select all";
   }
-  $("allCats").onclick = () => { settings.cats = settings.cats.length === CATS.length ? [] : CATS.map((c) => c.id); saveSettings(); renderCats(); };
+  function renderCats() {
+    for (const c of CATS) {
+      const { b, small } = catBtns[c.id];
+      b.setAttribute("aria-pressed", String(settings.cats.includes(c.id)));
+      small.textContent = `${freshCount(c.id)} of ${QUIZ[c.id].length} unused · ${c.first}s`;
+    }
+    $("allCats").textContent = settings.cats.length === CATS.length ? "Clear all" : "Select all";
+    const n = settings.cats.length;
+    $("startBtn").textContent = n ? `Start the quiz · ${n} subject${n > 1 ? "s" : ""}` : "Start the quiz";
+  }
+  $("allCats").onclick = () => { settings.cats = settings.cats.length === CATS.length ? [] : CATS.map((c) => c.id); saveSettings(); renderCats(); $("setupErr").textContent = ""; };
   $("resetSeen").onclick = () => {
     if (!confirm("Mark every question as unused again? Old questions can then come back.")) return;
     seen = {}; store.set("seen", seen); renderCats();
@@ -567,42 +567,42 @@ body.playing footer { display: none; }
       ? "<b>4 choices:</b> the group taps its answer. A wrong choice is crossed out before the question passes."
       : "<b>Quizmaster:</b> groups answer out loud, and the quizmaster reveals the answer and marks it right or wrong.";
   }
-  bindSeg("perSeg", "per", "per", Number);
   bindSeg("styleSeg", "style", "style", String);
   renderStyleNote();
 
   /* ---------- game state ---------- */
-  let game = null;   // { groups, rounds, r, q, style }
+  let game = null;   // { groups, cats, style, q, asked }
   let turn = null;   // the question on screen
 
-  function pickQuestions(cat, n) {
-    const bank = QUIZ[cat];
-    let s = seenSet(cat);
+  // One fresh question from a random ticked subject. A subject whose bank is used up starts its history over,
+  // but never repeats a question already asked in this game unless the whole bank has been asked.
+  function pickQuestion() {
+    const cat = game.cats[Math.floor(Math.random() * game.cats.length)];
+    const bank = QUIZ[cat], s = seenSet(cat);
     let pool = bank.filter((q) => !s.has(hash(q[0])));
-    if (pool.length < n) {
-      // Not enough unused questions left: start this category's history over, but keep what's already picked fresh.
-      const fresh = shuffle(pool);
+    if (!pool.length) {
       seen[cat] = []; store.set("seen", seen);
-      const rest = shuffle(bank.filter((q) => !fresh.includes(q)));
-      return fresh.concat(rest).slice(0, n);
+      pool = bank.filter((q) => !game.asked.has(q));
+      if (!pool.length) { game.asked = new Set(); pool = bank; }
     }
-    return shuffle(pool).slice(0, n);
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    game.asked.add(item);
+    return { cat, item };
   }
 
   function startGame() {
     const names = settings.groups.map((g, i) => g.trim() || "Group " + "ABCDEF"[i]);
     const lower = names.map((n) => n.toLowerCase());
     if (new Set(lower).size !== lower.length) { $("setupErr").textContent = "Give every group a different name."; return; }
-    if (!settings.cats.length) { $("setupErr").textContent = "Pick at least one round."; return; }
+    if (!settings.cats.length) { $("setupErr").textContent = "Tick at least one subject."; return; }
     $("setupErr").textContent = "";
-    const n = names.length;
     game = {
       style: settings.style,
-      groups: names.map((name, i) => ({ name, color: COLORS[i], score: 0, direct: 0, passed: 0 })),
-      rounds: settings.cats.map((cat) => ({ cat, qs: pickQuestions(cat, settings.per * n) })),
-      r: 0, q: 0,
+      groups: names.map((name, i) => ({ name, color: COLORS[i], score: 0, direct: 0, passed: 0, turns: 0 })),
+      cats: settings.cats.slice(),
+      q: 0, asked: new Set(),
     };
-    showIntro();
+    show("play"); renderBoard(); nextQuestion();
   }
 
   function standingsInto(box, final) {
@@ -614,29 +614,12 @@ body.playing footer { display: none; }
       const row = el("div", "stand" + (place === 1 && g.score > 0 ? " first" : ""));
       const nm = el("div", "nm"); const d = el("span", "dot"); d.style.setProperty("--c", g.color);
       const txt = el("div"); txt.append(el("span", "", g.name));
-      if (final) txt.append(el("small", "", `${g.direct} direct · ${g.passed} on a pass`));
+      if (final) txt.append(el("small", "", `${g.turns} question${g.turns === 1 ? "" : "s"} · ${g.direct} right · ${g.passed} on a pass`));
       nm.append(d, txt);
       row.append(el("span", "pos", String(place)), nm, el("b", "", String(g.score)));
       box.append(row);
     });
   }
-
-  function showIntro() {
-    const round = game.rounds[game.r], c = CAT[round.cat];
-    $("introKicker").textContent = `Round ${game.r + 1} of ${game.rounds.length}`;
-    $("introIcon").textContent = c.icon;
-    $("introName").textContent = c.name;
-    const chips = $("introChips"); chips.textContent = "";
-    const chip = (b, t) => { const s = el("span", "chip"); s.append(el("b", "", b), document.createTextNode(" " + t)); chips.append(s); };
-    chip(round.qs.length, "questions");
-    chip(c.first + "s", "to answer");
-    chip(c.pass + "s", "when passed");
-    standingsInto($("introStand"), false);
-    $("introStand").hidden = game.r === 0;
-    show("intro");
-    $("roundBtn").focus();
-  }
-  $("roundBtn").onclick = () => { show("play"); renderBoard(); nextQuestion(); };
 
   /* ---------- play ---------- */
   function renderBoard() {
@@ -660,11 +643,12 @@ body.playing footer { display: none; }
   }
 
   function nextQuestion() {
-    const round = game.rounds[game.r], c = CAT[round.cat], n = game.groups.length;
-    const item = round.qs[game.q];
-    markSeen(round.cat, item);
-    // Each round starts with a different group, and the question rotates through the groups.
-    const owner = (game.q + game.r) % n;
+    const n = game.groups.length;
+    const { cat, item } = pickQuestion(), c = CAT[cat];
+    markSeen(cat, item);
+    // Questions go to the groups in turn: A, B, C, A, B, C…
+    const owner = game.q % n;
+    game.groups[owner].turns++;
     let queue = Array.from({ length: n }, (_, k) => (owner + k) % n);
     // With 4 choices, stop after two passes so the last group never gets a free 1-in-1 pick.
     if (game.style === "choices") queue = queue.slice(0, 3);
@@ -677,9 +661,7 @@ body.playing footer { display: none; }
 
     $("playIcon").textContent = c.icon;
     $("playCat").textContent = c.name;
-    $("playRound").textContent = `· Round ${game.r + 1}/${game.rounds.length}`;
-    $("playQ").textContent = `Question ${game.q + 1} of ${round.qs.length}`;
-    $("progressBar").style.width = (game.q / round.qs.length) * 100 + "%";
+    $("playQ").textContent = `Question ${game.q + 1}`;
     $("question").textContent = item[0];
     $("feedback").textContent = ""; $("feedback").className = "feedback";
     replay($("qcard"), "fade-in");
@@ -694,10 +676,7 @@ body.playing footer { display: none; }
         b.onclick = () => choose(i);
         choices.append(b);
       });
-    } else {
-      $("answerBox").classList.remove("shown");
-      $("answerText").textContent = "Hidden. Tap “Show answer” to check.";
-    }
+    } else hideAnswer();
     startTurn();
   }
 
@@ -717,10 +696,9 @@ body.playing footer { display: none; }
     const box = $("playActions"); box.textContent = "";
     const btn = (label, cls, fn, key) => { const b = el("button", "btn " + cls, label); b.type = "button"; b.onclick = fn; if (key) b.dataset.key = key; box.append(b); return b; };
     if (turn.done) {
-      const last = game.q === game.rounds[game.r].qs.length - 1;
-      const lastRound = game.r === game.rounds.length - 1;
-      btn(last ? (lastRound ? "See final scores" : "End of round →") : "Next question →", "primary big", advance).focus();
-      $("playHint").textContent = "Enter or Space for next";
+      btn("Next question →", "primary big", advance).focus();
+      btn("End quiz", "big", endQuiz);
+      $("playHint").textContent = "Enter or Space for the next question";
       return;
     }
     const nextName = turn.pos < turn.queue.length - 1 ? game.groups[turn.queue[turn.pos + 1]].name : null;
@@ -809,6 +787,7 @@ body.playing footer { display: none; }
       why === "wrong" ? sfx.bad() : sfx.pass();
       feedback(`${what}. Over to ${game.groups[turn.queue[turn.pos]].name}!`, why === "wrong" ? "bad" : "info");
       if (why === "wrong") replay($("qcard"), "shake");
+      if (game.style === "host" && turn.revealed) hideAnswer(); // don't leave the answer up for the next group
       startTurn();
       return;
     }
@@ -817,6 +796,11 @@ body.playing footer { display: none; }
     feedback(`${what}. No points this time.`, "bad");
   }
 
+  function hideAnswer() {
+    if (turn) turn.revealed = false;
+    $("answerBox").classList.remove("shown");
+    $("answerText").textContent = "Hidden. Tap “Show answer” to check.";
+  }
   function reveal() {
     turn.revealed = true;
     $("answerBox").classList.add("shown");
@@ -838,22 +822,21 @@ body.playing footer { display: none; }
   }
 
   function advance() {
-    const round = game.rounds[game.r];
     turn = null;
-    if (game.q < round.qs.length - 1) { game.q++; nextQuestion(); return; }
-    game.q = 0;
-    if (game.r < game.rounds.length - 1) { game.r++; showIntro(); return; }
-    showFinal();
+    game.q++;
+    nextQuestion();
   }
 
   function showFinal() {
-    stopTimer(); turn = null;
+    stopTimer();
     const top = Math.max(...game.groups.map((g) => g.score));
     const winners = game.groups.filter((g) => g.score === top);
-    if (top === 0) { $("winner").textContent = "No points!"; $("winnerSub").textContent = "Nobody scored this time. Try an easier round?"; }
+    const played = game.q + (turn && turn.done ? 1 : 0);
+    if (top === 0) { $("winner").textContent = "No points!"; $("winnerSub").textContent = "Nobody scored this time. Try an easier subject?"; }
     else if (winners.length > 1) { $("winner").textContent = "It's a tie!"; $("winnerSub").textContent = `${winners.map((g) => g.name).join(" and ")} share first place with ${top} points.`; }
-    else { $("winner").textContent = winners[0].name + " wins!"; $("winnerSub").textContent = `${top} points across ${game.rounds.length} round${game.rounds.length > 1 ? "s" : ""}.`; }
+    else { $("winner").textContent = winners[0].name + " wins!"; $("winnerSub").textContent = `${top} points from ${played} question${played === 1 ? "" : "s"}.`; }
     standingsInto($("finalStand"), true);
+    turn = null;
     show("final");
     if (top > 0) sfx.win();
     renderCats();
@@ -862,17 +845,20 @@ body.playing footer { display: none; }
   $("startBtn").onclick = startGame;
   $("againBtn").onclick = startGame;
   $("setupBtn").onclick = () => { renderGroups(); renderCats(); show("setup"); };
-  $("quitBtn").onclick = () => {
+  function endQuiz() {
     const wasRunning = turn && turn.running; pauseTimer();
-    if (confirm("End the quiz now and show the scores?")) showFinal();
+    // Groups that got one more question than the others are worth a mention before stopping.
+    const t = game.groups.map((g) => g.turns), uneven = Math.min(...t) !== Math.max(...t);
+    const msg = "End the quiz now and show the scores?" + (uneven ? "\n\nNot every group has had the same number of questions yet." : "");
+    if (confirm(msg)) showFinal();
     else if (wasRunning) resumeTimer();
-  };
+  }
+  $("quitBtn").onclick = endQuiz;
 
   /* ---------- keyboard ---------- */
   document.addEventListener("keydown", (e) => {
     if (e.target.matches("input") || e.ctrlKey || e.metaKey || e.altKey) return;
     const k = e.key.toLowerCase();
-    if (!$("intro").hidden && (k === "enter" || k === " ")) { e.preventDefault(); $("roundBtn").click(); return; }
     if ($("play").hidden || !turn) return;
     if (turn.done) { if (k === "enter" || k === " ") { e.preventDefault(); advance(); } return; }
     if (k === " ") { e.preventDefault(); togglePause(); return; }
@@ -888,7 +874,8 @@ body.playing footer { display: none; }
   document.addEventListener("visibilitychange", () => { if (document.hidden) pauseTimer(); });
 
   renderGroups();
-  renderCats();
+  buildCats();
+  if (CATS.length) renderCats();
 })();
 </script>
 </body>
