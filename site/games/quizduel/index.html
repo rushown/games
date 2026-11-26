@@ -741,7 +741,8 @@ body.playing footer { display: none; }
   }
   function frame(now) {
     if (!turn || !turn.running) return;
-    turn.left -= now - turn.last; turn.last = now;
+    // a frame's timestamp can be slightly older than the performance.now() the turn started from: never add time
+    turn.left -= Math.max(0, now - turn.last); turn.last = Math.max(now, turn.last);
     drawTimer();
     if (turn.left <= 0) { turn.running = false; fail("time"); return; }
     turn.raf = requestAnimationFrame(frame);

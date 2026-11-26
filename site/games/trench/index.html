@@ -684,8 +684,9 @@ function reveal() {
   $("nextBtn").focus({ preventScroll: true });
 
   // sink the tokens on the next frame so the transition runs
+  const tokens = [...$("column").querySelectorAll(".token")];
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    $("column").querySelectorAll(".token").forEach(t => {
+    tokens.forEach(t => {
       const pk = mine[+t.dataset.i];
       t.style.top = pk.a ? zoneDepthPct(pk.a.z) + "%" : "4%";
       t.style.transform = "translate(-50%, -50%)";
