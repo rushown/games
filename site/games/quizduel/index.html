@@ -6,10 +6,6 @@
 <title>Quiz Duel · Roshan Adhikari</title>
 <meta name="description" content="A group quiz for classrooms and friends. Name your groups, pick subjects like maths, science, astronomy and Nepal, and take turns against the clock. Questions never repeat. Free, no sign-up.">
 <meta name="theme-color" content="#060606">
-<script>
-// The question bank loads from relative paths (questions/*.js), so the page has to sit under /quizduel/, not /quizduel.
-if (location.protocol !== "file:" && !/\/$|\.html$/.test(location.pathname)) location.replace(location.pathname + "/" + location.search + location.hash);
-</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
@@ -287,7 +283,7 @@ body.playing footer { display: none; }
 <body>
 
 <header class="top">
-  <a class="back" href="../../"><span class="logo" aria-hidden="true">RA</span>← All games</a>
+  <a class="back" href="/"><span class="logo" aria-hidden="true">RA</span>← All games</a>
   <div class="tools">
     <button type="button" class="icon-btn" id="pauseBtn" hidden aria-label="Pause timer">Pause</button>
     <button type="button" class="icon-btn" id="soundBtn" aria-label="Sound on">🔊</button>
@@ -395,15 +391,15 @@ body.playing footer { display: none; }
 </footer>
 
 <script>window.QUIZ = {};</script>
-<script src="questions/math.js"></script>
-<script src="questions/science.js"></script>
-<script src="questions/astronomy.js"></script>
-<script src="questions/geography.js"></script>
-<script src="questions/animals.js"></script>
-<script src="questions/plants.js"></script>
-<script src="questions/chemistry.js"></script>
-<script src="questions/body.js"></script>
-<script src="questions/nepal.js"></script>
+<script src="/games/quizduel/questions/math.js"></script>
+<script src="/games/quizduel/questions/science.js"></script>
+<script src="/games/quizduel/questions/astronomy.js"></script>
+<script src="/games/quizduel/questions/geography.js"></script>
+<script src="/games/quizduel/questions/animals.js"></script>
+<script src="/games/quizduel/questions/plants.js"></script>
+<script src="/games/quizduel/questions/chemistry.js"></script>
+<script src="/games/quizduel/questions/body.js"></script>
+<script src="/games/quizduel/questions/nepal.js"></script>
 <script>
 (function () {
   "use strict";
