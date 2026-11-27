@@ -3,13 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Trench Dive · Roshan Adhikari</title>
+<title>Rushillion · Roshan Adhikari</title>
 <meta name="description" content="Name anything in the category, and the rarer your answer, the deeper you sink. A daily word dive, free play, and a pass-and-play duel. Free, no sign-up.">
 <meta name="theme-color" content="#060606">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235b6cff'/%3E%3Cpath d='M16 6v16M10 17l6 6 6-6' stroke='%23e8ff47' stroke-width='3.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/arcade-back.css">
 <style>
 /* Palette and type match roshana.name.np and the rest of the arcade: lime + orange on near-black. */
 :root {
@@ -56,9 +57,6 @@ button:disabled { cursor: default; }
 
 .top, main { width: 100%; max-width: 900px; margin: 0 auto; }
 .top { height: 60px; display: flex; align-items: center; justify-content: space-between; flex: none; }
-.back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 13px; color: var(--mute); transition: color .2s; }
-.back:hover { color: var(--txt); }
-.logo { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--y); color: var(--bg); font-size: 12px; font-weight: 600; }
 .icon-btn { min-width: 44px; min-height: 44px; display: grid; place-items: center; border-radius: 12px; color: var(--mute); transition: color .2s, background .2s; }
 @media (hover: hover) { .icon-btn:hover { color: var(--txt); background: var(--card); } }
 .icon-btn svg { width: 20px; height: 20px; }
@@ -90,8 +88,8 @@ main { flex: 1 0 auto; padding: 4px 0 32px; }
 /* ---------- home ---------- */
 .home { max-width: 560px; margin: 0 auto; display: grid; gap: 20px; text-align: center; padding-top: clamp(4px, 2dvh, 24px); }
 .brand { display: grid; gap: 10px; justify-items: center; }
-.brand h1 { font-family: var(--display); font-weight: 400; font-size: clamp(62px, 18vw, 108px); line-height: .82; letter-spacing: .01em; }
-.brand h1 span { display: block; color: var(--z1); text-shadow: 0 0 40px rgba(71, 215, 255, .25); }
+.brand h1 { font-family: var(--display); font-weight: 400; font-size: clamp(56px, 17vw, 108px); line-height: .82; letter-spacing: .01em; }
+.brand h1 span { color: var(--z1); text-shadow: 0 0 40px rgba(71, 215, 255, .25); }
 .brand p { color: var(--mute); max-width: 430px; }
 .bubbles { width: 88px; height: 88px; }
 .bubbles .b { animation: rise 3.6s ease-in infinite; }
@@ -154,59 +152,15 @@ form.answer .btn { min-height: 54px; }
 .acts { display: flex; justify-content: center; gap: 8px; }
 
 /* ---------- reveal ---------- */
-.reveal { max-width: 720px; margin: 0 auto; display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 18px; align-items: stretch; }
-.column {
-  position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); min-height: 380px;
-  display: grid; grid-template-rows: repeat(5, 1fr);
-  background: linear-gradient(180deg, #1d2a12 0%, #0b2a35 22%, #0e1438 46%, #160d2c 70%, #0a0606 100%);
+.reveal { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+/* the dive itself: a canvas the camera rides down through, tap anywhere to skip to the landing */
+.scene {
+  position: relative; height: clamp(300px, 72dvh, 620px); border-radius: 18px; overflow: hidden;
+  border: 1px solid var(--line); background: #05080b; cursor: pointer; touch-action: manipulation; user-select: none;
 }
-.band { position: relative; border-top: 0; display: flex; align-items: flex-end; justify-content: flex-start; padding: 6px 8px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--z); opacity: .75; }
-.band { transition: opacity .4s, background .6s; }
-.band.hit { opacity: 1; background: linear-gradient(90deg, color-mix(in srgb, var(--z) 20%, transparent), transparent); }
-/* level lines: one at the top of every zone below the surface, with its depth marked on the right */
-.band:not(:first-child)::before {
-  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--z) 70%, transparent), color-mix(in srgb, var(--z) 25%, transparent));
-  transform-origin: left center;
-}
-.band:not(:first-child)::after {
-  content: attr(data-m); position: absolute; right: 6px; top: 3px; font-size: 9px; letter-spacing: .06em;
-  color: var(--z); opacity: .6; font-variant-numeric: tabular-nums; text-transform: none;
-}
-.band.cross::before { animation: lineFlash .7s ease-out; }
-.band.cross::after { animation: markFlash .7s ease-out; }
-@keyframes lineFlash {
-  0% { height: 3px; background: var(--z); box-shadow: 0 0 14px 2px var(--z); transform: scaleX(.2); }
-  35% { transform: scaleX(1); }
-  100% { height: 1px; box-shadow: 0 0 0 0 transparent; transform: scaleX(1); }
-}
-@keyframes markFlash { 0% { opacity: 1; transform: scale(1.35); } 100% { opacity: .6; transform: scale(1); } }
-.band span { font-variant-numeric: tabular-nums; }
-.token {
-  position: absolute; left: 50%; top: 0; transform: translate(-50%, -110%); width: 46px; height: 46px; border-radius: 50%;
-  display: grid; place-items: center; background: var(--z); color: var(--bg); font-weight: 600; font-size: 13px;
-  box-shadow: 0 0 24px var(--z); z-index: 2; will-change: top, transform;
-}
-.token .dm {
-  position: absolute; left: 50%; top: calc(100% + 4px); transform: translateX(-50%); white-space: nowrap;
-  font-size: 10px; font-weight: 500; color: var(--txt); opacity: .85; font-variant-numeric: tabular-nums; pointer-events: none;
-}
-.token.z4 .dm { top: auto; bottom: calc(100% + 4px); } /* the bottom zone has no room below */
-.token.landed { animation: land .5s ease-out; }
-.token.landed::after {
-  content: ""; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid var(--z);
-  animation: ring .9s ease-out forwards; pointer-events: none;
-}
-@keyframes land { 0% { scale: 1; } 30% { scale: 1.18 .86; } 60% { scale: .94 1.06; } 100% { scale: 1; } }
-@keyframes ring { from { opacity: .9; transform: scale(1); } to { opacity: 0; transform: scale(2.3); } }
-.bubble {
-  position: absolute; width: var(--s, 6px); height: var(--s, 6px); border-radius: 50%; pointer-events: none; z-index: 1;
-  border: 1px solid rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .08);
-  transform: translate(-50%, -50%); animation: bub var(--d, 1.2s) ease-out forwards;
-}
-@keyframes bub { to { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% - 46px)) scale(.4); } }
-.token.miss { background: var(--card2); color: var(--mute); box-shadow: none; border: 1px solid var(--line2); }
-.rcard { padding: 22px; display: grid; gap: 14px; align-content: start; }
+.scene canvas { display: block; width: 100%; height: 100%; }
+.rcard { padding: 22px; display: grid; gap: 14px; align-content: start; transition: opacity .45s, transform .5s cubic-bezier(.2, .9, .25, 1); }
+.rcard.wait { opacity: 0; transform: translateY(16px); visibility: hidden; }
 .rcard .q { font-size: 13px; color: var(--mute); }
 .verdict { display: grid; gap: 6px; }
 .verdict .ans { font-size: 22px; font-weight: 600; overflow-wrap: anywhere; }
@@ -262,17 +216,17 @@ details.chart summary:hover { color: var(--txt); }
 .row-btns { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); padding: 10px 18px; border-radius: 999px; background: var(--txt); color: var(--bg); font-size: 14px; font-weight: 500; z-index: 10; }
 
+@media (max-width: 900px) and (orientation: portrait), (max-width: 600px) {
+  .reveal { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .scene { height: clamp(330px, 58dvh, 500px); }
+}
 @media (max-width: 620px) {
-  .reveal { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; }
-  .column { min-height: 320px; }
-  .band { font-size: 0; padding: 4px; }
-  .band:not(:first-child)::after { font-size: 8px; right: 4px; }
-  .band span { font-size: 10px; }
-  .token { width: 38px; height: 38px; font-size: 11px; }
   .rcard { padding: 16px; }
   .duo { grid-template-columns: 1fr; }
 }
 @media (max-width: 400px) {
+  .seg .wide { display: none; }
+  .seg button { padding: 0 13px; }
   form.answer { grid-template-columns: 1fr; }
   .names { grid-template-columns: 1fr; }
 }
@@ -284,7 +238,7 @@ details.chart summary:hover { color: var(--txt); }
 <body>
 
 <header class="top">
-  <a class="back" href="/"><span class="logo">RA</span> ← All games</a>
+  <a class="ra-back" href="/#games"><span class="ra-mark" aria-hidden="true">RA</span><span><span class="ra-arrow" aria-hidden="true">←</span> All games</span></a>
   <button class="icon-btn" id="soundBtn" type="button" aria-label="Sound" title="Sound"></button>
 </header>
 
@@ -297,7 +251,7 @@ details.chart summary:hover { color: var(--txt); }
         <g fill="none" stroke="#47d7ff" stroke-width="2"><circle class="b" cx="52" cy="40" r="4"/><circle class="b" cx="58" cy="44" r="2.5"/><circle class="b" cx="48" cy="46" r="3"/></g>
         <g class="diver"><circle cx="44" cy="62" r="16" fill="#5b6cff"/><circle cx="44" cy="62" r="8" fill="#060606"/><circle cx="44" cy="62" r="4" fill="#e8ff47"/></g>
       </svg>
-      <h1>Trench <span>Dive</span></h1>
+      <h1>Rush<span>illion</span></h1>
       <p>Name anything that fits. Everyone knows the obvious answers. The rarer yours is, the deeper you sink and the more points you score.</p>
     </div>
 
@@ -307,7 +261,7 @@ details.chart summary:hover { color: var(--txt); }
         <div class="seg" role="group" aria-label="Mode">
           <button type="button" data-mode="daily" aria-pressed="true">Daily dive</button>
           <button type="button" data-mode="free" aria-pressed="false">Free dive</button>
-          <button type="button" data-mode="duel" aria-pressed="false">Duel · 2 players</button>
+          <button type="button" data-mode="duel" aria-pressed="false">Duel<span class="wide"> · 2 players</span></button>
         </div>
         <p class="note" id="modeNote"></p>
       </div>
@@ -376,8 +330,8 @@ details.chart summary:hover { color: var(--txt); }
 
   <!-- REVEAL -->
   <section class="reveal" id="reveal" hidden>
-    <div class="column" id="column" aria-hidden="true"></div>
-    <div class="panel rcard" id="rcard"></div>
+    <div class="scene" id="scene" aria-hidden="true"><canvas id="sceneCv"></canvas></div>
+    <div class="panel rcard" id="rcard" aria-live="polite"></div>
   </section>
 
   <!-- RESULTS -->
@@ -502,25 +456,52 @@ function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch { 
 
 /* ================= Sound ================= */
 let ac;
-function tone(freq, dur, type = "sine", vol = .08, when = 0, slide) {
-  if (!S.sound) return;
+function audio() {
+  if (!S.sound) return null;
   try {
     ac = ac || new (window.AudioContext || window.webkitAudioContext)();
     if (ac.state === "suspended") ac.resume();
-    const t = ac.currentTime + when, o = ac.createOscillator(), g = ac.createGain();
+    return ac;
+  } catch { return null; }
+}
+/* Each sound returns its gain node so a long one (the sink) can be cut short. */
+function tone(freq, dur, type = "sine", vol = .08, when = 0, slide) {
+  const a = audio(); if (!a) return null;
+  try {
+    const t = a.currentTime + when, o = a.createOscillator(), g = a.createGain();
     o.type = type; o.frequency.setValueAtTime(freq, t);
     if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
     g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur + .02);
-  } catch { /* no audio */ }
+    o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + .02);
+    return g;
+  } catch { return null; }
 }
+function noise(dur, vol, when = 0, f0 = 1800, f1 = 300) {
+  const a = audio(); if (!a) return null;
+  try {
+    const t = a.currentTime + when, n = Math.max(1, Math.floor(a.sampleRate * dur)), buf = a.createBuffer(1, n, a.sampleRate), ch = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) ch[i] = Math.random() * 2 - 1;
+    const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    src.buffer = buf; f.type = "bandpass"; f.Q.value = .9;
+    f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    src.connect(f).connect(g).connect(a.destination); src.start(t); src.stop(t + dur + .02);
+    return g;
+  } catch { return null; }
+}
+const hush = nodes => nodes.forEach(g => { try { if (g && ac) { g.gain.cancelScheduledValues(ac.currentTime); g.gain.setTargetAtTime(.0001, ac.currentTime, .04); } } catch { /* already stopped */ } });
 const sfx = {
   tap: () => tone(520, .06, "triangle", .07),
-  tick: z => tone(700 - z * 90, .09, "sine", .045),
-  sink: z => { tone(600, 1.2 + z * .2, "sine", .07, 0, 120 - z * 15); [0, 1, 2].forEach(i => tone(900 + i * 140, .05, "triangle", .03, .1 + i * .12)); },
-  zone: z => [392, 440, 523, 659, 784].slice(0, z + 1).forEach((f, i) => tone(f * (z === 4 ? 1.5 : 1), .25, "triangle", .08, 1.5 + i * .08)),
+  beep: () => tone(900, .04, "square", .03),
+  splash: () => { noise(.45, .3, 0, 2600, 350); tone(260, .22, "sine", .06, 0, 110); },
+  sink: sec => [tone(480, sec, "sine", .05, 0, 70), noise(sec, .07, 0, 900, 140)],
+  cross: z => { const f = 360 - z * 45; tone(f, .55, "sine", .1, 0, f * .55); tone(1000 - z * 120, .1, "triangle", .035); },
+  land: z => {
+    [392, 440, 523, 659, 784].slice(0, z + 1).forEach((f, i) => tone(f * (z === 4 ? 1.5 : 1), .3, "triangle", .08, i * .07));
+    if (z === 4) tone(95, 1.5, "sine", .2, 0, 36);
+  },
+  ping: () => tone(700, .15, "triangle", .04),
   miss: () => { tone(220, .35, "sawtooth", .05); tone(160, .45, "square", .04, .1); },
-  tick: () => tone(900, .04, "square", .03),
   end: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, .3, "triangle", .09, i * .1))
 };
 function paintSound() {
@@ -635,7 +616,7 @@ function startTimer() {
     if (document.hidden) return;   // pause while the tab is hidden
     timeLeft--;
     paintTimer();
-    if (timeLeft <= 5 && timeLeft > 0) sfx.tick();
+    if (timeLeft <= 5 && timeLeft > 0) sfx.beep();
     if (timeLeft <= 0) { stopTimer(); submit($("ans").value, true); }
   }, 1000);
 }
@@ -676,12 +657,6 @@ function reveal() {
   const p = BANK[G.ids[G.round]];
   const duel = G.mode === "duel";
   const mine = G.picks.map(pl => pl[G.round]);
-  const deepest = mine.reduce((m, pk) => pk.a && (!m || pk.a.z > m.a.z) ? pk : m, null);
-
-  // the ocean column, with a token per player that sinks to its zone
-  const hitZones = new Set(mine.filter(pk => pk.a).map(pk => pk.a.z));
-  $("column").innerHTML = ZONES.map((z, i) => `<div class="band z${i}" data-m="${i ? fmtM((ZONES[i - 1].pts + ZONES[i].pts) / 2) : ""}">${z.name} <span>&nbsp;${z.pts}</span></div>`).join("") +
-    mine.map((pk, i) => `<div class="token ${pk.a ? "z" + pk.a.z : "miss"}" data-i="${i}" style="left:${duel ? (i ? 70 : 30) : 50}%">${duel ? "P" + (i + 1) : pk.a ? "+" + pk.pts : "0"}<span class="dm">0 m</span></div>`).join("");
 
   // two rare answers the player didn't give, from the deepest zones
   const given = new Set(mine.map(pk => pk.a));
@@ -716,82 +691,479 @@ function reveal() {
   $("rcard").innerHTML = `<div class="q">${esc(CATS[p.cat])} · ${esc(p.q)}</div>${body}${deeperHtml}
     <button class="btn next" id="nextBtn" type="button">${last ? "Surface and see results" : "Next prompt"} →</button>
     <details class="chart"><summary>See the full chart (${p.answers.length} answers)</summary>${chart}</details>`;
+  // the card stays hidden until the dive lands, so the scene gets to tell you where you ended up
+  const card = $("rcard");
+  card.classList.add("wait");
   show("reveal");
-  $("nextBtn").onclick = () => { sfx.tap(); advance(); };
-  $("nextBtn").focus({ preventScroll: true });
-
-  sinkTokens(mine, hitZones, deepest);
+  $("nextBtn").onclick = () => { sfx.tap(); stopScene(); advance(); };
+  startScene(mine, G.players, () => {
+    card.classList.remove("wait");
+    $("nextBtn").focus({ preventScroll: true });
+    const r = card.getBoundingClientRect();
+    if (r.top > innerHeight * .75) card.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  });
 }
 
-/* Sink each token through the column: it drifts down with a slow sway, sheds bubbles, flashes every level line
-   it passes, counts its depth and settles with a splash ring in its zone. */
-let sinkGen = 0;
-function sinkTokens(mine, hitZones, deepest) {
-  const gen = ++sinkGen, col = $("column");
-  const bands = [...col.querySelectorAll(".band")];
-  const tokens = [...col.querySelectorAll(".token")];
-  const N = ZONES.length, centre = z => (z + .5) / N;
-  // depth in metres at a fraction of the column: 0 at the surface, each zone's depth at its centre
-  const metres = f => {
-    if (f <= centre(0)) return f / centre(0) * ZONES[0].pts * M_PER_PT;
-    const z = Math.min(N - 2, Math.floor(f * N - .5)), k = (f - centre(z)) / (centre(z + 1) - centre(z));
-    return (ZONES[z].pts + (ZONES[z + 1].pts - ZONES[z].pts) * Math.min(1, k)) * M_PER_PT;
-  };
+/* ================= Dive scene =================
+   A canvas the camera rides down. Everything in the world is placed in metres, and the screen
+   shows a window of it, so a rarer answer is a longer fall, not just a lower spot on a bar.
+   Draw order: water, light rays, marine snow, fish, level lines, trench floor, then a darkness
+   layer with a lamp-shaped hole around each diver, then everything that glows, then the HUD. */
+const BOUNDS = ZONES.slice(1).map((z, i) => (ZONES[i].pts + z.pts) / 2 * M_PER_PT); // 175, 375, 625, 875
+const FLOOR_M = 1060, AIR_M = 30, ENTRY = 380;
+const ZHEX = ["#e8ff47", "#47d7ff", "#5b6cff", "#b06bff", "#ff5e1a"], MISS_HEX = "#8d8b84", P_HEX = ["#e8ff47", "#ff5e1a"];
+const rgba = (h, a) => `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+const zoneAt = m => BOUNDS.filter(b => m >= b).length;
+const WATER = [[0, [18, 84, 98]], [175, [10, 58, 84]], [375, [12, 32, 74]], [625, [20, 12, 48]], [875, [9, 5, 20]], [FLOOR_M, [3, 2, 5]]];
+function waterAt(m) {
+  if (m <= 0) return WATER[0][1];
+  for (let i = 1; i < WATER.length; i++) if (m <= WATER[i][0]) {
+    const [m0, a] = WATER[i - 1], [m1, b] = WATER[i], k = (m - m0) / (m1 - m0);
+    return a.map((v, j) => Math.round(v + (b[j] - v) * k));
+  }
+  return WATER[WATER.length - 1][1];
+}
+/* Sinking speed over the dive: pick up speed, cruise, then a long slow glide into the landing,
+   which is where the suspense is. Stored as the running total of that speed, scaled to 0..1. */
+const PROFILE = (() => {
+  const n = 200, c = [0];
+  for (let i = 0; i < n; i++) {
+    const u = (i + .5) / n;
+    c.push(c[i] + (u < .15 ? .35 + .65 * u / .15 : u < .45 ? 1 : .5 + .5 * Math.cos(Math.PI * (u - .45) / .55)));
+  }
+  return c.map(x => x / c[n]);
+})();
+function profile(u) {
+  const x = Math.max(0, Math.min(1, u)) * (PROFILE.length - 1), i = Math.floor(x);
+  return i >= PROFILE.length - 1 ? 1 : PROFILE[i] + (PROFILE[i + 1] - PROFILE[i]) * (x - i);
+}
+const easeIO = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+let scene = null;
+function stopScene() {
+  if (!scene) return;
+  scene.dead = true; cancelAnimationFrame(scene.raf);
+  document.removeEventListener("keydown", scene.onKey);
+  hush(scene.sound);
+  scene = null;
+}
+
+function startScene(mine, names, onDone) {
+  stopScene();
+  const me = { dead: false, raf: 0, sound: [], onKey: null };
+  scene = me;
+  const cv = $("sceneCv"), ctx = cv.getContext("2d");
+  const dark = document.createElement("canvas"), dctx = dark.getContext("2d");
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const flash = i => { const b = bands[i]; b.classList.remove("cross"); void b.offsetWidth; b.classList.add("cross"); };
-  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; // ease in-out cubic
-  const bob = t => Math.sin(t * Math.PI) * .5 + Math.min(1, t * 2) * .5; // a miss dips in and floats back up a little
-  const meterText = f => (Math.round(metres(Math.max(0, f)) / 5) * 5).toLocaleString() + " m";
+  const duel = mine.length > 1, rnd = Math.random;
+  let W = 0, H = 0, PXM = 1;
+  const size = () => {
+    const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (!r.width || (r.width === W && r.height === H)) return;
+    W = r.width; H = r.height; PXM = H * 5.2 / 1000;     // a full dive is a bit over five screens of water
+    cv.width = dark.width = Math.round(W * dpr); cv.height = dark.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  size();
 
-  if (deepest) sfx.sink(deepest.a.z); else sfx.miss();
-  let pending = tokens.length;
-  const landed = () => {
-    if (--pending || gen !== sinkGen) return;
-    hitZones.forEach(z => bands[z].classList.add("hit"));
-    if (deepest) sfx.zone(deepest.a.z);
+  const divers = mine.map((pk, i) => ({
+    pk, i, z: pk.a ? pk.a.z : -1, end: pk.a ? ZONES[pk.a.z].pts * M_PER_PT : 12,
+    dur: pk.a ? 1300 + pk.a.z * 850 : 1700, delay: duel ? i * 240 : 0,
+    word: (w => w.length > 22 ? w.slice(0, 21) + "…" : w)((pk.raw || (pk.timedOut ? "Out of air" : "Skipped")).toUpperCase()),
+    x: duel ? (i ? .7 : .3) : .5, m: -AIR_M, crossed: 0, splashed: false, landed: false, landT: 0, phase: i * 1.9
+  }));
+  const lead = divers.reduce((a, d) => d.z > a.z ? d : a, divers[0]);
+
+  // the world: fish in the light, jellies and glints in the dark, a lure near the floor
+  const fish = Array.from({ length: 7 }, () => ({ m: 25 + rnd() * 330, x: rnd(), dir: rnd() < .5 ? -1 : 1, v: 14 + rnd() * 22, n: 4 + (rnd() * 6 | 0), s: .7 + rnd() * .7, seed: rnd() * 100 }));
+  const jellies = Array.from({ length: 8 }, () => { const m = 400 + rnd() * 480; return { m, x: .08 + rnd() * .76, c: ZHEX[zoneAt(m)], s: .7 + rnd() * .8, ph: rnd() * 6 }; });
+  const glints = Array.from({ length: 46 }, () => { const m = 560 + rnd() * 480; return { m, x: rnd() * .92, c: rnd() < .5 ? ZHEX[zoneAt(m)] : "#9fe8ff", ph: rnd() * 6, sp: .6 + rnd() * 1.6 }; });
+  const snow = Array.from({ length: 80 }, () => ({ x: rnd(), y: rnd(), z: .25 + rnd() * .75 }));
+  const floor = Array.from({ length: 26 }, (_, i) => 14 + rnd() * 34 + (i % 6 === 2 ? 34 : 0));
+
+  const parts = [], rings = [], flashes = BOUNDS.map(() => 0);
+  let cam = -.35 * H / PXM, camV = 0, shake = 0, flash = 0, banner = null, skipped = still, doneCalled = false;
+  const t0 = performance.now();
+
+  const verdictBanner = () => {
+    if (lead.z < 0) {
+      const pk = lead.pk;
+      return { t: duel ? "Nobody scores" : pk.raw ? "Not on the chart" : pk.timedOut ? "Out of air" : "No dive", s: "0 pts", c: MISS_HEX };
+    }
+    const s = !duel ? `+${lead.pk.pts} pts · ${fmtM(lead.pk.pts)}`
+      : divers.filter(d => d.z === lead.z).length > 1 ? "You both reach it" : `${names[lead.i]} dives deepest`;
+    return { t: ZONES[lead.z].name, s, c: ZHEX[lead.z] };
   };
 
-  tokens.forEach((t, n) => {
-    const pk = mine[+t.dataset.i], dm = t.querySelector(".dm");
-    const end = pk.a ? centre(pk.a.z) : .04;
-    const dur = pk.a ? 900 + pk.a.z * 520 : 700;
-    const delay = n * 180, phase = n * 1.7;
-    let passed = 0, lastBub = 0, t0 = 0;
-    const place = f => { t.style.top = f * 100 + "%"; };
-    const finish = () => {
-      place(end); t.style.transform = "translate(-50%, -50%)";
-      dm.textContent = pk.a ? fmtM(ZONES[pk.a.z].pts) : "0 m";
-      t.classList.add("landed"); landed();
-    };
-    if (still) { finish(); return; }
-    const frame = now => {
-      if (gen !== sinkGen || !t.isConnected) return;
-      if (!t0) t0 = now + delay;
-      const raw = Math.max(0, Math.min(1, (now - t0) / dur));
-      const f = -.06 + (end + .06) * (pk.a ? ease(raw) : bob(raw));
-      const sway = Math.sin((now - t0) / 260 + phase) * 7 * (1 - raw), tilt = Math.sin((now - t0) / 260 + phase + .6) * 8 * (1 - raw);
-      place(f);
-      t.style.transform = `translate(calc(-50% + ${sway.toFixed(1)}px), -50%) rotate(${tilt.toFixed(1)}deg)`;
-      if (pk.a) dm.textContent = meterText(f);
-      // level lines: band i's top edge sits at i / N of the column
-      while (passed + 1 < N && f >= (passed + 1) / N) { passed++; flash(passed); sfx.tick(passed); }
-      if (raw > 0 && raw < .92 && now - lastBub > 70) {
-        lastBub = now;
-        const b = document.createElement("i");
-        b.className = "bubble";
-        b.style.left = `calc(${t.style.left} + ${(sway + (Math.random() - .5) * 16).toFixed(1)}px)`;
-        b.style.top = `calc(${(f * 100).toFixed(2)}% - 18px)`;
-        b.style.setProperty("--s", (3 + Math.random() * 6).toFixed(1) + "px");
-        b.style.setProperty("--d", (.8 + Math.random() * .7).toFixed(2) + "s");
-        b.style.setProperty("--dx", ((Math.random() - .5) * 20).toFixed(1) + "px");
-        b.addEventListener("animationend", () => b.remove());
-        col.appendChild(b);
+  function splash(d) {
+    const x = d.x * W;
+    for (let k = 0; k < 22; k++) parts.push({ k: "drop", x: x + (rnd() - .5) * 14, m: 0, vx: (rnd() - .5) * 170, vy: -(120 + rnd() * 210), g: 700, drag: 0, life: .9, age: 0, r: 1 + rnd() * 2.2, c: "#d9f3ff" });
+    rings.push({ x: d.x, m: 0, c: "#d9f3ff", t0: performance.now(), flat: true });
+    shake = Math.max(shake, 2);
+    if (d === lead) sfx.splash();
+  }
+  function cross(d, n) {
+    flashes[n - 1] = performance.now();
+    if (d !== lead) return;
+    banner = { t: ZONES[n].name, s: BOUNDS[n - 1].toLocaleString() + " m", c: ZHEX[n], t0: performance.now(), dur: 1100 };
+    shake = Math.max(shake, 2 + n * 1.3);
+    sfx.cross(n);
+  }
+  function land(d) {
+    d.landed = true; d.m = d.end; d.landT = performance.now();
+    const hit = d.z >= 0, c = hit ? ZHEX[d.z] : MISS_HEX;
+    rings.push({ x: d.x, m: d.end, c, t0: d.landT });
+    if (hit && !still) for (let k = 0; k < 18 + d.z * 9; k++) {
+      const a = rnd() * Math.PI * 2, v = 60 + rnd() * (120 + d.z * 45);
+      parts.push({ k: "spark", x: d.x * W, m: d.end, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0, drag: 2.6, life: .7 + rnd() * .7, age: 0, r: 1.2 + rnd() * 2, c });
+    }
+    if (d !== lead) { if (hit) sfx.ping(); return; }
+    hush(me.sound);
+    banner = Object.assign(verdictBanner(), { t0: performance.now(), dur: 0, big: true });
+    if (!still) { shake = hit ? 4 + d.z * 3 : 2; if (d.z === 4) flash = .55; }
+    if (hit) sfx.land(d.z); else sfx.miss();
+    if (hit && d.z >= 3 && navigator.vibrate) navigator.vibrate(d.z === 4 ? [30, 50, 90] : 25);
+  }
+  function bubble(d, sway) {
+    parts.push({ k: "bub", x: d.x * W + sway + (rnd() - .5) * layout(d).tw * .8, m: d.m - 8 / PXM, vx: (rnd() - .5) * 20, vy: -(30 + rnd() * 50), g: 0, drag: 0, life: .9 + rnd() * .8, age: 0, r: 1.5 + rnd() * 3.5 });
+  }
+  const swayOf = (d, sec) => d.landed || d.m <= 0 ? 0 : Math.sin(sec * 3.2 + d.phase) * 6;
+  /* The answer itself is the diver: its letters, sized to fit the scene, measured once per width. */
+  const wfont = fs => `400 ${fs}px "Bebas Neue", Impact, sans-serif`;
+  function layout(d) {
+    if (d.lw === W && d.L) return d.L;
+    const maxW = (duel ? .36 : .7) * W;
+    let fs = W < 420 ? 28 : 36;
+    ctx.font = wfont(fs);
+    let tw = ctx.measureText(d.word).width;
+    if (tw > maxW) { fs = Math.max(13, fs * maxW / tw); ctx.font = wfont(fs); tw = ctx.measureText(d.word).width; }
+    const xs = [...d.word].map((_, k) => ctx.measureText(d.word.slice(0, k)).width);
+    d.lw = W; d.L = { fs, tw, xs, h: fs * 1.1 };
+    return d.L;
+  }
+
+  // tap or press a key to jump to the landing
+  const skip = () => { if (!skipped && !divers.every(d => d.landed)) { skipped = true; hush(me.sound); } };
+  cv.parentNode.onpointerdown = skip;
+  me.onKey = e => { if (e.repeat || e.key === "Tab" || e.metaKey || e.ctrlKey || e.altKey || performance.now() - t0 < 200) return; skip(); };
+  document.addEventListener("keydown", me.onKey);
+
+  if (!still) me.sound = sfx.sink((ENTRY + lead.dur) / 1000 + .3) || [];
+
+  function update(T, dt, sec) {
+    divers.forEach(d => {
+      if (d.landed) { d.m = d.z < 0 ? 12 + Math.sin(sec * 2.2 + d.phase) * 1.6 : d.end + Math.sin(sec * 1.6 + d.phase) * 1.2; return; }
+      const t = skipped ? Infinity : T - d.delay;
+      if (t < ENTRY) { const u = Math.max(0, t) / ENTRY; d.m = -AIR_M + AIR_M * u * u; }
+      else {
+        if (!d.splashed) { d.splashed = true; if (!skipped) splash(d); }
+        const u = Math.min(1, (t - ENTRY) / d.dur);
+        d.m = d.z < 0 ? (u < .35 ? 45 * (1 - Math.pow(1 - u / .35, 2)) : 45 - 33 * easeIO((u - .35) / .65)) : d.end * profile(u);
+        while (d.crossed < BOUNDS.length && d.m >= BOUNDS[d.crossed]) { d.crossed++; if (!skipped) cross(d, d.crossed); }
+        if (u >= 1) land(d);
       }
-      if (raw < 1) requestAnimationFrame(frame); else finish();
-    };
-    place(-.06);
-    requestAnimationFrame(frame);
-  });
+      if (!skipped && !d.landed && d.m > 2 && rnd() < dt * 32) bubble(d, swayOf(d, sec));
+    });
+    // the camera keeps the deepest diver a little above centre, and stops at the floor
+    const top = -.35 * H / PXM, deepest = Math.max(...divers.map(d => d.m));
+    const tgt = Math.min(FLOOR_M + 30 - H / PXM, Math.max(top, deepest - (H < 440 ? .62 : .45) * H / PXM));
+    const prev = cam;
+    cam = skipped ? tgt : cam + (tgt - cam) * (1 - Math.exp(-dt * 7));
+    camV = skipped ? 0 : (cam - prev) * PXM;
+    for (const s of snow) {
+      s.y += (-camV * s.z + dt * 6 * s.z) / H;
+      if (s.y < 0 || s.y > 1) { s.y = (s.y + 1) % 1; s.x = rnd(); }
+    }
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i];
+      p.age += dt;
+      if (p.drag) { const k = Math.exp(-p.drag * dt); p.vx *= k; p.vy *= k; }
+      p.vy += p.g * dt; p.x += p.vx * dt; p.m += p.vy * dt / PXM;
+      if (p.age > p.life || (p.k === "bub" && p.m < 0) || (p.k === "drop" && p.age > .1 && p.m > 0)) parts.splice(i, 1);
+    }
+    shake = shake > .15 ? shake * Math.exp(-dt * 9) : 0;
+    flash = Math.max(0, flash - dt * 1.4);
+    if (!doneCalled && divers.every(d => d.landed)) {
+      doneCalled = true;
+      setTimeout(() => { if (scene === me) onDone(); }, skipped ? 150 : 550);
+    }
+  }
+
+  function draw(now, sec) {
+    const Y = m => (m - cam) * PXM, view = H / PXM;
+    ctx.save();
+    if (shake) ctx.translate((rnd() - .5) * 2 * shake, (rnd() - .5) * 2 * shake);
+
+    // water, darker the deeper the window sits
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, `rgb(${waterAt(cam)})`); g.addColorStop(.5, `rgb(${waterAt(cam + view / 2)})`); g.addColorStop(1, `rgb(${waterAt(cam + view)})`);
+    ctx.fillStyle = g; ctx.fillRect(-20, -20, W + 40, H + 40);
+
+    const sY = Y(0);
+    const rayA = .09 * Math.max(0, Math.min(1, 1 - (cam + view / 2) / 320));
+    if (rayA > 0) {
+      ctx.globalCompositeOperation = "lighter";
+      for (let i = 0; i < 5; i++) {
+        const x0 = W * (.1 + i * .2) + Math.sin(sec * .4 + i * 1.7) * 22, rg = ctx.createLinearGradient(0, sY, 0, sY + H);
+        rg.addColorStop(0, `rgba(200,245,255,${rayA})`); rg.addColorStop(1, "rgba(200,245,255,0)");
+        ctx.fillStyle = rg; ctx.beginPath();
+        ctx.moveTo(x0 - 9, sY); ctx.lineTo(x0 + 9, sY); ctx.lineTo(x0 + 70 + i * 8, sY + H); ctx.lineTo(x0 - 26, sY + H); ctx.fill();
+      }
+      ctx.globalCompositeOperation = "source-over";
+    }
+
+    // marine snow: dots when still, streaks when the camera is falling fast
+    ctx.lineCap = "round";
+    for (const s of snow) {
+      const x = s.x * W, y = s.y * H;
+      if (y < sY + 4) continue;
+      const len = Math.min(H * .25, Math.abs(camV) * s.z * 3);
+      ctx.strokeStyle = ctx.fillStyle = `rgba(210,235,255,${.1 + .3 * s.z})`;
+      if (len > 1.5) { ctx.lineWidth = s.z * 1.6; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + len); ctx.stroke(); }
+      else { ctx.beginPath(); ctx.arc(x, y, s.z * 1.3, 0, 7); ctx.fill(); }
+    }
+
+    // fish schools
+    ctx.fillStyle = "rgba(3,16,26,.55)";
+    for (const f of fish) {
+      const y = Y(f.m);
+      if (y < -40 || y > H + 40) continue;
+      const span = W + 160, bx = ((f.x * span + f.dir * f.v * sec) % span + span) % span - 80;
+      for (let k = 0; k < f.n; k++) {
+        ctx.save();
+        ctx.translate(bx + Math.sin(f.seed + k * 2.3) * 26 * f.s, y + Math.cos(f.seed * 1.7 + k * 1.9) * 12 * f.s + Math.sin(sec * 2 + k) * 1.5);
+        ctx.scale(f.dir * f.s, f.s);
+        ctx.beginPath(); ctx.ellipse(0, 0, 7, 2.8, 0, 0, 7); ctx.moveTo(-5, 0); ctx.lineTo(-11, -3.6); ctx.lineTo(-11, 3.6); ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // level lines, flaring as a diver crosses them
+    ctx.font = '600 10px "DM Sans", system-ui, sans-serif'; ctx.textAlign = "right";
+    BOUNDS.forEach((b, i) => {
+      const y = Y(b);
+      if (y < -30 || y > H + 30) return;
+      const age = (now - flashes[i]) / 800, f = flashes[i] && age < 1 ? 1 - age : 0, c = ZHEX[i + 1];
+      if (f) {
+        const fg = ctx.createLinearGradient(0, y - 30, 0, y + 30);
+        fg.addColorStop(0, rgba(c, 0)); fg.addColorStop(.5, rgba(c, .25 * f)); fg.addColorStop(1, rgba(c, 0));
+        ctx.fillStyle = fg; ctx.fillRect(0, y - 30, W, 60);
+      }
+      ctx.setLineDash([6, 7]); ctx.strokeStyle = rgba(c, .3 + .7 * f); ctx.lineWidth = 1 + 2 * f;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = rgba(c, .65 + .35 * f);
+      ctx.fillText(`${ZONES[i + 1].name.toUpperCase()} · ${b} m`, W - 30, y - 7);
+    });
+
+    // trench floor
+    const fy = Y(FLOOR_M);
+    if (fy - 90 < H) {
+      ctx.beginPath(); ctx.moveTo(-20, H + 40);
+      floor.forEach((h, i) => ctx.lineTo(i / (floor.length - 1) * (W + 40) - 20, fy - h));
+      ctx.lineTo(W + 20, H + 40); ctx.closePath();
+      ctx.fillStyle = "#040205"; ctx.fill();
+      ctx.strokeStyle = "rgba(255,94,26,.22)"; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
+    // darkness, with a lamp-shaped hole around each diver
+    const darkA = Math.max(0, Math.min(.84, (cam + view / 2 - 280) / 600));
+    if (darkA > .01) {
+      dctx.globalCompositeOperation = "source-over";
+      dctx.clearRect(0, 0, W, H); dctx.fillStyle = `rgba(0,0,0,${darkA})`; dctx.fillRect(0, 0, W, H);
+      dctx.globalCompositeOperation = "destination-out";
+      divers.forEach(d => {
+        const x = d.x * W + swayOf(d, sec), y = Y(d.m) + 24, R = Math.min(170, W * .4);
+        const hg = dctx.createRadialGradient(x, y, 0, x, y, R);
+        hg.addColorStop(0, "rgba(0,0,0,1)"); hg.addColorStop(.45, "rgba(0,0,0,.7)"); hg.addColorStop(1, "rgba(0,0,0,0)");
+        dctx.fillStyle = hg; dctx.fillRect(x - R, y - R, R * 2, R * 2);
+      });
+      ctx.drawImage(dark, 0, 0, W, H);
+    }
+
+    // the surface sits on top of the water so its sky never darkens
+    if (sY > -12) {
+      ctx.beginPath(); ctx.moveTo(-20, -20);
+      for (let x = -20; x <= W + 20; x += 8) ctx.lineTo(x, sY + Math.sin(x * .035 + sec * 2.2) * 2.4 + Math.sin(x * .013 - sec * 1.3) * 1.6);
+      ctx.lineTo(W + 20, -20); ctx.closePath();
+      const sk = ctx.createLinearGradient(0, sY - H * .4, 0, sY);
+      sk.addColorStop(0, "#05080b"); sk.addColorStop(1, "#0d1c22");
+      ctx.fillStyle = sk; ctx.fill();
+      ctx.beginPath();
+      for (let x = -20; x <= W + 20; x += 8) ctx.lineTo(x, sY + Math.sin(x * .035 + sec * 2.2) * 2.4 + Math.sin(x * .013 - sec * 1.3) * 1.6);
+      ctx.strokeStyle = "rgba(200,240,255,.5)"; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
+    // everything that glows
+    ctx.globalCompositeOperation = "lighter";
+    for (const p of glints) {
+      const y = Y(p.m);
+      if (y < -10 || y > H + 10) continue;
+      const a = Math.pow(Math.max(0, Math.sin(sec * p.sp + p.ph)), 3);
+      if (a < .05) continue;
+      ctx.fillStyle = rgba(p.c, a * .16); ctx.beginPath(); ctx.arc(p.x * W, y, 6, 0, 7); ctx.fill();
+      ctx.fillStyle = rgba(p.c, a * .9); ctx.beginPath(); ctx.arc(p.x * W, y, 1.6, 0, 7); ctx.fill();
+    }
+    for (const j of jellies) {
+      const y = Y(j.m) + Math.sin(sec * .8 + j.ph) * 6, x = j.x * W + Math.sin(sec * .3 + j.ph) * 12;
+      if (y < -60 || y > H + 60) continue;
+      const p = 1 + Math.sin(sec * 2.4 + j.ph) * .09, r = 13 * j.s;
+      const hg = ctx.createRadialGradient(x, y, 0, x, y, r * 3);
+      hg.addColorStop(0, rgba(j.c, .18)); hg.addColorStop(1, rgba(j.c, 0));
+      ctx.fillStyle = hg; ctx.fillRect(x - r * 3, y - r * 3, r * 6, r * 6);
+      ctx.beginPath(); ctx.ellipse(x, y, r * p, r * .78 / p, 0, Math.PI, 0); ctx.closePath();
+      ctx.fillStyle = rgba(j.c, .3); ctx.fill(); ctx.strokeStyle = rgba(j.c, .8); ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.strokeStyle = rgba(j.c, .4);
+      for (let k = 0; k < 4; k++) {
+        const tx = x - r * .6 + k * r * .4;
+        ctx.beginPath(); ctx.moveTo(tx, y);
+        for (let s = 1; s <= 6; s++) ctx.lineTo(tx + Math.sin(sec * 3 + k + s * .8 + j.ph) * 2.5, y + s * r * .38);
+        ctx.stroke();
+      }
+    }
+    const lureY = Y(968);
+    if (lureY > -60 && lureY < H + 80) {
+      const lx = W * .82, pr = 24 * (1 + .15 * Math.sin(sec * 3));
+      ctx.globalCompositeOperation = "source-over";
+      ctx.strokeStyle = "rgba(255,94,26,.22)"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(W + 10, lureY + 70); ctx.quadraticCurveTo(W * .92, lureY - 14, lx, lureY); ctx.stroke();
+      ctx.globalCompositeOperation = "lighter";
+      const lg = ctx.createRadialGradient(lx, lureY, 0, lx, lureY, pr);
+      lg.addColorStop(0, "rgba(255,170,110,.55)"); lg.addColorStop(1, "rgba(255,94,26,0)");
+      ctx.fillStyle = lg; ctx.beginPath(); ctx.arc(lx, lureY, pr, 0, 7); ctx.fill();
+      ctx.fillStyle = "#ffd3b0"; ctx.beginPath(); ctx.arc(lx, lureY, 3.5, 0, 7); ctx.fill();
+    }
+    for (const p of parts) {
+      const y = Y(p.m), a = 1 - p.age / p.life;
+      if (p.k === "spark") { ctx.fillStyle = rgba(p.c, a); ctx.beginPath(); ctx.arc(p.x, y, p.r, 0, 7); ctx.fill(); }
+    }
+    for (let i = rings.length - 1; i >= 0; i--) {
+      const r = rings[i], a = (now - r.t0) / 900;
+      if (a > 1) { rings.splice(i, 1); continue; }
+      const rad = 18 + a * 80;
+      ctx.strokeStyle = rgba(r.c, (1 - a) * .9); ctx.lineWidth = .5 + 2.5 * (1 - a);
+      ctx.beginPath(); ctx.ellipse(r.x * W, Y(r.m), rad * (r.flat ? 1.4 : 1), rad * (r.flat ? .3 : 1), 0, 0, 7); ctx.stroke();
+    }
+
+    // divers: glow, lamp, body
+    divers.forEach(d => {
+      const x = d.x * W + swayOf(d, sec), y = Y(d.m), L = layout(d), hw = L.tw / 2;
+      const c = d.landed ? (d.z < 0 ? MISS_HEX : ZHEX[d.z]) : ZHEX[zoneAt(Math.max(0, d.m))];
+      if (!d.landed && d.m > 220) {
+        const top = y + L.h * .4, cg = ctx.createLinearGradient(0, top, 0, top + 160);
+        cg.addColorStop(0, rgba(c, .2)); cg.addColorStop(1, rgba(c, 0));
+        ctx.fillStyle = cg; ctx.beginPath(); ctx.moveTo(x - hw * .6, top); ctx.lineTo(x + hw * .6, top); ctx.lineTo(x + hw + 40, top + 160); ctx.lineTo(x - hw - 40, top + 160); ctx.fill();
+      }
+      const gr = Math.max(50, hw + 34);
+      ctx.save(); ctx.translate(x, y); ctx.scale(1, .55);
+      const hg = ctx.createRadialGradient(0, 0, 0, 0, 0, gr);
+      hg.addColorStop(0, rgba(c, d.z < 0 && d.landed ? .18 : .4)); hg.addColorStop(1, rgba(c, 0));
+      ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(0, 0, gr, 0, 7); ctx.fill();
+      ctx.restore();
+    });
+    ctx.globalCompositeOperation = "source-over";
+    for (const p of parts) {
+      const y = Y(p.m), a = 1 - p.age / p.life;
+      if (p.k === "bub") {
+        ctx.strokeStyle = `rgba(255,255,255,${.55 * a})`; ctx.fillStyle = `rgba(255,255,255,${.07 * a})`; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(p.x + Math.sin(p.age * 9 + p.r) * 2, y, p.r, 0, 7); ctx.fill(); ctx.stroke();
+      } else if (p.k === "drop") { ctx.fillStyle = `rgba(217,243,255,${a})`; ctx.beginPath(); ctx.arc(p.x, y, p.r, 0, 7); ctx.fill(); }
+    }
+    divers.forEach(d => {
+      const x = d.x * W + swayOf(d, sec), y = Y(d.m);
+      const c = d.landed ? (d.z < 0 ? MISS_HEX : ZHEX[d.z]) : ZHEX[zoneAt(Math.max(0, d.m))];
+      const L = layout(d), moving = !d.landed && d.m > 0, missed = d.landed && d.z < 0;
+      ctx.save(); ctx.translate(x, y);
+      if (moving) ctx.rotate(Math.sin(sec * 3.2 + d.phase + .8) * .06);
+      ctx.font = wfont(L.fs); ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+      [...d.word].forEach((ch, k) => {
+        let oy = 0, rot = 0;
+        if (moving) { oy = Math.sin(sec * 7 - k * .6 + d.phase) * L.fs * .1; rot = Math.sin(sec * 5 - k * .9 + d.phase) * .08; }
+        if (d.landT) {
+          const a = (now - d.landT - k * 40) / 420;
+          if (a > 0 && a < 1) oy -= Math.sin(a * Math.PI) * (1 - a) * L.fs * .5;
+        }
+        const lx = -L.tw / 2 + L.xs[k];
+        ctx.save(); ctx.translate(lx, oy); ctx.rotate(rot);
+        ctx.strokeStyle = "rgba(4,6,8,.85)"; ctx.lineWidth = Math.max(3, L.fs * .14); ctx.strokeText(ch, 0, 0);
+        ctx.shadowColor = c; ctx.shadowBlur = missed ? 0 : 16; ctx.fillStyle = c; ctx.fillText(ch, 0, 0);
+        ctx.restore();
+      });
+      if (missed) { ctx.strokeStyle = rgba(MISS_HEX, .9); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-L.tw / 2 - 4, 0); ctx.lineTo(L.tw / 2 + 4, 0); ctx.stroke(); }
+      ctx.restore();
+      ctx.textBaseline = "alphabetic";
+      const label = !duel ? "" : `P${d.i + 1}` + (d.landed ? " · " + (d.z < 0 ? "0 pts" : "+" + d.pk.pts) : "");
+      if (label) {
+        ctx.font = '600 11px "DM Sans", system-ui, sans-serif'; ctx.textAlign = "center";
+        ctx.fillStyle = duel ? P_HEX[d.i] : "rgba(236,233,224,.92)";
+        ctx.fillText(label, x, y + L.h * .5 + 16);
+      }
+    });
+
+    // zone banner: punches in big, then settles
+    if (banner) {
+      const age = (now - banner.t0) / 1000, life = banner.dur ? banner.dur / 1000 : Infinity;
+      if (age > life) banner = null;
+      else {
+        const a = Math.min(1, age / .12) * (life === Infinity ? 1 : Math.min(1, (life - age) / .3)), k = 1 + .5 * Math.exp(-age * 9);
+        let fs = banner.big ? Math.min(80, W * .16, H * .16) : Math.min(54, W * .115, H * .12);
+        ctx.font = `400 ${fs}px "Bebas Neue", Impact, sans-serif`;
+        const tw = ctx.measureText(banner.t.toUpperCase()).width;
+        if (tw > W * .7) { fs *= W * .7 / tw; ctx.font = `400 ${fs}px "Bebas Neue", Impact, sans-serif`; }
+        // narrow scenes: keep it below the depth readout
+        ctx.save(); ctx.translate(W / 2, Math.max(H * .27, H < 440 ? 96 : 116, W < 520 ? 84 + fs * .8 : 0));
+        ctx.scale(k, k); ctx.globalAlpha = a; ctx.textAlign = "center";
+        ctx.shadowColor = banner.c; ctx.shadowBlur = 30; ctx.fillStyle = banner.c;
+        ctx.fillText(banner.t.toUpperCase(), 0, 0);
+        ctx.shadowBlur = 0; ctx.font = `600 ${banner.big ? 15 : 12}px "DM Sans", system-ui, sans-serif`; ctx.fillStyle = "rgba(236,233,224,.92)";
+        ctx.fillText(banner.s, 0, fs * .48);
+        ctx.restore();
+      }
+    }
+    ctx.restore();   // the HUD below doesn't shake
+
+    if (flash > 0) { ctx.fillStyle = `rgba(255,236,220,${flash})`; ctx.fillRect(0, 0, W, H); }
+
+    // depth readout
+    const shown = Math.max(...divers.map(d => d.landed ? (d.z < 0 ? 0 : d.end) : Math.max(0, d.m)));
+    const hz = zoneAt(shown), missed = divers.every(d => d.landed && d.z < 0), hc = missed ? MISS_HEX : ZHEX[hz];
+    ctx.textAlign = "left";
+    ctx.font = '600 10px "DM Sans", system-ui, sans-serif'; ctx.fillStyle = "rgba(236,233,224,.55)";
+    ctx.fillText("DEPTH", 16, 24);
+    ctx.font = `400 ${W < 420 ? 34 : 40}px "Bebas Neue", Impact, sans-serif`; ctx.fillStyle = hc;
+    ctx.fillText((Math.round(shown / 5) * 5).toLocaleString() + " m", 16, W < 420 ? 54 : 60);
+    ctx.font = '600 11px "DM Sans", system-ui, sans-serif'; ctx.fillStyle = rgba(hc, .8);
+    ctx.fillText(missed ? "No depth" : ZONES[hz].name, 16, W < 420 ? 70 : 77);
+
+    // depth gauge down the right edge, one marker per diver
+    const gx = W - 14, g0 = 18, g1 = H - 18, gy = m => g0 + Math.max(0, Math.min(FLOOR_M, m)) / FLOOR_M * (g1 - g0);
+    ctx.lineWidth = 3; ctx.lineCap = "butt";
+    ZONES.forEach((_, i) => {
+      ctx.strokeStyle = rgba(ZHEX[i], .45);
+      ctx.beginPath(); ctx.moveTo(gx, gy(i ? BOUNDS[i - 1] : 0) + 1); ctx.lineTo(gx, gy(i < BOUNDS.length ? BOUNDS[i] : FLOOR_M) - 1); ctx.stroke();
+    });
+    divers.forEach(d => {
+      ctx.fillStyle = duel ? P_HEX[d.i] : d.landed && d.z < 0 ? MISS_HEX : ZHEX[zoneAt(Math.max(0, d.m))];
+      ctx.strokeStyle = "#060606"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(gx, gy(d.m), 5, 0, 7); ctx.fill(); ctx.stroke();
+    });
+
+    if (!skipped && !divers.every(d => d.landed) && now - t0 > 600) {
+      ctx.font = '500 11px "DM Sans", system-ui, sans-serif'; ctx.textAlign = "center"; ctx.fillStyle = "rgba(236,233,224,.4)";
+      ctx.fillText("Tap to skip", W / 2, H - 14);
+    }
+  }
+
+  let last = t0;
+  const frame = now => {
+    if (me.dead) return;
+    if ($("reveal").hidden) { stopScene(); return; }
+    size();
+    const dt = Math.min(.05, Math.max(0, (now - last) / 1000)); last = now;
+    update(now - t0, dt, (now - t0) / 1000);
+    draw(now, (now - t0) / 1000);
+    me.raf = requestAnimationFrame(frame);
+  };
+  me.raf = requestAnimationFrame(frame);
 }
 
 function advance() {
@@ -841,7 +1213,7 @@ function finish() {
     </div>`;
   show("results");
   if (!duel) $("shareBtn").onclick = () => {
-    const text = `Trench Dive${G.mode === "daily" ? " · " + today() : ""}\n${G.picks[0].map(pk => pk.a ? EMOJI[pk.a.z] : "⬜").join("")}\n${fmtM(totals[0])} (${totals[0]} pts)`;
+    const text = `Rushillion${G.mode === "daily" ? " · " + today() : ""}\n${G.picks[0].map(pk => pk.a ? EMOJI[pk.a.z] : "⬜").join("")}\n${fmtM(totals[0])} (${totals[0]} pts)`;
     (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast("Copied to clipboard"), () => prompt("Copy your result:", text));
   };
   $("againBtn").onclick = () => { if (G.mode === "daily") S.mode = "free"; save(); paintHome(); $("startBtn").click(); };

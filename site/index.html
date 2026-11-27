@@ -103,6 +103,7 @@ h1 span { color: var(--y); }
 /* games */
 main { flex: 1; }
 .games { padding: clamp(16px, 4vw, 32px) 0 clamp(40px, 7vw, 72px); }
+.games { scroll-margin-top: 8px; }  /* every game's back pill lands here: /#games */
 .head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 h2 { font-size: 16px; font-weight: 600; }
 .count { font-size: 12px; color: var(--mute); }
@@ -129,7 +130,7 @@ h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
 .play b { transition: transform .2s; font-weight: 600; }
 .game:hover .play b { transform: translateX(3px); }
 
-/* card art: Trench Dive (ocean zones with an answer sinking through them) */
+/* card art: Rushillion (ocean zones with an answer sinking through them) */
 .td { background: linear-gradient(180deg, #1d2a12 0%, #0b2a35 30%, #0e1438 58%, #0a0606 100%); display: flex; align-items: stretch; justify-content: center; position: relative; overflow: hidden; }
 .td ol { list-style: none; display: grid; grid-template-rows: repeat(5, 1fr); width: 100%; }
 .td li { border-top: 1px dashed rgba(255, 255, 255, .09); padding: 0 6%; display: flex; align-items: center; justify-content: flex-end; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
@@ -270,7 +271,7 @@ footer a:hover { color: var(--y); }
 </header>
 
 <main>
-  <section class="games" aria-labelledby="games-title">
+  <section class="games" id="games" aria-labelledby="games-title">
     <div class="wrap">
       <div class="head">
         <h2 id="games-title">Games</h2>
@@ -351,7 +352,7 @@ footer a:hover { color: var(--y); }
               <span class="tok"></span>
             </div>
             <div class="body">
-              <div class="title"><h3>Trench Dive</h3><span class="badge">1–2 players</span></div>
+              <div class="title"><h3>Rushillion</h3><span class="badge">1–2 players</span></div>
               <p>Name anything that fits the prompt. The rarer your answer, the deeper you sink. A daily dive, free play, or a duel.</p>
               <div class="tags"><span>Words</span><span>Daily</span><span>Duel</span></div>
               <span class="play">Play now <b aria-hidden="true">→</b></span>

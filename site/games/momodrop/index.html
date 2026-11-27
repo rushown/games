@@ -7,6 +7,7 @@
 <meta name="description" content="Draw lines to guide a falling momo onto the plate. A free physics puzzle game.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;800&display=swap">
+<link rel="stylesheet" href="/assets/arcade-back.css">
 <style>
 /* Layout: one 16:9 stage fitted to whatever box it lives in (page, iframe, popup); HUD and menus scale with the stage width. Single deliberate daytime look. */
 :root{
@@ -57,9 +58,7 @@ button.go.reset{background:var(--navy);box-shadow:0 4px 0 #00225a}
 .grid button{width:3.1em;height:3.1em;padding:0;border-radius:.8em;display:grid;place-items:center;align-content:center;line-height:1;font-size:1.2em}
 .grid button small{display:block;font-size:.55em;color:#c99a14;letter-spacing:.05em;min-height:1em}
 .grid button.lock{opacity:.4;cursor:not-allowed}
-.home{color:var(--ink);font-weight:800;font-size:.85em;opacity:.7;text-decoration:none;padding:.4em .6em;border-radius:999px;align-self:center}
-.home:hover{opacity:1;text-decoration:underline}
-.home:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.card .ra-back{align-self:center}
 .nflag{width:2.2em;height:auto}
 #rotate{display:none;align-items:center;gap:10px;background:var(--paper);color:var(--ink);font:800 14px/1.3 var(--body);padding:8px 8px 8px 14px;border-radius:999px;max-width:100%;box-sizing:border-box}
 #rotate button{font-size:13px;padding:2px 10px;box-shadow:none;background:#ead8bf}
@@ -89,11 +88,11 @@ button.go.reset{background:var(--navy);box-shadow:0 4px 0 #00225a}
       <h1>Momo Drop</h1>
       <p>Draw lines to guide the momo onto the plate. Keep it away from the chilies!</p>
       <div class="row"><button class="go big" id="bPlay">Play</button><button class="big" id="bLevels">Levels</button></div>
-      <a class="home" href="../../">← All games</a>
+      <a class="ra-back" href="/#games"><span class="ra-mark" aria-hidden="true">RA</span><span><span class="ra-arrow" aria-hidden="true">←</span> All games</span></a>
     </div>
   </div>
   <div class="panel" id="pLevels" hidden>
-    <div class="card"><h2>Choose a level</h2><div class="grid" id="grid"></div><div class="row"><button id="bBack">Back</button><a class="home" href="../../">All games</a></div></div>
+    <div class="card"><h2>Choose a level</h2><div class="grid" id="grid"></div><div class="row"><button id="bBack">Back</button><a class="ra-back" href="/#games"><span class="ra-mark" aria-hidden="true">RA</span><span><span class="ra-arrow" aria-hidden="true">←</span> All games</span></a></div></div>
   </div>
   <div class="panel" id="pWin" hidden>
     <div class="card"><h2 id="winTitle">Delicious!</h2><div class="stars" id="winStars"></div><p id="winMsg"></p>

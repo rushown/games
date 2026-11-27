@@ -24,10 +24,21 @@ export default function AppShell({ children }: { children: ReactNode }) {
     <>
       <header className={s.top}>
         <div className={`wrap ${s.bar}`}>
-          <Link className={s.logo} href="/">
-            <span className={s.mark} aria-hidden />
-            WheelDrafter
-          </Link>
+          <div className={s.side}>
+            {/* a plain <a>: the arcade lives outside this app's basePath, so next/link would rewrite it */}
+            <a className={s.arcade} href="/#games" aria-label="All games">
+              <span className={s.arcadeMark} aria-hidden>
+                RA
+              </span>
+              <span aria-hidden>
+                ←<span className={s.arcadeText}> All games</span>
+              </span>
+            </a>
+            <Link className={s.logo} href="/">
+              <span className={s.mark} aria-hidden />
+              WheelDrafter
+            </Link>
+          </div>
           <nav className={s.desk} aria-label="Main">
             {NAV.map((n) => (
               <Link key={n.href} href={n.href} className={isActive(n.href) ? s.on : undefined}>
