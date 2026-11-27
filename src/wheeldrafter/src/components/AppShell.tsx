@@ -26,7 +26,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <div className={`wrap ${s.bar}`}>
           <div className={s.side}>
             {/* a plain <a>: the arcade lives outside this app's basePath, so next/link would rewrite it */}
-            <a className={s.arcade} href="/#games" aria-label="All games">
+            <a className={s.arcade} href="/games#games" aria-label="All games">
               <span className={s.arcadeMark} aria-hidden>
                 RA
               </span>

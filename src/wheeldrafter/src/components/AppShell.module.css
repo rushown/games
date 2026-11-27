@@ -95,7 +95,7 @@
   }
 }
 
-/* Back to the arcade's games list. A copy of site/assets/arcade-back.css (.ra-back), so it matches every
+/* Back to the arcade's games list. A copy of site/games/assets/arcade-back.css (.ra-back), so it matches every
    other game; this app is served separately, so it can't load that file in dev. */
 .side {
   display: flex;

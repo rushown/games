@@ -1,5 +1,6 @@
 /* The "back to all games" pill, shared by every game in the arcade so it looks and works the same everywhere.
-   It links to /#games, the games list on the arcade home page. The Next.js games (animedraft, wheeldrafter)
+   It links to /games#games, the games list on the arcade home page (the arcade is served at /games on the portfolio
+   domain, and /games redirects to / on the standalone one). It lives under /games/ so it loads on both. The Next.js games (animedraft, wheeldrafter)
    carry a copy of these rules in their AppShell.module.css, since they're served as separate apps. */
 .ra-back {
   display: inline-flex; align-items: center; gap: 8px; flex: none;
