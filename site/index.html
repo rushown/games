@@ -142,6 +142,11 @@ h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
 .qd { background: radial-gradient(110% 100% at 50% 10%, #1c2010, #0d0d0d 68%); display: flex; align-items: center; justify-content: center; }
 .qd svg { width: 86%; height: auto; overflow: visible; }
 .qd .ring { stroke-dasharray: 1 1; animation: countdown 6s linear infinite; }
+/* card art: PokeDraft (six stat bars against an Arceus line) */
+.ss { background: radial-gradient(110% 100% at 50% 10%, #1a1a24, #0d0d0d 68%); display: flex; align-items: center; justify-content: center; }
+.ss svg { width: 86%; height: auto; }
+.ss .bar { transform-box: fill-box; transform-origin: left; animation: statgrow 4s cubic-bezier(.2,.8,.2,1) infinite; }
+@keyframes statgrow { 0% { transform: scaleX(0); } 30%, 85% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
 @keyframes countdown { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -1; } }
 
 /* card art: Tic Tac Toe (mini board mid-game) */
@@ -189,7 +194,7 @@ footer a:hover { color: var(--y); }
   .body { padding: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .wd svg, .ctrl, .stickL, .stickR, .chip, .md .momo, .tt .win, .qd .ring { animation: none; }
+  .wd svg, .ctrl, .stickL, .stickR, .chip, .md .momo, .tt .win, .qd .ring, .ss .bar { animation: none; }
   .pad { transition: none; }
   .game, .play b { transition: none; }
 }
@@ -355,6 +360,31 @@ footer a:hover { color: var(--y); }
               <div class="title"><h3>Rushillion</h3><span class="badge">1–2 players</span></div>
               <p>Name anything that fits the prompt. The rarer your answer, the deeper you sink. A daily dive, free play, or a duel.</p>
               <div class="tags"><span>Words</span><span>Daily</span><span>Duel</span></div>
+              <span class="play">Play now <b aria-hidden="true">→</b></span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="game" href="games/pokedraft/">
+            <div class="art ss" aria-hidden="true">
+              <svg viewBox="0 0 300 160">
+                <g font-family="DM Sans, sans-serif" font-size="10" font-weight="700" letter-spacing="1">
+                  <text x="20" y="30" fill="#ff6b6b">HP</text><text x="20" y="52" fill="#f5a26a">ATK</text><text x="20" y="74" fill="#f2d66b">DEF</text>
+                  <text x="20" y="96" fill="#7fa8ff">SPA</text><text x="20" y="118" fill="#7fd98a">SPD</text><text x="20" y="140" fill="#ff8fc0">SPE</text>
+                </g>
+                <g>
+                  <rect x="56" y="22" width="224" height="8" rx="4" fill="rgba(236,233,224,.06)"/><rect x="56" y="44" width="224" height="8" rx="4" fill="rgba(236,233,224,.06)"/><rect x="56" y="66" width="224" height="8" rx="4" fill="rgba(236,233,224,.06)"/>
+                  <rect x="56" y="88" width="224" height="8" rx="4" fill="rgba(236,233,224,.06)"/><rect x="56" y="110" width="224" height="8" rx="4" fill="rgba(236,233,224,.06)"/><rect x="56" y="132" width="224" height="8" rx="4" fill="rgba(236,233,224,.06)"/>
+                  <rect class="bar" x="56" y="22" width="224" height="8" rx="4" fill="#ff6b6b"/><rect class="bar" x="56" y="44" width="118" height="8" rx="4" fill="#f5a26a"/><rect class="bar" x="56" y="66" width="190" height="8" rx="4" fill="#f2d66b"/>
+                  <rect class="bar" x="56" y="88" width="150" height="8" rx="4" fill="#7fa8ff"/><rect class="bar" x="56" y="110" width="96" height="8" rx="4" fill="#7fd98a"/><rect class="bar" x="56" y="132" width="168" height="8" rx="4" fill="#ff8fc0"/>
+                </g>
+                <line x1="161" y1="14" x2="161" y2="146" stroke="#e8ff47" stroke-width="2" stroke-dasharray="4 4"/>
+              </svg>
+            </div>
+            <div class="body">
+              <div class="title"><h3>PokeDraft</h3><span class="badge">1–2 players</span></div>
+              <p>Six stat slots roll random Pokémon. Lock one per spin while the rest roll again. Out-stat Arceus, sink under Magikarp, hit a bullseye, or duel a friend.</p>
+              <div class="tags"><span>Pokémon</span><span>Roulette</span><span>Duel</span></div>
               <span class="play">Play now <b aria-hidden="true">→</b></span>
             </div>
           </a>

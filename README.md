@@ -9,6 +9,7 @@ party games for one phone passed around a room, a physics puzzle, a quiz ladder,
 | [WheelDrafter](#wheeldrafter) | 1–2 | Spin wheels of fate to build a one-of-a-kind legend, then duel a friend |
 | [Momo Drop](#momo-drop) | 1 | Draw lines so a falling momo lands in its bowl of jhol |
 | [Trench Dive](#trench-dive) | 1–2 | Name anything that fits; the rarer your answer, the deeper you sink |
+| [PokeDraft](#pokedraft) | 1–2 | Six stat reels roll random Pokémon; lock one per spin to out-stat Arceus or sink under Magikarp |
 | [Quiz Duel](#quiz-duel) | 2–6 groups | A timed classroom quiz: 900 easy questions across 9 subjects, turn by turn |
 | [Tic Tac Toe](#tic-tac-toe) | 1–2 | The classic, against a friend or a computer that never loses |
 
@@ -86,6 +87,25 @@ answer that fits. Correct answers are ranked by how rare they are, from five oce
 - The 25-second timer is optional and pauses when the tab is hidden. Stats, settings and daily results are saved in
   the browser (`localStorage`).
 
+### PokeDraft
+`site/games/pokedraft/` · one HTML file, base stats for all 1,025 Pokémon embedded (from PokeAPI)
+
+Choose generations (and legendaries on or off), then pick a mode. Before the first spin the game fetches every image it
+will show from the PokeAPI sprite repo, with a progress bar, so the reels run smoothly.
+
+Each spin, all six stat slots (HP, Atk, Def, SpA, SpD, Spe) roll like slot-machine reels and each lands on its own
+random Pokémon, stats hidden. Tap one slot to lock it: you score that Pokémon's base stat for that slot. The unlocked
+slots roll again, one lock per spin, until all six are locked (the last locks itself). The reveal shows your total,
+every spin with its stats, and the best possible locks on the same spins (all 720 lock orders tried).
+
+- **Out-stat Arceus:** finish with a base stat total over 720. Arceus sits in the header as the boss and faces your creature on the result.
+- **Under Magikarp:** finish under 200, with Magikarp as the boss.
+- **Bullseye:** a random target from 300 to 650; land within 10.
+- **Duel:** both players get the same spins in the same order. P1 locks and passes the phone, then P2; highest (or lowest) total wins.
+- **Rerolls:** 0–3 per game (solo modes) to re-roll the open slots without locking. Settings and personal bests are kept in `localStorage`.
+- **Keys:** `Space` spin · `1`–`6` lock HP…Spe · `R` reroll.
+- **Loading:** the first two spins' images (and the boss) load before play; the rest load in the background, 4 at a time.
+
 ### Quiz Duel
 `site/games/quizduel/` · one HTML file plus a question bank in `questions/`
 
@@ -130,7 +150,7 @@ One Vercel project, deployed as three **[services](https://vercel.com/docs/servi
 | --- | --- | --- | --- |
 | `animedraft` | `src/animedraft-next/` | `/games/animedraft/…` | Next.js app (pages plus a read-only `/api/characters` endpoint) |
 | `wheeldrafter` | `src/wheeldrafter/` | `/games/wheeldrafter/…` | Next.js app (fully static pages) |
-| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, Trench Dive, Quiz Duel |
+| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, Trench Dive, Quiz Duel, PokeDraft |
 
 ```
 site/

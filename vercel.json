@@ -62,6 +62,11 @@
       "permanent": true
     },
     {
+      "source": "/:old(pokedraft|poke-draft){/}?",
+      "destination": "/games/pokedraft/",
+      "permanent": true
+    },
+    {
       "source": "/:old(quizduel|quiz-duel|quiz){/}?",
       "destination": "/games/quizduel/",
       "permanent": true
