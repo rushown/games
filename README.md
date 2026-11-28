@@ -11,6 +11,7 @@ party games for one phone passed around a room, a physics puzzle, a quiz ladder,
 | [Trench Dive](#trench-dive) | 1–2 | Name anything that fits; the rarer your answer, the deeper you sink |
 | [PokeDraft](#pokedraft) | 1–2 | Six stat reels roll random Pokémon; lock one per spin to out-stat Arceus or sink under Magikarp |
 | [Quiz Duel](#quiz-duel) | 2–6 groups | A timed classroom quiz: 900 easy questions across 9 subjects, turn by turn |
+| [Bubble Blower](#bubble-blower) | 1 | Pick an undersea buddy, hold to blow, let go when the bubble fills the shape |
 | [Tic Tac Toe](#tic-tac-toe) | 1–2 | The classic, against a friend or a computer that never loses |
 
 ---
@@ -128,6 +129,20 @@ A group quiz in the style of a Nepali school quiz contest, for a classroom, a pr
 
 Each file in `questions/` holds one subject as `[question, answer, wrong, wrong, wrong]`. The game shuffles the options.
 
+### Bubble Blower
+`site/games/bubbleblower/` · a single HTML file
+
+A one-button timing game. Pick a buddy, then hold (mouse, touch, `Space` or `Enter`) to blow a bubble out of the wand
+and let go when it fills the yellow dotted shape. The faint orange line is where it pops.
+
+- **Ten bubbles a game.** The first two are round; the rest are random from Round, Heart, Star, Fish and Cube, at random
+  sizes. Each bubble blows a little faster than the last, and holding longer speeds it up.
+- **Scoring:** within 3% of the target is **Perfect** (100, plus 25 for each Perfect in a row), 7% **Great** (75),
+  12% **Good** (50), 20% **Okay** (25), anything else 5. Past 130% of the target it pops for 0.
+- **Buddies** (original characters, drawn in SVG): **Puff** the pufferfish blows 30% faster and scores ×1.3,
+  **Shellby** the hermit crab is normal, **Tide** the sea turtle blows 25% slower and scores ×0.8.
+- Best score per buddy, the chosen buddy and the sound setting are saved in the browser (`localStorage`).
+
 ### Tic Tac Toe
 `site/games/tictactoe/` · a single HTML file
 
@@ -150,7 +165,7 @@ One Vercel project, deployed as three **[services](https://vercel.com/docs/servi
 | --- | --- | --- | --- |
 | `animedraft` | `src/animedraft-next/` | `/games/animedraft/…` | Next.js app (pages plus a read-only `/api/characters` endpoint) |
 | `wheeldrafter` | `src/wheeldrafter/` | `/games/wheeldrafter/…` | Next.js app (fully static pages) |
-| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, Trench Dive, Quiz Duel, PokeDraft |
+| `site` | `site/` | everything else | Plain HTML: the home page, Momo Drop, Tic Tac Toe, Trench Dive, Quiz Duel, PokeDraft, Bubble Blower |
 
 ```
 site/
@@ -219,6 +234,7 @@ headers, no caching for pages (updates show up straight away), one-day caching f
 | `/ttt`, `/tictactoe`, `/tic-tac-toe` | `/games/tictactoe/` |
 | `/quiz`, `/quizduel`, `/quiz-duel` | `/games/quizduel/` |
 | `/trench`, `/dive`, `/krillion`, `/kr` | `/games/trench/` |
+| `/bubble`, `/bubbleblower`, `/bubble-blower` | `/games/bubbleblower/` |
 | `/games` | `/` |
 
 To deploy, run `vercel --prod` from the repo root, or connect the GitHub repo in Vercel. Services are a Vercel beta
