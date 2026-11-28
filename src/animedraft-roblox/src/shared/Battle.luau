@@ -115,21 +115,61 @@ local function strongestFirst(team)
 	return t
 end
 
--- Teams are arrays of character records. Returns bouts, bout wins, winner (1, 2 or 0 for a draw).
+-- Damage the winner of a clash takes: close fights hurt, mismatches barely scratch.
+local function clashDamage(w, l): number
+	if w.scaling.ap >= BEYOND and l.scaling.ap < BEYOND then
+		return 6
+	end
+	local ratio = l.rating / math.max(w.rating, 1)
+	return math.clamp(math.round(20 + 70 * ratio * ratio), 8, 95)
+end
+Battle.clashDamage = clashDamage
+
+-- Team vs team as a chain fight: each side lines up weakest first (strongest is the anchor). The two
+-- front fighters clash; duelWinner decides who wins, the loser is knocked out and the winner stays on
+-- with the damage they took. If a winner's HP hits 0 it's a double KO. Last team with fighters wins;
+-- if both run out together, total power (ratings + synergy) decides.
+-- Each entry in `bouts` is one clash: { a, b (keys), winner (1/2), hpA, hpB (before), hpA2, hpB2 (after), reason }.
 function Battle.teamBattle(a, b)
 	local scores = { Battle.scoreTeam(a), Battle.scoreTeam(b) }
 	local la, lb = strongestFirst(a), strongestFirst(b)
-	local bouts, wins = {}, { 0, 0 }
-	for i = 1, math.min(#la, #lb) do
-		local winner = Battle.duelWinner(la[i], lb[i])
-		local w, l = if winner == 1 then la[i] else lb[i], if winner == 1 then lb[i] else la[i]
-		wins[winner] += 1
-		table.insert(bouts, { a = la[i].key, b = lb[i].key, winner = winner, reason = Battle.duelReason(w, l) })
+	-- Weakest first, so the strongest fighter is saved for last
+	local qa, qb = {}, {}
+	for i = #la, 1, -1 do
+		table.insert(qa, la[i])
 	end
-	local result = { scores = scores, bouts = bouts, wins = wins, winner = 0, decidedBy = "draw" }
-	if wins[1] ~= wins[2] then
-		result.winner = if wins[1] > wins[2] then 1 else 2
-		result.decidedBy = "bouts"
+	for i = #lb, 1, -1 do
+		table.insert(qb, lb[i])
+	end
+	local ia, ib, hpA, hpB = 1, 1, 100, 100
+	local bouts = {}
+	while ia <= #qa and ib <= #qb do
+		local fa, fb = qa[ia], qb[ib]
+		local winner = Battle.duelWinner(fa, fb)
+		local w, l = if winner == 1 then fa else fb, if winner == 1 then fb else fa
+		local dmg = clashDamage(w, l)
+		local bout = { a = fa.key, b = fb.key, winner = winner, hpA = hpA, hpB = hpB, reason = Battle.duelReason(w, l) }
+		if winner == 1 then
+			hpA, hpB = math.max(0, hpA - dmg), 0
+		else
+			hpA, hpB = 0, math.max(0, hpB - dmg)
+		end
+		bout.hpA2, bout.hpB2 = hpA, hpB
+		table.insert(bouts, bout)
+		if hpA <= 0 then
+			ia += 1
+			hpA = 100
+		end
+		if hpB <= 0 then
+			ib += 1
+			hpB = 100
+		end
+	end
+	local left = { #qa - ia + 1, #qb - ib + 1 }
+	local result = { scores = scores, bouts = bouts, wins = left, left = left, winner = 0, decidedBy = "draw" }
+	if left[1] ~= left[2] then
+		result.winner = if left[1] > left[2] then 1 else 2
+		result.decidedBy = "ko"
 	elseif scores[1].total ~= scores[2].total then
 		result.winner = if scores[1].total > scores[2].total then 1 else 2
 		result.decidedBy = "total"

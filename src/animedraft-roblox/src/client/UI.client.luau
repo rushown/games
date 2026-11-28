@@ -910,9 +910,10 @@ local function renderResults()
 	local title = if r.winner == 0 then "DRAW!" else `{state.seats[r.winner].name} WINS!`
 	local head = banner(resultsPanel, title, if r.winner == 0 then Color3.fromRGB(180, 180, 200) elseif r.winner == mySeat then Color3.fromRGB(120, 240, 140) else nil)
 	popIn(head)
-	local why = if r.decidedBy == "bouts" then `{r.wins[1]}–{r.wins[2]} in bouts`
-		elseif r.decidedBy == "total" then `Bouts tied {r.wins[1]}–{r.wins[2]}: total power decides`
-		else "Bouts and total power both tied"
+	local standing = if r.winner ~= 0 then r.left[r.winner] else 0
+	local why = if r.decidedBy == "ko" then `{#r.bouts} rounds · {standing} fighter{if standing == 1 then "" else "s"} still standing`
+		elseif r.decidedBy == "total" then "Both teams fell together: total power decides"
+		else "Both teams fell and total power is tied"
 	text({ Text = why, Position = UDim2.fromOffset(0, 72), Size = UDim2.new(1, 0, 0, 24), TextColor3 = C.dim, FontFace = BODY_MED, Parent = resultsPanel })
 	for i = 1, 2 do
 		local sc = r.scores[i]
@@ -926,7 +927,7 @@ local function renderResults()
 		local bout = new("Frame", { Size = UDim2.new(1, -10, 0, 96), BackgroundColor3 = C.card, LayoutOrder = n, Visible = false, Parent = scroll }, { corner(14), pad(8) })
 		local left = new("Frame", { Size = UDim2.new(0.42, 0, 0, 46), BackgroundTransparency = 1, Parent = bout })
 		miniRow(left, b.a, if b.winner == 1 then "WIN" else "", 1, 46)
-		text({ Text = "VS", Position = UDim2.fromScale(0.42, 0), Size = UDim2.new(0.16, 0, 0, 46), heading = true, TextSize = 24, TextColor3 = C.gold, Parent = bout })
+		text({ Text = "R" .. n, Position = UDim2.fromScale(0.42, 0), Size = UDim2.new(0.16, 0, 0, 46), heading = true, TextSize = 24, TextColor3 = C.gold, Parent = bout })
 		local right = new("Frame", { Position = UDim2.fromScale(0.58, 0), Size = UDim2.new(0.42, 0, 0, 46), BackgroundTransparency = 1, Parent = bout })
 		miniRow(right, b.b, if b.winner == 2 then "WIN" else "", 1, 46)
 		stroke(C.seat[b.winner], 4).Parent = (if b.winner == 1 then left else right):FindFirstChildWhichIsA("Frame")
@@ -967,14 +968,14 @@ local battleToken = 0
 local battlePlaying = false
 local heldToast = nil -- the Victory/Defeat toast waits until the reveal is over
 
-local function fighterCard(key, side)
+local function fighterCard(key, side, hp)
 	local c = Data.get(key)
 	local s = Data.SERIES[c.series]
 	local tierColor = TIER_COLOR[c.tier] or C.gold
 	local card = new("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		Position = UDim2.fromScale(if side == 1 then -0.3 else 1.3, 0.47),
-		Size = UDim2.fromOffset(300, 390),
+		Size = UDim2.fromOffset(300, 400),
 		BackgroundColor3 = Color3.new(1, 1, 1),
 		ZIndex = 72,
 		Parent = battleLayer,
@@ -992,7 +993,6 @@ local function fighterCard(key, side)
 	end
 	p.ZIndex = 73
 	if c.tier == "BEYOND" then
-		-- Purple aura for outerversal fighters
 		local aura = new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.new(1, 40, 1, 40), BackgroundColor3 = Color3.fromRGB(170, 90, 255), BackgroundTransparency = 0.6, ZIndex = 71, Parent = card }, { corner(36) })
 		task.spawn(function()
 			while aura.Parent do
@@ -1001,16 +1001,24 @@ local function fighterCard(key, side)
 			end
 		end)
 	end
-	text({ Text = c.name, Position = UDim2.fromOffset(0, 208), Size = UDim2.new(1, 0, 0, 40), heading = true, TextSize = 28, TextScaled = true, ZIndex = 74, Parent = shade })
-	text({ Text = `{s.short} · {c.title}`, Position = UDim2.fromOffset(0, 248), Size = UDim2.new(1, 0, 0, 20), FontFace = BODY_MED, TextSize = 14, TextColor3 = C.dim, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, ZIndex = 74, Parent = shade })
+	text({ Text = c.name, Position = UDim2.fromOffset(0, 208), Size = UDim2.new(1, 0, 0, 38), heading = true, TextSize = 28, TextScaled = true, ZIndex = 74, Parent = shade })
+	text({ Text = `{s.short} · {c.title}`, Position = UDim2.fromOffset(0, 246), Size = UDim2.new(1, 0, 0, 20), FontFace = BODY_MED, TextSize = 14, TextColor3 = C.dim, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, ZIndex = 74, Parent = shade })
 	local tier = text({ Text = Battle.tierLabel(c.tier), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 4, 0, -4), Size = UDim2.fromOffset(70, 40), BackgroundColor3 = tierColor, BackgroundTransparency = 0, heading = true, TextSize = 28, ZIndex = 76, Parent = shade })
 	corner(12).Parent = tier
 	stroke(C.ink, 3).Parent = tier
-	local num = text({ Text = "0", Position = UDim2.fromOffset(0, 274), Size = UDim2.new(1, 0, 0, 52), heading = true, TextSize = 50, TextColor3 = tierColor, ZIndex = 74, Parent = shade })
-	local track = new("Frame", { Position = UDim2.fromOffset(0, 332), Size = UDim2.new(1, 0, 0, 18), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.3, ZIndex = 74, Parent = shade }, { corner(9) })
-	local bar = new("Frame", { Size = UDim2.fromScale(0, 1), BackgroundColor3 = tierColor, ZIndex = 75, Parent = track }, { corner(9), shine() })
+	-- Power (rating) and HP
+	local num = text({ Text = "0", Position = UDim2.fromOffset(0, 270), Size = UDim2.new(1, 0, 0, 44), heading = true, TextSize = 40, TextColor3 = tierColor, ZIndex = 74, Parent = shade })
+	text({ Text = "POWER", Position = UDim2.fromOffset(0, 312), Size = UDim2.new(1, 0, 0, 14), TextSize = 12, TextColor3 = C.dim, ZIndex = 74, Parent = shade })
+	local track = new("Frame", { Position = UDim2.fromOffset(0, 334), Size = UDim2.new(1, 0, 0, 22), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.2, ZIndex = 74, Parent = shade }, { corner(11), stroke(C.ink, 2) })
+	local bar = new("Frame", { Size = UDim2.fromScale(hp / 100, 1), BackgroundColor3 = C.green, ZIndex = 75, Parent = track }, { corner(11), shine() })
+	local hpText = text({ Text = `HP {hp}`, Size = UDim2.fromScale(1, 1), heading = true, TextSize = 15, ZIndex = 76, Parent = track })
 	local scale = new("UIScale", { Parent = card })
-	return { frame = card, num = num, bar = bar, scale = scale, c = c, shade = shade }
+	return { key = key, frame = card, num = num, bar = bar, hpText = hpText, scale = scale, c = c, shade = shade }
+end
+
+local function setHp(f, hp)
+	tween(f.bar, 0.45, { Size = UDim2.fromScale(math.max(hp, 0) / 100, 1), BackgroundColor3 = if hp > 50 then C.green elseif hp > 20 then C.gold else C.red }, Enum.EasingStyle.Quad)
+	f.hpText.Text = `HP {math.max(hp, 0)}`
 end
 
 local function playBattle(r, done)
@@ -1027,49 +1035,69 @@ local function playBattle(r, done)
 		skip = true
 	end)
 	local header = text({ Text = "", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 16), Size = UDim2.fromOffset(700, 50), heading = true, TextSize = 40, TextColor3 = C.gold, ZIndex = 78, Parent = battleLayer })
-	local score = text({ Text = "", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 66), Size = UDim2.fromOffset(700, 34), heading = true, TextSize = 26, ZIndex = 78, Parent = battleLayer })
-	local wins = { 0, 0 }
+	local score = text({ Text = "", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 66), Size = UDim2.fromOffset(760, 34), heading = true, TextSize = 24, ZIndex = 78, Parent = battleLayer })
 	local function wait(t)
 		local untilT = os.clock() + t
 		while os.clock() < untilT and not skip and alive() do
 			task.wait()
 		end
 	end
+	local size = state.auction and state.auction.config.teamSize or 5
+	local left = { size, size }
+	local cur = {}
+	local function showScore()
+		score.Text = `{state.seats[1].name}  {string.rep("●", left[1])}{string.rep("○", size - left[1])}   vs   {string.rep("●", left[2])}{string.rep("○", size - left[2])}  {state.seats[2].name}`
+	end
+	showScore()
 
 	for n, b in r.bouts do
 		if skip or not alive() then
 			break
 		end
-		header.Text = if n == 1 then "MAIN EVENT" else "BOUT " .. n
-		score.Text = `{state.seats[1].name}  {wins[1]} – {wins[2]}  {state.seats[2].name}`
-		local L, R = fighterCard(b.a, 1), fighterCard(b.b, 2)
-		play("lot")
-		tween(L.frame, 0.4, { Position = UDim2.fromScale(0.27, 0.47) }, Enum.EasingStyle.Back)
-		tween(R.frame, 0.4, { Position = UDim2.fromScale(0.73, 0.47) }, Enum.EasingStyle.Back)
+		header.Text = "ROUND " .. n
+		local keys = { b.a, b.b }
+		local hps = { b.hpA, b.hpB }
+		local entered = false
+		for side = 1, 2 do
+			if not cur[side] or cur[side].key ~= keys[side] then
+				local f = fighterCard(keys[side], side, hps[side])
+				cur[side] = f
+				entered = true
+				tween(f.frame, 0.4, { Position = UDim2.fromScale(if side == 1 then 0.27 else 0.73, 0.47) }, Enum.EasingStyle.Back)
+				-- Power counts up as they step in
+				task.spawn(function()
+					local t0 = os.clock()
+					while os.clock() - t0 < 0.7 and f.frame.Parent do
+						local k = 1 - (1 - math.min(1, (os.clock() - t0) / 0.7)) ^ 3
+						f.num.Text = string.format("%.1f", f.c.rating * k)
+						task.wait()
+					end
+					f.num.Text = tostring(f.c.rating)
+				end)
+			end
+		end
+		if entered then
+			play("lot")
+			if n > 1 then
+				local tag = text({ Text = "NEW CHALLENGER!", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.2), Size = UDim2.fromOffset(520, 60), heading = true, TextSize = 44, TextColor3 = C.red, ZIndex = 78, Parent = battleLayer })
+				local ts = new("UIScale", { Scale = 2, Parent = tag })
+				tween(ts, 0.25, { Scale = 1 }, Enum.EasingStyle.Back)
+				task.delay(1.1, function()
+					tag:Destroy()
+				end)
+			end
+		end
 		local vs = text({ Text = "VS", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.45), Size = UDim2.fromOffset(200, 120), heading = true, TextSize = 96, TextColor3 = C.gold, ZIndex = 77, Parent = battleLayer })
 		local vsScale = new("UIScale", { Scale = 3, Parent = vs })
-		wait(0.35)
+		wait(0.3)
 		tween(vsScale, 0.3, { Scale = 1 }, Enum.EasingStyle.Back)
-		wait(0.35)
+		wait(if entered then 0.9 else 0.5)
 
-		-- Power ratings race up
-		play("bid")
-		local t0 = os.clock()
-		local dur = 0.9
-		for _, f in { L, R } do
-			tween(f.bar, dur, { Size = UDim2.fromScale(math.clamp(f.c.rating / 100, 0.03, 1), 1) }, Enum.EasingStyle.Quart)
-		end
-		while os.clock() - t0 < dur and not skip and alive() do
-			local k = math.min(1, (os.clock() - t0) / dur)
-			k = 1 - (1 - k) ^ 3
-			L.num.Text = string.format("%.1f", L.c.rating * k)
-			R.num.Text = string.format("%.1f", R.c.rating * k)
-			task.wait()
-		end
-		L.num.Text, R.num.Text = tostring(L.c.rating), tostring(R.c.rating)
-		wait(0.25)
-
-		-- Clash: flash + shake
+		-- Clash: both lunge in, flash + shake
+		local L, R = cur[1], cur[2]
+		tween(L.frame, 0.12, { Position = UDim2.fromScale(0.36, 0.47) })
+		tween(R.frame, 0.12, { Position = UDim2.fromScale(0.64, 0.47) })
+		wait(0.12)
 		play("sold")
 		local flash = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.1, ZIndex = 79, Parent = battleLayer })
 		tween(flash, 0.35, { BackgroundTransparency = 1 })
@@ -1081,29 +1109,44 @@ local function playBattle(r, done)
 			task.wait(0.03)
 		end
 		battleLayer.Position = UDim2.new()
+		tween(L.frame, 0.2, { Position = UDim2.fromScale(0.27, 0.47) })
+		tween(R.frame, 0.2, { Position = UDim2.fromScale(0.73, 0.47) })
+		setHp(L, b.hpA2)
+		setHp(R, b.hpB2)
+		vs:Destroy()
 
-		-- Winner and loser
-		local W, Lo = if b.winner == 1 then L else R, if b.winner == 1 then R else L
-		wins[b.winner] += 1
-		score.Text = `{state.seats[1].name}  {wins[1]} – {wins[2]}  {state.seats[2].name}`
-		tween(W.scale, 0.3, { Scale = 1.1 }, Enum.EasingStyle.Back)
-		local edge = W.frame:FindFirstChildOfClass("UIStroke")
-		if edge then
-			edge.Color = C.gold
-			tween(edge, 0.3, { Thickness = 11 })
-		end
-		tween(Lo.scale, 0.4, { Scale = 0.88 })
-		tween(Lo.frame, 0.5, { Rotation = if Lo == L then -8 else 8, Position = Lo.frame.Position + UDim2.fromScale(0, 0.06) }, Enum.EasingStyle.Quad)
-		tween(Lo.shade, 0.4, { BackgroundTransparency = 0.05 })
-		local stamp = text({ Text = "WIN!", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.12), Size = UDim2.fromOffset(200, 80), Rotation = -12, heading = true, TextSize = 64, TextColor3 = C.gold, ZIndex = 78, Parent = W.frame })
-		local stampScale = new("UIScale", { Scale = 2.5, Parent = stamp })
-		tween(stampScale, 0.25, { Scale = 1 }, Enum.EasingStyle.Back)
+		local W = if b.winner == 1 then L else R
+		tween(W.scale, 0.2, { Scale = 1.08 }, Enum.EasingStyle.Back)
 		local reason = text({ Text = b.reason, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.84, 0), Size = UDim2.fromOffset(820, 60), FontFace = BODY_MED, TextSize = 19, ZIndex = 78, Parent = battleLayer })
-		play("click")
-		wait(2.1)
-		for _, x in { L.frame, R.frame, vs, reason } do
-			x:Destroy()
+		wait(0.35)
+		-- Knock out whoever hit 0 HP
+		for side = 1, 2 do
+			local f = cur[side]
+			local hp = if side == 1 then b.hpA2 else b.hpB2
+			if hp <= 0 then
+				left[side] -= 1
+				local ko = text({ Text = "K.O.!", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.3), Size = UDim2.fromOffset(220, 90), Rotation = -12, heading = true, TextSize = 72, TextColor3 = C.red, ZIndex = 78, Parent = f.frame })
+				local ks = new("UIScale", { Scale = 2.5, Parent = ko })
+				tween(ks, 0.25, { Scale = 1 }, Enum.EasingStyle.Back)
+				tween(f.shade, 0.4, { BackgroundTransparency = 0.05 })
+				tween(f.frame, 0.6, { Rotation = if side == 1 then -14 else 14, Position = UDim2.fromScale(if side == 1 then 0.2 else 0.8, 0.62) }, Enum.EasingStyle.Quad)
+				local dead = f.frame
+				task.delay(1.4, function()
+					if dead.Parent then
+						tween(dead, 0.3, { Position = dead.Position + UDim2.fromScale(0, 0.6) })
+						task.delay(0.35, function()
+							dead:Destroy()
+						end)
+					end
+				end)
+				cur[side] = nil
+			end
 		end
+		tween(W.scale, 0.3, { Scale = 1 })
+		showScore()
+		play("click")
+		wait(1.7)
+		reason:Destroy()
 	end
 
 	if alive() then
@@ -1113,7 +1156,17 @@ local function playBattle(r, done)
 		local big = text({ Text = title, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.45), Size = UDim2.fromOffset(900, 120), heading = true, TextSize = 90, TextColor3 = if r.winner == 0 then C.text else C.gold, ZIndex = 78, Parent = battleLayer })
 		local bs = new("UIScale", { Scale = 3, Parent = big })
 		tween(bs, 0.35, { Scale = 1 }, Enum.EasingStyle.Back)
-		text({ Text = `{r.wins[1]} – {r.wins[2]} in bouts`, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0.56), Size = UDim2.fromOffset(600, 40), heading = true, TextSize = 32, ZIndex = 78, Parent = battleLayer })
+		local standing = if r.winner ~= 0 then r.left[r.winner] else 0
+		text({
+			Text = if r.decidedBy == "ko" then `{standing} fighter{if standing == 1 then "" else "s"} still standing` else "Both teams fell: total power decides",
+			AnchorPoint = Vector2.new(0.5, 0),
+			Position = UDim2.fromScale(0.5, 0.56),
+			Size = UDim2.fromOffset(700, 40),
+			heading = true,
+			TextSize = 32,
+			ZIndex = 78,
+			Parent = battleLayer,
+		})
 		play(if r.winner ~= 0 and r.winner == mySeat then "victory" elseif mySeat and r.winner ~= 0 then "defeat" else "sold")
 		skip = false
 		wait(1.6)
