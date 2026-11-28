@@ -49,6 +49,11 @@ def call(method, url, body=None, headers=None):
                 time.sleep(2 ** attempt)  # rate limited or busy: back off and retry
                 continue
             raise SystemExit(f"{method} {url} failed: HTTP {e.code} {e.read().decode(errors='replace')[:300]}")
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+            if attempt < 5:
+                time.sleep(2 ** attempt)  # connection dropped: wait and retry
+                continue
+            raise SystemExit(f"{method} {url} failed: {e}")
 
 
 def upload(path: Path) -> int:
@@ -91,6 +96,12 @@ state = json.loads(STATE.read_text()) if STATE.exists() else {}
 files = sorted(UPLOAD_DIR.glob("*.jpg"))
 if not files:
     sys.exit("No images found. Put them in portraits/raw/ named by id (see list.md).")
+
+# Forget portraits whose image was removed from portraits/raw/ (they fall back to the series emblem).
+for gone in set(state) - {f.stem for f in files}:
+    print(f"removing {gone} (no image in portraits/raw/)")
+    del state[gone]
+STATE.write_text(json.dumps(state, indent=1))
 
 for i, f in enumerate(files, 1):
     digest = hashlib.sha1(f.read_bytes()).hexdigest()

@@ -29,6 +29,10 @@ for key, name in keys:
     img = ImageOps.fit(Image.open(src).convert("RGB"), (SIZE, SIZE), Image.LANCZOS, centering=(0.5, 0.3))
     img.save(OUT / f"{key}.jpg", quality=86, optimize=True)
     done += 1
+# Drop shrunk copies whose original was removed from raw/ (so they aren't uploaded again).
+for old in OUT.glob("*.jpg"):
+    if old.stem.lower() not in found:
+        old.unlink()
 print(f"Prepared {done}/{len(keys)} portraits in {OUT}")
 if missing:
     print(f"Still missing {len(missing)}: " + ", ".join(missing[:20]) + (" ..." if len(missing) > 20 else ""))
