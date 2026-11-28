@@ -106,6 +106,10 @@ h1 span { color: var(--sea); }
 .blurb { color: var(--mute); font-size: 13px; }
 .best { font-size: 12.5px; color: var(--mute); }
 .best b { color: var(--y); }
+.custom-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+label.btn { display: inline-flex; align-items: center; cursor: pointer; }
+.btn.small { min-height: 38px; padding: 0 16px; font-size: 13.5px; }
+.btn.primary:disabled { opacity: .45; cursor: not-allowed; }
 .dots { display: flex; gap: 6px; justify-content: center; }
 .dots i { width: 7px; height: 7px; border-radius: 999px; background: rgba(255,255,255,.2); }
 .dots i.on { background: var(--sea); }
@@ -179,6 +183,11 @@ footer a:hover { color: var(--txt); }
         <p class="blurb" id="bBlurb"></p>
         <p class="best" id="bBest"></p>
         <div class="tips"><span>3 lives</span><span>Combos up to ×5</span><span>3 perfects = Fever</span><span>Golden = ×3</span><span>Dodge jellies</span></div>
+        <div class="custom-row" id="customRow" hidden>
+          <label class="btn small" for="imgIn" id="imgLabel">Choose image</label>
+          <input id="imgIn" type="file" accept="image/*" hidden>
+          <button class="btn small" id="imgClear" type="button" hidden>Remove</button>
+        </div>
         <div><button class="btn primary" id="start" type="button">Start blowing</button></div>
       </div>
     </div>
@@ -509,12 +518,59 @@ function makeTide() {
   };
 }
 
+// "Your buddy": any picture the player picks, shown as a sticker cut-out. It's kept only in this browser.
+const STICKER_H = 1.9;
+function makeCustom() {
+  const g = new THREE.Group(), card = new THREE.Group(); g.add(card);
+  const geo = new THREE.PlaneGeometry(1, 1);
+  const face = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ transparent: true, alphaTest: .05, side: THREE.DoubleSide }));
+  const border = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, alphaTest: .05, side: THREE.DoubleSide }));
+  border.position.z = -.015; border.scale.setScalar(1.07);
+  card.add(border, face);
+  const hand = new THREE.Object3D(); card.add(hand);
+  let w = 1.4;
+  function setImage(img) {
+    const tex = img ? new THREE.Texture(img) : null;
+    if (tex) { tex.colorSpace = THREE.SRGBColorSpace; tex.needsUpdate = true; }
+    [face, border].forEach(m => { if (m.material.map) m.material.map.dispose(); m.material.map = tex; m.material.needsUpdate = true; });
+    const aspect = img ? img.width / img.height : .75;
+    w = Math.min(2.4, STICKER_H * aspect);
+    const h = w / aspect;
+    face.scale.set(w, h, 1); border.scale.set(w * 1.07 + .08, h * 1.07 + .08, 1);
+    card.position.y = h / 2;
+    hand.position.set(w * .45, -h * .05, .05);
+    face.visible = border.visible = !!img;
+  }
+  setImage(null);
+  return {
+    g, hand, setImage,
+    anim(t, blow, baseYaw = 0) {
+      card.rotation.y = -baseYaw;                  // the sticker keeps facing the camera; happy spins still show
+      const sq = .04 * Math.sin(t * 3) + .1 * blow;
+      card.scale.set(1 + sq * .6, 1 - sq * .4 + .04 * Math.sin(t * 2.2), 1);
+      card.rotation.z = .05 * Math.sin(t * 1.7);
+    }
+  };
+}
+
 const BUDDIES = [
   { id: 'puff', name: 'Puff', make: makePuff, perk: 'Big lungs · blows 25% faster · ×1.3 points', blurb: 'A pufferfish who inflates when excited, which is always.', speed: 1.25, mult: 1.3, window: .03 },
   { id: 'shellby', name: 'Shellby', make: makeShellby, perk: 'Steady claws · normal speed · ×1 points', blurb: 'A hermit crab with a borrowed shell and a big opinion.', speed: 1, mult: 1, window: .035 },
   { id: 'tide', name: 'Tide', make: makeTide, perk: 'Slow and steady · 22% slower · wider Perfect · ×0.8', blurb: 'A sea turtle who has never once been in a hurry.', speed: .78, mult: .8, window: .045 }
 ];
+BUDDIES.push({ id: 'custom', name: 'Your buddy', make: makeCustom, perk: 'Your own picture · normal speed · ×1 points', blurb: 'Pick any image from your device. A PNG with a see-through background looks best. It stays in this browser only.', speed: 1, mult: 1, window: .035 });
 for (const b of BUDDIES) { b.model = b.make(); b.model.g.visible = false; scene.add(b.model.g); }
+const CUSTOM = BUDDIES.find(b => b.id === 'custom');
+let customReady = false;
+function loadCustom(dataUrl) {
+  if (!dataUrl) { customReady = false; CUSTOM.model.setImage(null); return Promise.resolve(); }
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => { CUSTOM.model.setImage(img); customReady = true; res(); };
+    img.onerror = () => { customReady = false; res(); };
+    img.src = dataUrl;
+  });
+}
 const shadowBlob = mesh(new THREE.CircleGeometry(1, 32), new THREE.MeshBasicMaterial({ color: 0x061a28, transparent: true, opacity: .35, depthWrite: false }), [0, .03, 0], null, [-Math.PI / 2, 0, 0]);
 scene.add(shadowBlob);
 
@@ -660,8 +716,39 @@ function showBuddy() {
   const best = saved.best[b.id];
   $('bBest').innerHTML = best != null ? `Best: <b>${best.toLocaleString()}</b>` : 'No games yet';
   $('dots').innerHTML = BUDDIES.map((_, i) => `<i class="${i === buddyIdx ? 'on' : ''}"></i>`).join('');
+  const isCustom = b.id === 'custom';
+  $('customRow').hidden = !isCustom;
+  if (isCustom) {
+    $('bName').textContent = saved.customName || 'Your buddy';
+    $('imgLabel').textContent = customReady ? 'Change image' : 'Choose image';
+    $('imgClear').hidden = !customReady;
+  }
+  const blocked = isCustom && !customReady;
+  $('start').disabled = blocked;
+  $('start').textContent = blocked ? 'Choose an image first' : 'Start blowing';
   react = { kind: 'happy', t: 0 };
 }
+// shrink the picked image to at most 512px and keep it (with transparency) in localStorage
+$('imgIn').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0]; e.target.value = '';
+  if (!file || !file.type.startsWith('image/')) return;
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => {
+    const k = Math.min(1, 512 / Math.max(img.width, img.height));
+    const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url);
+    let data = c.toDataURL('image/png');
+    if (data.length > 1.5e6) data = c.toDataURL('image/webp', .85);
+    saved.customImg = data;
+    saved.customName = (file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'Your buddy').slice(0, 18);
+    try { localStorage.setItem(STORE, JSON.stringify(saved)); } catch { delete saved.customImg; persist(); }
+    loadCustom(data).then(showBuddy);
+  };
+  img.onerror = () => URL.revokeObjectURL(url);
+  img.src = url;
+});
+$('imgClear').onclick = () => { delete saved.customImg; delete saved.customName; persist(); loadCustom(null).then(showBuddy); };
 function cycle(d) { buddyIdx = (buddyIdx + d + BUDDIES.length) % BUDDIES.length; saved.buddy = BUDDIES[buddyIdx].id; persist(); showBuddy(); sfx.click(); }
 $('prev').onclick = () => cycle(-1);
 $('next').onclick = () => cycle(1);
@@ -678,6 +765,7 @@ function toPick() {
 
 function startGame() {
   const buddy = BUDDIES[buddyIdx];
+  if (buddy.id === 'custom' && !customReady) return;
   g = { buddy, n: -1, score: 0, lives: 3, combo: 0, bestCombo: 0, perfectRun: 0, fever: 0, fevers: 0, perfects: 0,
         state: 'wait', r: 0, hold: 0, round: null, lvl: 1, waitUntil: 0, jellySeen: false, breatheSeen: false };
   mode = 'play';
@@ -805,7 +893,7 @@ function gameOver() {
   const isBest = prev == null || g.score > prev;
   if (isBest) saved.best[b.id] = g.score;
   persist();
-  $('oWho').textContent = `${b.name} · game over`;
+  $('oWho').textContent = `${b.id === 'custom' ? (saved.customName || b.name) : b.name} · game over`;
   $('oScore').textContent = g.score.toLocaleString();
   $('oNote').innerHTML = isBest && prev != null ? '<span class="newbest">New best!</span>' : prev != null ? `Best: ${prev.toLocaleString()}` : 'First game in the books.';
   $('oStats').innerHTML = [[g.n + 1, 'Bubbles'], [g.perfects, 'Perfects'], [g.bestCombo, 'Best combo'], [g.fevers, 'Fevers']]
@@ -889,7 +977,10 @@ function step(dt) {
   const inGame = mode !== 'pick';
   const from = inGame ? PICK_POS : GAME_POS, to = inGame ? GAME_POS : PICK_POS;
   m.g.position.lerpVectors(from, to, e);
-  const sFrom = inGame ? 1.7 : 1, sTo = inGame ? 1 : 1.7;
+  // the picture buddy's picker card is taller (image buttons), so lift it and keep it a bit smaller there
+  const isPic = b.id === 'custom', pickScale = isPic ? 1.35 : 1.7;
+  if (isPic) m.g.position.y += 1.3 * (inGame ? 1 - e : e);
+  const sFrom = inGame ? pickScale : 1, sTo = inGame ? 1 : pickScale;
   m.g.scale.setScalar(sFrom + (sTo - sFrom) * e);
   let yaw = inGame ? .55 : Math.sin(t * .7) * .55;
   let hop = 0, roll = 0;
@@ -900,7 +991,7 @@ function step(dt) {
   }
   m.g.position.y += hop; m.g.rotation.set(0, yaw, roll);
   const blowing = g && g.state === 'blowing';
-  m.anim(t, blowing ? Math.min(1, g.hold * 3) : 0);
+  m.anim(t, blowing ? Math.min(1, g.hold * 3) : 0, inGame ? .55 : Math.sin(t * .7) * .55);
   shadowBlob.visible = inGame; // the picker floats the buddy mid-water, so no floor shadow there
   shadowBlob.position.set(m.g.position.x, .03, m.g.position.z); shadowBlob.scale.setScalar(m.g.scale.x * (1.05 - hop * .4));
 
@@ -1000,6 +1091,7 @@ function frame(now) {
 }
 
 fit();
+loadCustom(saved.customImg).then(() => { if (mode === 'pick') showBuddy(); });
 toPick();
 buddyMove = 1;
 requestAnimationFrame(frame);

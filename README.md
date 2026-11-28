@@ -144,7 +144,9 @@ a bubble out of the wand and let go when it fills the glowing yellow shape. The 
   any bubble it touches (from bubble 6), and shapes that breathe in and out (from bubble 9).
 - **Buddies** (original characters, built from three.js shapes): **Puff** the pufferfish blows 25% faster, ×1.3 points;
   **Shellby** the hermit crab is the baseline; **Tide** the sea turtle blows 22% slower with a wider Perfect window, ×0.8.
-- Best score per buddy, the chosen buddy and the sound setting are saved in the browser (`localStorage`). `←`/`→` change buddy on the picker.
+- **Your buddy:** the fourth slot takes any picture from the player's device and shows it as a sticker cut-out that
+  bounces, spins and holds the wand. It's shrunk to 512px and kept only in that browser; nothing is uploaded.
+- Best score per buddy, the chosen buddy, the picture and the sound setting are saved in the browser (`localStorage`). `←`/`→` change buddy on the picker.
 
 ### Tic Tac Toe
 `site/games/tictactoe/` · a single HTML file
