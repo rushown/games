@@ -59,19 +59,21 @@ local C = {
 
 ------------------------------------------------------------------ sound
 
+-- Full-volume levels; the Settings sliders scale these (0–1).
+local MUSIC_VOLUME, SFX_VOLUME = 0.32, 0.6
+local musicLevel, sfxLevel = 1, 1
 local sfx = {}
 for name, id in Config.SOUNDS do
 	if id ~= 0 then
 		local s = Instance.new("Sound")
 		s.Name = name
 		s.SoundId = "rbxassetid://" .. id
-		s.Volume = if name:find("Music") then 0 else 0.6
+		s.Volume = if name:find("Music") then 0 else SFX_VOLUME
 		s.Looped = name:find("Music") ~= nil
 		s.Parent = SoundService
 		sfx[name] = s
 	end
 end
-local musicOn = true
 local currentMusic = nil
 local function play(name: string)
 	local s = sfx[name]
@@ -98,7 +100,7 @@ local function setMusic(name: string?)
 		if not new.IsPlaying then
 			new:Play()
 		end
-		TweenService:Create(new, TweenInfo.new(1.5), { Volume = if musicOn then 0.32 else 0 }):Play()
+		TweenService:Create(new, TweenInfo.new(1.5), { Volume = MUSIC_VOLUME * musicLevel }):Play()
 	end
 end
 
@@ -1611,14 +1613,105 @@ local shopButton = sideButton("⚡", "SHOP", C.gold, openShop)
 local shopBadge = text({ Text = "!", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -6, 0, 6), Size = UDim2.fromOffset(30, 30), BackgroundColor3 = C.red, BackgroundTransparency = 0, heading = true, TextSize = 22, Visible = false, ZIndex = 5, Parent = shopButton })
 corner(15).Parent = shopBadge
 stroke(Color3.new(1, 1, 1), 2).Parent = shopBadge
-local musicIcon
-_, musicIcon = sideButton("🎵", "MUSIC", C.blue, function()
-	musicOn = not musicOn
-	local s = currentMusic and sfx[currentMusic]
-	if s then
-		tween(s, 0.4, { Volume = if musicOn then 0.32 else 0 })
+
+------------------------------------------------------------------ settings
+-- Music and sound-effect volume sliders, each with a mute button.
+
+local function applyVolumes()
+	for name, snd in sfx do
+		if name:find("Music") then
+			if name == currentMusic then
+				snd.Volume = MUSIC_VOLUME * musicLevel
+			end
+		else
+			snd.Volume = SFX_VOLUME * sfxLevel
+		end
 	end
-	musicIcon.Text = if musicOn then "🎵" else "🔇"
+end
+
+local settingsDim = new("TextButton", { Text = "", AutoButtonColor = false, Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.4, Visible = false, ZIndex = 30, Parent = root })
+local settingsPanel = panel({ Size = UDim2.fromOffset(600, 330), Active = true, ZIndex = 31, Parent = settingsDim })
+banner(settingsPanel, "⚙ SETTINGS", Color3.fromRGB(150, 200, 255), 31)
+local function closeSettings()
+	settingsDim.Visible = false
+end
+settingsDim.Activated:Connect(closeSettings)
+closeX(settingsPanel, closeSettings, 31)
+
+local UserInput = game:GetService("UserInputService")
+local function volumeRow(y, icon, label, get, set)
+	local row = new("Frame", { Position = UDim2.fromOffset(36, y), Size = UDim2.new(1, -72, 0, 92), BackgroundColor3 = C.ink, BackgroundTransparency = 0.45, ZIndex = 32, Parent = settingsPanel }, { corner(18) })
+	text({ Text = `{icon}  {label}`, Position = UDim2.fromOffset(18, 8), Size = UDim2.new(1, -36, 0, 30), heading = true, TextSize = 24, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 33, Parent = row })
+	local pct = text({ Text = "", AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -96, 0, 8), Size = UDim2.fromOffset(80, 30), heading = true, TextSize = 22, TextColor3 = C.gold, TextXAlignment = Enum.TextXAlignment.Right, ZIndex = 33, Parent = row })
+	local track = new("TextButton", { Text = "", AutoButtonColor = false, Position = UDim2.fromOffset(18, 52), Size = UDim2.new(1, -130, 0, 22), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.3, ZIndex = 33, Parent = row }, { corner(11), stroke(C.ink, 2) })
+	local fill = new("Frame", { Size = UDim2.fromScale(get(), 1), BackgroundColor3 = C.blue, ZIndex = 34, Parent = track }, { corner(11), shine() })
+	local knob = new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(get(), 0.5), Size = UDim2.fromOffset(34, 34), BackgroundColor3 = Color3.new(1, 1, 1), ZIndex = 35, Parent = track }, {
+		new("UICorner", { CornerRadius = UDim.new(1, 0) }),
+		stroke(C.ink, 3),
+	})
+	local mute
+	local before = 1
+	local function show()
+		local v = get()
+		fill.Size = UDim2.fromScale(v, 1)
+		knob.Position = UDim2.fromScale(v, 0.5)
+		pct.Text = `{math.round(v * 100)}%`
+		mute.Text = if v <= 0 then "🔇" else "🔊"
+		setEnabled(mute, true)
+		mute.BackgroundColor3 = if v <= 0 then C.red else C.green
+	end
+	mute = button({ Text = "🔊", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -14, 0.5, 0), Size = UDim2.fromOffset(70, 60), BackgroundColor3 = C.green, TextSize = 30, radius = 16, ZIndex = 33, Parent = row }, function()
+		if get() > 0 then
+			before = get()
+			set(0)
+		else
+			set(if before > 0 then before else 1)
+		end
+		show()
+	end)
+	local dragging = false
+	local function at(x)
+		set(math.clamp((x - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1))
+		show()
+	end
+	track.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			at(input.Position.X)
+		end
+	end)
+	UserInput.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			at(input.Position.X)
+		end
+	end)
+	UserInput.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			if dragging and label ~= "MUSIC" then
+				play("click") -- let the player hear the new effects level
+			end
+			dragging = false
+		end
+	end)
+	show()
+end
+volumeRow(92, "🎵", "MUSIC", function()
+	return musicLevel
+end, function(v)
+	musicLevel = v
+	applyVolumes()
+end)
+volumeRow(200, "🔔", "SOUND EFFECTS", function()
+	return sfxLevel
+end, function(v)
+	sfxLevel = v
+	applyVolumes()
+end)
+
+sideButton("⚙", "SETTINGS", C.blue, function()
+	settingsDim.Visible = true
+	popIn(settingsPanel)
+	play("open")
 end)
 
 local function fmtTime(sec)
