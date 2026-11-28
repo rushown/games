@@ -2,7 +2,8 @@
 /**
  * Image loader for character portraits and series cover art.
  *
- * 1. Baked URLs from src/data/images.json (written by `npm run sync:images`) are used instantly.
+ * 1. Baked images (downloaded into public/img/ by `npm run sync:images`, paths in src/data/images.json)
+ *    are used instantly.
  * 2. Anything missing is fetched straight from AniList by the browser: requests are batched,
  *    rate-limit aware, and cached in localStorage so each device only asks once.
  *
@@ -17,6 +18,11 @@ const ENABLED = process.env.NEXT_PUBLIC_IMAGES !== "off";
 const STORE_KEY = "animedraft:images:v1";
 const BATCH = 6;
 const GAP_MS = 700;
+// Prefix for files in public/: the Next basePath, or "." in the single-file preview.
+const ASSET_BASE = process.env.NEXT_PUBLIC_ASSET_BASE ?? "";
+
+/** Local paths ("/img/…") from images.json get the asset prefix; remote URLs pass through. */
+const resolve = (src: string | null | undefined) => (src ? (src.startsWith("/") ? ASSET_BASE + src : src) : null);
 
 type Cache = Record<string, ImageEntry | null>;
 
@@ -120,15 +126,15 @@ function useImage(id: string, lookup: () => Lookup | null): ImageEntry | null {
 }
 
 export function useCharacterImage(key: string): string | null {
-  return (
+  return resolve(
     useImage(`c:${key}`, () => {
       const c = CHARACTER_BY_KEY[key];
       return c ? characterLookup(c, SERIES_BY_KEY[c.series]) : null;
-    })?.image ?? null
+    })?.image,
   );
 }
 
 export function useSeriesImage(key: string): { cover: string | null; banner: string | null } {
   const e = useImage(`s:${key}`, () => (SERIES_BY_KEY[key] ? seriesLookup(SERIES_BY_KEY[key]) : null));
-  return { cover: e?.image ?? null, banner: e?.banner ?? null };
+  return { cover: resolve(e?.image), banner: resolve(e?.banner) };
 }

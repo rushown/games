@@ -2,610 +2,610 @@
   "characters": {
     "simon": {
       "anilistId": 2257,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2257-jnalsdnIX1vN.jpg"
+      "image": "/img/characters/simon.jpg"
     },
     "kamina": {
       "anilistId": 2075,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2075-sWb5Xz76JWdX.png"
+      "image": "/img/characters/kamina.png"
     },
     "featherine": {
       "anilistId": 36061,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/n36061-0Pr9tBvCqIWh.png"
+      "image": "/img/characters/featherine.png"
     },
     "bernkastel": {
       "anilistId": 11840,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/n11840-VWgfpuaeRXvh.png"
+      "image": "/img/characters/bernkastel.png"
     },
     "beatrice": {
       "anilistId": 10285,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b10285-oyIek2zBT5Vm.jpg"
+      "image": "/img/characters/beatrice.jpg"
     },
     "madoka": {
       "anilistId": 37832,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b37832-lzVj5IkUciLd.jpg"
+      "image": "/img/characters/madoka.jpg"
     },
     "homura": {
       "anilistId": 38005,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b38005-T3NR8p2f021x.jpg"
+      "image": "/img/characters/homura.jpg"
     },
     "haruhi": {
       "anilistId": 251,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b251-8DTaCNkSvBQ8.png"
+      "image": "/img/characters/haruhi.png"
     },
     "goku": {
       "anilistId": 246,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/246-wsRRr6z1kii8.png"
+      "image": "/img/characters/goku.png"
     },
     "vegeta": {
       "anilistId": 913,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b913-NIFkKazWM8VO.png"
+      "image": "/img/characters/vegeta.png"
     },
     "gohan": {
       "anilistId": 2093,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2093-kdFZhqcNSsqW.png"
+      "image": "/img/characters/gohan.png"
     },
     "broly": {
       "anilistId": 4945,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b4945-iE59qIP7TxPu.png"
+      "image": "/img/characters/broly.png"
     },
     "whis": {
       "anilistId": 76346,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b76346-BNh2DE5Rh2IW.jpg"
+      "image": "/img/characters/whis.jpg"
     },
     "beerus": {
       "anilistId": 76348,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b76348-pGWrznfxgPIV.png"
+      "image": "/img/characters/beerus.png"
     },
     "frieza": {
       "anilistId": 3694,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b3694-bDfOdSSdFfPv.png"
+      "image": "/img/characters/frieza.png"
     },
     "saitama": {
       "anilistId": 73935,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b73935-ON5d0mAcrItd.jpg"
+      "image": "/img/characters/saitama.jpg"
     },
     "tatsumaki": {
       "anilistId": 81929,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b81929-WPVp2LQoWgkc.png"
+      "image": "/img/characters/tatsumaki.png"
     },
     "garou": {
       "anilistId": 89277,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b89277-xBGb4B5YISXg.png"
+      "image": "/img/characters/garou.png"
     },
     "genos": {
       "anilistId": 73979,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b73979-tVi9maPID881.jpg"
+      "image": "/img/characters/genos.jpg"
     },
     "gojo": {
       "anilistId": 127691,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b127691-9zqh1xpIubn7.png"
+      "image": "/img/characters/gojo.png"
     },
     "sukuna": {
       "anilistId": 133701,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b133701-rCQuDpHr3UZL.png"
+      "image": "/img/characters/sukuna.png"
     },
     "yuji": {
       "anilistId": 127212,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b127212-FVm2tD0erQ5B.png"
+      "image": "/img/characters/yuji.png"
     },
     "yuta": {
       "anilistId": 129571,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b129571-GHJk7gviHOOw.jpg"
+      "image": "/img/characters/yuta.jpg"
     },
     "megumi": {
       "anilistId": 126635,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b126635-L0y3I92JSUkN.png"
+      "image": "/img/characters/megumi.png"
     },
     "toji": {
       "anilistId": 162722,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b162722-btzdghBizxKS.jpg"
+      "image": "/img/characters/toji.jpg"
     },
     "aizen": {
       "anilistId": 1086,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b1086-qR9218BjZTC0.png"
+      "image": "/img/characters/aizen.png"
     },
     "yhwach": {
       "anilistId": 68537,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b68537-iUYuTUyHRJpf.png"
+      "image": "/img/characters/yhwach.png"
     },
     "ichigo": {
       "anilistId": 5,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b5-a7bkJgjhhigE.png"
+      "image": "/img/characters/ichigo.png"
     },
     "kenpachi": {
       "anilistId": 909,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b909-slhoFBon7oiH.jpg"
+      "image": "/img/characters/kenpachi.jpg"
     },
     "urahara": {
       "anilistId": 210,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b210-mw01NrQfRjzT.png"
+      "image": "/img/characters/urahara.png"
     },
     "unohana": {
       "anilistId": 3845,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b3845-B0r5OCEkdJOR.png"
+      "image": "/img/characters/unohana.png"
     },
     "orihime": {
       "anilistId": 7,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b7-JdR4betokDjR.jpg"
+      "image": "/img/characters/orihime.jpg"
     },
     "byakuya": {
       "anilistId": 907,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b907-kgnDKeMtEN5y.png"
+      "image": "/img/characters/byakuya.png"
     },
     "naruto": {
       "anilistId": 17,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b17-phjcWCkRuIhu.png"
+      "image": "/img/characters/naruto.png"
     },
     "sasuke": {
       "anilistId": 13,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b13-SISLEw1oAD7a.png"
+      "image": "/img/characters/sasuke.png"
     },
     "madara": {
       "anilistId": 53901,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b53901-HnRKSoHMG5Vg.png"
+      "image": "/img/characters/madara.png"
     },
     "itachi": {
       "anilistId": 14,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b14-9Kb1E5oel1ke.png"
+      "image": "/img/characters/itachi.png"
     },
     "kakashi": {
       "anilistId": 85,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b85-mkVBh2yjxjmx.png"
+      "image": "/img/characters/kakashi.png"
     },
     "minato": {
       "anilistId": 2535,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2535-Xq9WKNPJQEt3.png"
+      "image": "/img/characters/minato.png"
     },
     "kaguya": {
       "anilistId": 126069,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b126069-CYxn8C4AHwiD.png"
+      "image": "/img/characters/kaguya.png"
     },
     "tsunade": {
       "anilistId": 2767,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2767-r61Cj9v8I0wl.png"
+      "image": "/img/characters/tsunade.png"
     },
     "shikamaru": {
       "anilistId": 2007,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2007-QaesJlIZDifj.jpg"
+      "image": "/img/characters/shikamaru.jpg"
     },
     "luffy": {
       "anilistId": 40,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b40-MNypXsxSRb1R.png"
+      "image": "/img/characters/luffy.png"
     },
     "zoro": {
       "anilistId": 62,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b62-S7oAeA9WInjV.png"
+      "image": "/img/characters/zoro.png"
     },
     "shanks": {
       "anilistId": 727,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b727-wUJx7M1z5xON.png"
+      "image": "/img/characters/shanks.png"
     },
     "whitebeard": {
       "anilistId": 2751,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2751-NnzW0N2vCTjX.jpg"
+      "image": "/img/characters/whitebeard.jpg"
     },
     "kaido": {
       "anilistId": 46109,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b46109-MT7Hm4Bk93In.png"
+      "image": "/img/characters/kaido.png"
     },
     "chopper": {
       "anilistId": 309,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b309-H64NhbJ2ywIQ.jpg"
+      "image": "/img/characters/chopper.jpg"
     },
     "ace": {
       "anilistId": 2072,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2072-Lc6jEdsueJUK.jpg"
+      "image": "/img/characters/ace.jpg"
     },
     "blackbeard": {
       "anilistId": 3331,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b3331-7ZJDc4BNv9Yp.jpg"
+      "image": "/img/characters/blackbeard.jpg"
     },
     "meruem": {
       "anilistId": 23277,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b23277-EYmIxzL64Mji.png"
+      "image": "/img/characters/meruem.png"
     },
     "netero": {
       "anilistId": 14489,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b14489-WgGsdlQJka65.jpg"
+      "image": "/img/characters/netero.jpg"
     },
     "gon": {
       "anilistId": 30,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b30-lyFExKyDhefc.jpg"
+      "image": "/img/characters/gon.jpg"
     },
     "killua": {
       "anilistId": 27,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b27-Z5O02kQUydpT.jpg"
+      "image": "/img/characters/killua.jpg"
     },
     "hisoka": {
       "anilistId": 31,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b31-FZckOuu7L1un.png"
+      "image": "/img/characters/hisoka.png"
     },
     "chrollo": {
       "anilistId": 58,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b58-USOmsz3nursi.jpg"
+      "image": "/img/characters/chrollo.jpg"
     },
     "kurapika": {
       "anilistId": 28,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b28-ivA7UGnfE40a.png"
+      "image": "/img/characters/kurapika.png"
     },
     "eren": {
       "anilistId": 40882,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b40882-dsj7IP943WFF.jpg"
+      "image": "/img/characters/eren.jpg"
     },
     "levi": {
       "anilistId": 45627,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b45627-CR68RyZmddGG.png"
+      "image": "/img/characters/levi.png"
     },
     "armin": {
       "anilistId": 46494,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b46494-g7xYYuBtYPnO.png"
+      "image": "/img/characters/armin.png"
     },
     "mikasa": {
       "anilistId": 40881,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b40881-F3gr1PkreDvj.png"
+      "image": "/img/characters/mikasa.png"
     },
     "escanor": {
       "anilistId": 90202,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b90202-1H7FIX2hDmYd.png"
+      "image": "/img/characters/escanor.png"
     },
     "meliodas": {
       "anilistId": 72921,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b72921-XDHNd1wflN6P.png"
+      "image": "/img/characters/meliodas.png"
     },
     "gilgamesh": {
       "anilistId": 2514,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b2514-hnE6LEdqm7Su.png"
+      "image": "/img/characters/gilgamesh.png"
     },
     "artoria": {
       "anilistId": 497,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b497-Yg5pNmC8kxzs.png"
+      "image": "/img/characters/artoria.png"
     },
     "light": {
       "anilistId": 80,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b80-26EhwSsSqQ50.png"
+      "image": "/img/characters/light.png"
     },
     "L": {
       "anilistId": 71,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b71-1W4panC53vfs.png"
+      "image": "/img/characters/L.png"
     },
     "ryuk": {
       "anilistId": 75,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b75-IkEpzO21LgFy.jpg"
+      "image": "/img/characters/ryuk.jpg"
     },
     "lelouch": {
       "anilistId": 417,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b417-gVLmIJu9phcK.png"
+      "image": "/img/characters/lelouch.png"
     },
     "dio": {
       "anilistId": 4004,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b4004-w0OtWuvjhftG.png"
+      "image": "/img/characters/dio.png"
     },
     "giorno": {
       "anilistId": 10529,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b10529-AloL8jjZwjsg.png"
+      "image": "/img/characters/giorno.png"
     },
     "allmight": {
       "anilistId": 89224,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b89224-K6KEuQAuYKzq.jpg"
+      "image": "/img/characters/allmight.jpg"
     },
     "deku": {
       "anilistId": 89028,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b89028-8w1I9o1ISHMg.png"
+      "image": "/img/characters/deku.png"
     },
     "afo": {
       "anilistId": 125956,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/125956-jzhb8Z4peLb8.jpg"
+      "image": "/img/characters/afo.jpg"
     },
     "bakugo": {
       "anilistId": 88892,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b88892-bdOha3lNcaN6.png"
+      "image": "/img/characters/bakugo.png"
     },
     "todoroki": {
       "anilistId": 89220,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b89220-KNBwaVFAR8FD.png"
+      "image": "/img/characters/todoroki.png"
     },
     "tanjiro": {
       "anilistId": 126071,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b126071-BTNEc1nRIv68.png"
+      "image": "/img/characters/tanjiro.png"
     },
     "nezuko": {
       "anilistId": 127518,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b127518-NRlq1CQ1v1ro.png"
+      "image": "/img/characters/nezuko.png"
     },
     "rengoku": {
       "anilistId": 129133,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b129133-VlTPowwt68rJ.png"
+      "image": "/img/characters/rengoku.png"
     },
     "zenitsu": {
       "anilistId": 129131,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b129131-FZrQ7lSlxmEr.png"
+      "image": "/img/characters/zenitsu.png"
     },
     "yoriichi": {
       "anilistId": 149220,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b149220-OuBk7B3O6WD6.jpg"
+      "image": "/img/characters/yoriichi.jpg"
     },
     "muzan": {
       "anilistId": 129132,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b129132-4nIZakUZ1o8W.jpg"
+      "image": "/img/characters/muzan.jpg"
     },
     "alucard": {
       "anilistId": 601,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/n601-CVySkaFQgsPW.jpg"
+      "image": "/img/characters/alucard.jpg"
     },
     "asta": {
       "anilistId": 123285,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b123285-tKijiuQErDS0.png"
+      "image": "/img/characters/asta.png"
     },
     "yami": {
       "anilistId": 124440,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b124440-Lpdo6y8cljV6.png"
+      "image": "/img/characters/yami.png"
     },
     "mob": {
       "anilistId": 89616,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b89616-dXmdOc7L6SDi.png"
+      "image": "/img/characters/mob.png"
     },
     "ainz": {
       "anilistId": 89103,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b89103-ZsnA0r77GHsR.png"
+      "image": "/img/characters/ainz.png"
     },
     "rimuru": {
       "anilistId": 123962,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b123962-eL9yGV0NLMF7.png"
+      "image": "/img/characters/rimuru.png"
     },
     "anos": {
       "anilistId": 138595,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b138595-Z6j0gP9s7avX.png"
+      "image": "/img/characters/anos.png"
     },
     "makima": {
       "anilistId": 137080,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b137080-UHcynYNjb5ZU.png"
+      "image": "/img/characters/makima.png"
     },
     "denji": {
       "anilistId": 130102,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b130102-FO1VHNnEnLlB.png"
+      "image": "/img/characters/denji.png"
     },
     "power": {
       "anilistId": 137079,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b137079-6yLEUYR3bmpr.png"
+      "image": "/img/characters/power.png"
     },
     "aki": {
       "anilistId": 137081,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b137081-TSrUR3mUJL6r.png"
+      "image": "/img/characters/aki.png"
     },
     "accelerator": {
       "anilistId": 13917,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b13917-160NVNDNgywA.png"
+      "image": "/img/characters/accelerator.png"
     },
     "frieren": {
       "anilistId": 176754,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b176754-PCnpqIOkjhFk.png"
+      "image": "/img/characters/frieren.png"
     },
     "himmel": {
       "anilistId": 184311,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b184311-wQFySqYXEqf1.png"
+      "image": "/img/characters/himmel.png"
     },
     "fern": {
       "anilistId": 183965,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b183965-uGFohBjlFoTp.png"
+      "image": "/img/characters/fern.png"
     },
     "edward": {
       "anilistId": 11,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b11-TA5Nuk7EDUZG.jpg"
+      "image": "/img/characters/edward.jpg"
     },
     "mustang": {
       "anilistId": 68,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b68-moBLY2WO2am3.png"
+      "image": "/img/characters/mustang.png"
     },
     "kaneki": {
       "anilistId": 87275,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b87275-mb13EWZBdbh3.png"
+      "image": "/img/characters/kaneki.png"
     },
     "kirito": {
       "anilistId": 36765,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b36765-BnLbXg0Tzzh9.png"
+      "image": "/img/characters/kirito.png"
     },
     "loid": {
       "anilistId": 138101,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b138101-7NCB0Md8zA6G.png"
+      "image": "/img/characters/loid.png"
     },
     "yor": {
       "anilistId": 138102,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b138102-ZOAu9jI2d5ke.png"
+      "image": "/img/characters/yor.png"
     },
     "anya": {
       "anilistId": 138100,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b138100-4Li0tWRCa5bQ.png"
+      "image": "/img/characters/anya.png"
     },
     "zeno": {
       "anilistId": 146259,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b146259-JOcHMVKvRiWB.png"
+      "image": "/img/characters/zeno.png"
     },
     "jinwoo": {
       "anilistId": 129928,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b129928-BCEjVaP0AQSw.png"
+      "image": "/img/characters/jinwoo.png"
     },
     "pain": {
       "anilistId": 3180,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b3180-ITMGBLWNBOgV.png"
+      "image": "/img/characters/pain.png"
     },
     "jotaro": {
       "anilistId": 4003,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b4003-gWDSEGbeOAll.png"
+      "image": "/img/characters/jotaro.png"
     },
     "kokushibo": {
       "anilistId": 141918,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/b141918-Bfgq88XJFOPz.png"
+      "image": "/img/characters/kokushibo.png"
     },
     "father": {
       "anilistId": 15542,
-      "image": "https://s4.anilist.co/file/anilistcdn/character/large/n15542-7kL0vJ9U8bVR.png"
+      "image": "/img/characters/father.png"
     }
   },
   "series": {
     "gl": {
       "anilistId": 2001,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx2001-XwRnjzGeFWRQ.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/2001-3eWhvkau8NV3.jpg"
+      "image": "/img/series/gl.png",
+      "banner": "/img/series/gl-banner.jpg"
     },
     "um": {
       "anilistId": 4896,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx4896-q6l4Bq4ly0tw.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/4896-bk5bs5riD1kQ.jpg"
+      "image": "/img/series/um.jpg",
+      "banner": "/img/series/um-banner.jpg"
     },
     "pm": {
       "anilistId": 9756,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx9756-QnUGwlwwnsuN.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/9756-d5M8NffgJJHB.jpg"
+      "image": "/img/series/pm.jpg",
+      "banner": "/img/series/pm-banner.jpg"
     },
     "hs": {
       "anilistId": 849,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx849-wQM3GqLvl62P.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/849-Cey4HHIDoeY2.jpg"
+      "image": "/img/series/hs.png",
+      "banner": "/img/series/hs-banner.jpg"
     },
     "db": {
       "anilistId": 813,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx813-ZhnFNOeCU5dQ.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/813-03ZLvWJgR6Wd.jpg"
+      "image": "/img/series/db.png",
+      "banner": "/img/series/db-banner.jpg"
     },
     "opm": {
       "anilistId": 21087,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21087-B5DHjqZ3kW4b.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21087-sHb9zUZFsHe1.jpg"
+      "image": "/img/series/opm.jpg",
+      "banner": "/img/series/opm-banner.jpg"
     },
     "sl": {
       "anilistId": 151807,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx151807-it355ZgzquUd.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/151807-37yfQA3ym8PA.jpg"
+      "image": "/img/series/sl.png",
+      "banner": "/img/series/sl-banner.jpg"
     },
     "jjk": {
       "anilistId": 113415,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx113415-LHBAeoZDIsnF.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/113415-jQBSkxWAAk83.jpg"
+      "image": "/img/series/jjk.jpg",
+      "banner": "/img/series/jjk-banner.jpg"
     },
     "bl": {
       "anilistId": 269,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx269-d2GmRkJbMopq.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/269-08ar2HJOUAuL.jpg"
+      "image": "/img/series/bl.png",
+      "banner": "/img/series/bl-banner.jpg"
     },
     "na": {
       "anilistId": 1735,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1735-kGfVm0YqCPcu.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/1735.jpg"
+      "image": "/img/series/na.png",
+      "banner": "/img/series/na-banner.jpg"
     },
     "op": {
       "anilistId": 21,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21-ELSYx3yMPcKM.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21-wf37VakJmZqs.jpg"
+      "image": "/img/series/op.jpg",
+      "banner": "/img/series/op-banner.jpg"
     },
     "hxh": {
       "anilistId": 11061,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx11061-y5gsT1hoHuHw.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/11061-8WkkTZ6duKpq.jpg"
+      "image": "/img/series/hxh.png",
+      "banner": "/img/series/hxh-banner.jpg"
     },
     "aot": {
       "anilistId": 16498,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx16498-buvcRTBx4NSm.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/16498-8jpFCOcDmneX.jpg"
+      "image": "/img/series/aot.jpg",
+      "banner": "/img/series/aot-banner.jpg"
     },
     "sds": {
       "anilistId": 20789,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx20789-Ma5ouSYPkru9.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/20789-qwG9GcxIrmVE.jpg"
+      "image": "/img/series/sds.jpg",
+      "banner": "/img/series/sds-banner.jpg"
     },
     "fate": {
       "anilistId": 10087,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx10087-M4Hd9qrHGrXk.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/10087-32MFY9VnJQ7I.jpg"
+      "image": "/img/series/fate.png",
+      "banner": "/img/series/fate-banner.jpg"
     },
     "dn": {
       "anilistId": 1535,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1535-kUgkcrfOrkUM.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/1535.jpg"
+      "image": "/img/series/dn.jpg",
+      "banner": "/img/series/dn-banner.jpg"
     },
     "cg": {
       "anilistId": 1575,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1575-hsmWM2ydNm1m.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/1575.jpg"
+      "image": "/img/series/cg.jpg",
+      "banner": "/img/series/cg-banner.jpg"
     },
     "jojo": {
       "anilistId": 666,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx666-kYzXvKlUbeMP.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/666-emK2J3PsdHb2.jpg"
+      "image": "/img/series/jojo.jpg",
+      "banner": "/img/series/jojo-banner.jpg"
     },
     "mha": {
       "anilistId": 21459,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21459-nYh85uj2Fuwr.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21459-yeVkolGKdGUV.jpg"
+      "image": "/img/series/mha.jpg",
+      "banner": "/img/series/mha-banner.jpg"
     },
     "kny": {
       "anilistId": 101922,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101922-WBsBl0ClmgYL.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101922-33MtJGsUSxga.jpg"
+      "image": "/img/series/kny.jpg",
+      "banner": "/img/series/kny-banner.jpg"
     },
     "hel": {
       "anilistId": 777,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx777-F6547pSAR2Zd.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/777-XzPjBZdSRtDT.jpg"
+      "image": "/img/series/hel.jpg",
+      "banner": "/img/series/hel-banner.jpg"
     },
     "bc": {
       "anilistId": 97940,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx97940-fyh8o7gNbha0.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/97940-1URQdQ4U1a0b.jpg"
+      "image": "/img/series/bc.png",
+      "banner": "/img/series/bc-banner.jpg"
     },
     "mob": {
       "anilistId": 21507,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21507-6YUSbh2m0N1p.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/21507-Qx8bGsLXUgLo.jpg"
+      "image": "/img/series/mob.jpg",
+      "banner": "/img/series/mob-banner.jpg"
     },
     "ovl": {
       "anilistId": 20832,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx20832-vUNm5zrYWifc.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/20832-NswCiSYMoI2k.jpg"
+      "image": "/img/series/ovl.jpg",
+      "banner": "/img/series/ovl-banner.jpg"
     },
     "ts": {
       "anilistId": 101280,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101280-tDxCVJm714nt.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/101280-9t7J3774n955.jpg"
+      "image": "/img/series/ts.jpg",
+      "banner": "/img/series/ts-banner.jpg"
     },
     "mk": {
       "anilistId": 112301,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx112301-f88Fs2es4pSr.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/112301-e50SRjhGDGUu.jpg"
+      "image": "/img/series/mk.jpg",
+      "banner": "/img/series/mk-banner.jpg"
     },
     "csm": {
       "anilistId": 127230,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx127230-DdP4vAdssLoz.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/127230-o8IRwCGVr9KW.jpg"
+      "image": "/img/series/csm.png",
+      "banner": "/img/series/csm-banner.jpg"
     },
     "idx": {
       "anilistId": 4654,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx4654-ba44icsxDQZd.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/4654-YLc90XaeWvPb.jpg"
+      "image": "/img/series/idx.jpg",
+      "banner": "/img/series/idx-banner.jpg"
     },
     "fr": {
       "anilistId": 189513,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx189513-1R9Sryve0K53.png",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/189513-HjE2qNupgfEe.jpg"
+      "image": "/img/series/fr.png",
+      "banner": "/img/series/fr-banner.jpg"
     },
     "fma": {
       "anilistId": 5114,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx5114-nSWCgQlmOMtj.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/5114-q0V5URebphSG.jpg"
+      "image": "/img/series/fma.jpg",
+      "banner": "/img/series/fma-banner.jpg"
     },
     "tg": {
       "anilistId": 20605,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/b20605-k665mVkSug8D.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/20605-RCJ7M71zLmrh.jpg"
+      "image": "/img/series/tg.jpg",
+      "banner": "/img/series/tg-banner.jpg"
     },
     "sao": {
       "anilistId": 11757,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx11757-SxYDUzdr9rh2.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/11757-TlEEV9weG4Ag.jpg"
+      "image": "/img/series/sao.jpg",
+      "banner": "/img/series/sao-banner.jpg"
     },
     "sxf": {
       "anilistId": 140960,
-      "image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx140960-Kb6R5nYQfjmP.jpg",
-      "banner": "https://s4.anilist.co/file/anilistcdn/media/anime/banner/140960-Z7xSvkRxHKfj.jpg"
+      "image": "/img/series/sxf.jpg",
+      "banner": "/img/series/sxf-banner.jpg"
     }
   }
 }

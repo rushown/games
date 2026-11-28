@@ -1,6 +1,6 @@
 // Bundles the app into one self-contained HTML file (JS, CSS and fonts inlined).
 import { build } from "esbuild";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -26,6 +26,8 @@ const result = await build({
     "process.env.NODE_ENV": '"production"',
     // Images load from AniList in the browser. Pass IMAGES=off to build a fully offline file.
     "process.env.NEXT_PUBLIC_IMAGES": JSON.stringify(process.env.IMAGES === "off" ? "off" : "on"),
+    // Baked images are copied next to index.html (preview/dist/img/).
+    "process.env.NEXT_PUBLIC_ASSET_BASE": '"."',
   },
   logLevel: "warning",
 });
@@ -48,4 +50,5 @@ const html = `<!DOCTYPE html>
 </html>`;
 mkdirSync(r("preview/dist"), { recursive: true });
 writeFileSync(r("preview/dist/index.html"), html);
+if (existsSync(r("public/img"))) cpSync(r("public/img"), r("preview/dist/img"), { recursive: true });
 console.log(`preview/dist/index.html  ${(html.length / 1024).toFixed(0)} KB`);
