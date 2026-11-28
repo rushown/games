@@ -1,230 +1,92 @@
 --!nonstrict
--- AnimeDraft: Draft Duel server. One draft table per server: two seats (players or bots),
--- spectators watch. The server owns the auction state; clients only send intents.
+-- AnimeDraft server: a hall of draft tables so a full server can play at once.
+-- Each player can be at one table (seated or watching). The server owns every auction; clients
+-- only send intents.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local DataStoreService = game:GetService("DataStoreService")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local Data = require(Shared.Data)
-local Auction = require(Shared.Auction)
-local Battle = require(Shared.Battle)
-local Bot = require(script.Parent.Bot)
+local Config = require(Shared.Config)
+local Table = require(script.Parent.Table)
 local Arena = require(script.Parent.Arena)
 local Energy = require(script.Parent.Energy)
-local Config = require(Shared.Config)
+local Records = require(script.Parent.Records)
 
 local remotes = Instance.new("Folder")
 remotes.Name = "Remotes"
-local ActionEvent = Instance.new("RemoteEvent")
-ActionEvent.Name = "Action"
-ActionEvent.Parent = remotes
-local StateEvent = Instance.new("RemoteEvent")
-StateEvent.Name = "State"
-StateEvent.Parent = remotes
-local ToastEvent = Instance.new("RemoteEvent")
-ToastEvent.Name = "Toast"
-ToastEvent.Parent = remotes
-local GetState = Instance.new("RemoteFunction")
-GetState.Name = "GetState"
-GetState.Parent = remotes
+local function remote(class: string, name: string)
+	local r = Instance.new(class)
+	r.Name = name
+	r.Parent = remotes
+	return r
+end
+local ActionEvent = remote("RemoteEvent", "Action") -- client → server intents
+local StateEvent = remote("RemoteEvent", "State") -- server → members: full table state (nil = not at a table)
+local TablesEvent = remote("RemoteEvent", "Tables") -- server → everyone: table browser summaries
+local ToastEvent = remote("RemoteEvent", "Toast")
+local GetState = remote("RemoteFunction", "GetState")
+local DuelEvent = remote("RemoteEvent", "Duel") -- server → target: { from = userId, name, expires }
 remotes.Parent = ReplicatedStorage
 
-Arena.build()
+local tables: { any } = {}
+local watchAd -- rewarded ads, defined below
+local playerTable: { [Player]: any } = {}
 
--- Seat: { kind = "player", player = Player } | { kind = "bot", name = string } | nil
-local seats: { [number]: any } = {}
-local config = table.clone(Auction.DEFAULT_CONFIG)
-local mode = "lobby" -- "lobby" | "draft" | "results"
-local auction: any = nil
-local deadline: number? = nil -- server time when the hammer falls
-local lastRev = -1
-local result: any = nil
-local botThink: { [number]: number } = {}
-
-local BOT_NAMES = { "Bot Kaizen", "Bot Ultra", "Bot Senpai", "Bot Bankai", "Bot Plus Ultra" }
-
-local function seatName(i: number): string
-	local s = seats[i]
-	if not s then
-		return "Empty"
-	end
-	return if s.kind == "bot" then s.name else s.player.DisplayName
-end
-
-local function seatOf(player: Player): number?
-	for i = 1, 2 do
-		local s = seats[i]
-		if s and s.kind == "player" and s.player == player then
-			return i
+local function toast(list: { Player }?, text: string, kind: string?)
+	if list then
+		for _, p in list do
+			ToastEvent:FireClient(p, text, kind)
 		end
-	end
-	return nil
-end
-
-local function now(): number
-	return workspace:GetServerTimeNow()
-end
-
-local function snapshot()
-	local seatInfo = {}
-	for i = 1, 2 do
-		local s = seats[i]
-		seatInfo[i] = {
-			name = seatName(i),
-			kind = if s then s.kind else "empty",
-			userId = if s and s.kind == "player" then s.player.UserId else 0,
-		}
-	end
-	return {
-		mode = mode,
-		seats = seatInfo,
-		config = config,
-		auction = if auction then Auction.public(auction) else nil,
-		deadline = deadline,
-		result = result,
-	}
-end
-
-local function broadcast()
-	local snap = snapshot()
-	StateEvent:FireAllClients(snap)
-	Arena.show(snap)
-end
-
--- `kind` = "shop" makes the client open the energy shop.
-local function toast(player: Player?, text: string, kind: string?)
-	if player then
-		ToastEvent:FireClient(player, text, kind)
 	else
 		ToastEvent:FireAllClients(text, kind)
 	end
 end
 
------------------------------------------------------------------- records
+local function summaries()
+	local list = {}
+	for _, t in tables do
+		table.insert(list, t:summary())
+	end
+	return list
+end
 
-local store = nil
-pcall(function()
-	store = DataStoreService:GetDataStore("AnimeDraftRecords_v1")
+-- Coalesce bursts of changes into one send per frame.
+local dirty: { [any]: boolean } = {}
+local function markChanged(t)
+	dirty[t] = true
+end
+RunService.Heartbeat:Connect(function()
+	if next(dirty) then
+		for t in dirty do
+			local snap = t:snapshot()
+			for p in t.members do
+				StateEvent:FireClient(p, snap)
+			end
+			Arena.show(t.id, snap)
+		end
+		dirty = {}
+		TablesEvent:FireAllClients(summaries())
+	end
+	for _, t in tables do
+		t:step()
+	end
 end)
 
-local function setupLeaderstats(player: Player)
-	local ls = Instance.new("Folder")
-	ls.Name = "leaderstats"
-	local w = Instance.new("IntValue")
-	w.Name = "Wins"
-	w.Parent = ls
-	local l = Instance.new("IntValue")
-	l.Name = "Losses"
-	l.Parent = ls
-	ls.Parent = player
-	if store then
-		task.spawn(function()
-			local ok, rec = pcall(function()
-				return store:GetAsync("u" .. player.UserId)
-			end)
-			if ok and type(rec) == "table" then
-				w.Value = rec.wins or 0
-				l.Value = rec.losses or 0
-			end
-		end)
-	end
-end
-
-local function saveRecord(player: Player)
-	local ls = player:FindFirstChild("leaderstats")
-	if not (store and ls) then
-		return
-	end
-	local rec = { wins = (ls :: any).Wins.Value, losses = (ls :: any).Losses.Value }
-	task.spawn(function()
-		pcall(function()
-			store:SetAsync("u" .. player.UserId, rec)
-		end)
-	end)
-end
-
-local function addResult(i: number, won: boolean)
-	local s = seats[i]
-	if not (s and s.kind == "player") then
-		return
-	end
-	local ls = s.player:FindFirstChild("leaderstats")
-	if ls then
-		local stat = (ls :: any)[if won then "Wins" else "Losses"]
-		stat.Value += 1
-		saveRecord(s.player)
-	end
-end
-
------------------------------------------------------------------- flow
-
-local function finishDraft()
-	local teams = {}
-	for i = 1, 2 do
-		local t = {}
-		for _, o in auction.players[i].team do
-			table.insert(t, Data.get(o.key))
-		end
-		teams[i] = t
-	end
-	local battle = Battle.teamBattle(teams[1], teams[2])
-	result = battle
-	mode = "results"
-	deadline = nil
-	if battle.winner ~= 0 then
-		addResult(battle.winner, true)
-		addResult(Auction.other(battle.winner), false)
-		toast(nil, `{seatName(battle.winner)} wins the draft!`)
-	else
-		toast(nil, "It's a dead draw!")
-	end
-end
-
-local function afterChange()
-	if not auction then
-		return
-	end
-	if auction.phase == "done" then
-		finishDraft()
-	else
-		local lot = auction.lot
-		if lot and lot.rev ~= lastRev then
-			lastRev = lot.rev
-			if auction.phase == "auction" and auction.config.timer > 0 then
-				-- First look at a fresh character gets a little extra time.
-				local extra = if #lot.history == 0 then 4 else 0
-				deadline = now() + auction.config.timer + extra
-			else
-				deadline = nil
-			end
-			botThink = {}
-		end
-	end
-	broadcast()
-end
-
--- Every human in a seat pays Config.ENERGY.draftCost to start. Nobody pays unless everyone can.
-local function payForDraft(): boolean
+-- Every human in a seat pays the draft cost; nobody pays unless everyone can.
+local function pay(t): boolean
 	local cost = Config.ENERGY.draftCost
-	local humans = {}
-	for i = 1, 2 do
-		local s = seats[i]
-		if s and s.kind == "player" then
-			table.insert(humans, s.player)
-		end
-	end
+	local humans = t:humans()
 	for _, p in humans do
 		if not Energy.ready(p) then
-			toast(nil, `Loading {p.DisplayName}'s energy… try again in a moment`)
+			toast(humans, `Loading {p.DisplayName}'s energy… try again in a moment`)
 			return false
 		end
 		if Energy.get(p) < cost then
-			toast(p, `You need {cost} ⚡ energy to draft. More arrives tomorrow, or grab a pack!`, "shop")
+			toast({ p }, `You need {cost} ⚡ to draft. Energy refills over time, or grab a pack!`, "shop")
 			for _, q in humans do
 				if q ~= p then
-					toast(q, `{p.DisplayName} is out of energy`)
+					toast({ q }, `{p.DisplayName} is out of energy`)
 				end
 			end
 			return false
@@ -236,203 +98,276 @@ local function payForDraft(): boolean
 	return true
 end
 
-local function startDraft()
-	if not (seats[1] and seats[2]) then
-		return
-	end
-	if not payForDraft() then
-		return
-	end
-	auction = Auction.new(config, { seatName(1), seatName(2) })
-	result = nil
-	mode = "draft"
-	lastRev = -1
-	afterChange()
-end
-
-local function act(seat: number, a: any): string?
-	if mode ~= "draft" or not auction then
-		return "No draft running"
-	end
-	a.player = seat
-	local err = Auction.apply(auction, a)
-	if not err then
-		afterChange()
-	end
-	return err
-end
-
-local function botSeat(i: number)
-	local used = {}
-	for j = 1, 2 do
-		if seats[j] and seats[j].kind == "bot" then
-			used[seats[j].name] = true
-		end
-	end
-	local name = BOT_NAMES[math.random(#BOT_NAMES)]
-	while used[name] do
-		name = BOT_NAMES[math.random(#BOT_NAMES)]
-	end
-	seats[i] = { kind = "bot", name = name }
-	if auction then
-		auction.players[i].name = name
-	end
-end
-
------------------------------------------------------------------- client intents
-
-local CONFIG_OPTIONS = {
-	budget = { 15, 25, 40 },
-	teamSize = { 3, 5 },
-	timer = { 0, 5, 8, 12 },
-	pool = { "all", "gods", "fair" },
+local hooks = {
+	changed = markChanged,
+	toast = toast,
+	pay = pay,
+	result = function(t, player: Player, won: boolean)
+		Records.add(player, won)
+		toast({ player }, if won then "Victory! +1 win" else "Defeat. Run it back?", if won then "win" else "lose")
+	end,
 }
 
-local DRAFT_ACTIONS = { raise = true, allIn = true, skip = true, keep = true, pass = true, accept = true, hammer = true }
-
-ActionEvent.OnServerEvent:Connect(function(player: Player, msg: any)
-	if type(msg) ~= "table" or type(msg.type) ~= "string" then
-		return
-	end
-	local t = msg.type
-	local mine = seatOf(player)
-
-	if t == "sit" then
-		local i = msg.seat
-		if mode ~= "lobby" or (i ~= 1 and i ~= 2) or mine then
-			return
-		end
-		if seats[i] and seats[i].kind == "player" then
-			return toast(player, "That seat is taken")
-		end
-		seats[i] = { kind = "player", player = player }
-	elseif t == "stand" then
-		if mode ~= "lobby" or not mine then
-			return
-		end
-		seats[mine] = nil
-	elseif t == "addBot" then
-		local i = msg.seat
-		if mode ~= "lobby" or (i ~= 1 and i ~= 2) or seats[i] then
-			return
-		end
-		botSeat(i)
-	elseif t == "removeBot" then
-		local i = msg.seat
-		if mode ~= "lobby" or (i ~= 1 and i ~= 2) or not (seats[i] and seats[i].kind == "bot") then
-			return
-		end
-		seats[i] = nil
-	elseif t == "config" then
-		if mode ~= "lobby" or not mine then
-			return toast(player, "Take a seat to change the rules")
-		end
-		local opts = CONFIG_OPTIONS[msg.key]
-		if opts and table.find(opts, msg.value) then
-			(config :: any)[msg.key] = msg.value
-		end
-	elseif t == "start" then
-		if mode ~= "lobby" or not mine then
-			return
-		end
-		if not (seats[1] and seats[2]) then
-			return toast(player, "Both seats need a player or a bot")
-		end
-		startDraft()
-		return
-	elseif t == "rematch" then
-		if mode ~= "results" or not mine then
-			return
-		end
-		startDraft()
-		return
-	elseif t == "lobby" then
-		if mode ~= "results" or not mine then
-			return
-		end
-		mode, auction, result, deadline = "lobby", nil, nil, nil
-	elseif DRAFT_ACTIONS[t] then
-		if not mine then
-			return toast(player, "You're spectating")
-		end
-		if t == "hammer" and not (auction and auction.config.timer == 0) then
-			return
-		end
-		local a = { type = t, by = tonumber(msg.by) }
-		if t == "raise" and not (a.by == 1 or a.by == 2 or a.by == 5) then
-			return
-		end
-		local err = act(mine, a)
-		if err then
-			toast(player, err)
-		end
-		return
-	else
-		return
-	end
-	broadcast()
-end)
-
-GetState.OnServerInvoke = function()
-	return snapshot()
+local map = Arena.build(Config.TABLES)
+Arena.runSky()
+local stations = map.tables
+for i = 1, Config.TABLES do
+	tables[i] = Table.new(i, hooks)
+	markChanged(tables[i]) -- draw every stage screen once at start
 end
 
------------------------------------------------------------------- players joining / leaving
-
-Players.PlayerAdded:Connect(setupLeaderstats)
-for _, p in Players:GetPlayers() do
-	setupLeaderstats(p)
+local function moveTo(player: Player, cf: CFrame?)
+	local char = player.Character
+	local root = char and char:FindFirstChild("HumanoidRootPart")
+	if root and cf then
+		char:PivotTo(cf)
+	end
 end
 
-Players.PlayerRemoving:Connect(function(player)
-	local i = seatOf(player)
-	if not i then
-		return
+local function leaveTable(player: Player)
+	local t = playerTable[player]
+	if t then
+		playerTable[player] = nil
+		t:removeMember(player)
+		StateEvent:FireClient(player, nil)
 	end
-	if mode == "lobby" then
-		seats[i] = nil
-	else
-		botSeat(i) -- a bot takes over so the other player can finish
-		toast(nil, `{player.DisplayName} left. {seats[i].name} takes over.`)
-	end
-	broadcast()
-end)
+end
 
------------------------------------------------------------------- hammer timer + bots
+local function joinTable(player: Player, id: number, teleport: boolean)
+	local t = tables[id]
+	if not t or playerTable[player] == t then
+		return
+	end
+	leaveTable(player)
+	playerTable[player] = t
+	t:addMember(player)
+	if teleport then
+		moveTo(player, stations[id].stand)
+	end
+end
 
-RunService.Heartbeat:Connect(function()
-	if mode ~= "draft" or not auction then
+for id, st in stations do
+	st.prompt.Triggered:Connect(function(player)
+		joinTable(player, id, false)
+	end)
+end
+
+------------------------------------------------------------------ duels
+-- Walk up to someone and use their "Challenge" prompt, or pick them in the Players list.
+-- If they accept, both go to an empty table and sit down facing each other.
+
+local pending: { [Player]: { from: Player, expires: number } } = {}
+local lastChallenge: { [Player]: number } = {}
+
+local function busy(p: Player): boolean
+	local t = playerTable[p]
+	return t ~= nil and t.mode ~= "lobby"
+end
+
+local function challenge(from: Player, to: Player?)
+	if not to or to == from or not to.Parent then
 		return
 	end
-	if deadline and now() >= deadline then
-		deadline = nil
-		act(1, { type = "hammer" })
+	if busy(from) then
+		return toast({ from }, "Finish your draft first")
+	end
+	if busy(to) then
+		return toast({ from }, `{to.DisplayName} is in a draft right now`)
+	end
+	if os.clock() - (lastChallenge[from] or 0) < 4 then
 		return
 	end
-	for i = 1, 2 do
-		local s = seats[i]
-		if s and s.kind == "bot" then
-			local at = botThink[i]
-			if not at then
-				botThink[i] = os.clock() + Bot.delay(auction, i)
-			elseif os.clock() >= at then
-				botThink[i] = os.clock() + Bot.delay(auction, i)
-				local a = Bot.decide(auction, i)
-				if a then
-					act(i, a)
-					-- Manual timer with two bots: they'd wait forever, so a bot calls Sold when it leads.
-				elseif
-					auction.phase == "auction"
-					and auction.config.timer == 0
-					and auction.lot
-					and (auction.lot.leader == i or (seats[1].kind == "bot" and seats[2].kind == "bot"))
-				then
-					act(i, { type = "hammer" })
-				end
-				return
+	lastChallenge[from] = os.clock()
+	local p = pending[to]
+	if p and p.from == from and p.expires > os.clock() then
+		return toast({ from }, "Challenge already sent")
+	end
+	pending[to] = { from = from, expires = os.clock() + Config.DUEL_TIMEOUT }
+	DuelEvent:FireClient(to, { from = from.UserId, name = from.DisplayName, timeout = Config.DUEL_TIMEOUT })
+	toast({ from }, `Challenge sent to {to.DisplayName}!`)
+end
+
+local function freeTable()
+	local best, bestScore = nil, -1
+	for _, t in tables do
+		if t.mode == "lobby" and not t.seats[1] and not t.seats[2] then
+			local score = 100 - t:memberCount()
+			if score > bestScore then
+				best, bestScore = t, score
 			end
 		end
 	end
+	return best
+end
+
+local function answer(to: Player, fromId: number, accept: boolean)
+	local p = pending[to]
+	if not p or p.from.UserId ~= fromId then
+		return
+	end
+	pending[to] = nil
+	local from = p.from
+	if not accept then
+		return toast({ from }, `{to.DisplayName} declined the duel`)
+	end
+	if p.expires < os.clock() or not from.Parent then
+		return toast({ to }, "That challenge expired")
+	end
+	if busy(from) or busy(to) then
+		return toast({ from, to }, "One of you is already in a draft")
+	end
+	local t = freeTable()
+	if not t then
+		return toast({ from, to }, "Every table is taken right now. Try again in a moment!")
+	end
+	joinTable(from, t.id, true)
+	joinTable(to, t.id, true)
+	t:handle(from, { type = "sit", seat = 1 })
+	t:handle(to, { type = "sit", seat = 2 })
+	toast({ from, to }, `Duel on at table {t.id}! Pick the rules and press START`)
+end
+
+-- A "Challenge" prompt on every character (hidden on your own by the client).
+local function addPrompt(player: Player, char: Model)
+	local root = char:WaitForChild("HumanoidRootPart", 10)
+	if not root then
+		return
+	end
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "DuelPrompt"
+	prompt.ActionText = "Challenge to a draft"
+	prompt.ObjectText = player.DisplayName
+	prompt.KeyboardKeyCode = Enum.KeyCode.F
+	prompt.HoldDuration = 0.3
+	prompt.MaxActivationDistance = 12
+	prompt.RequiresLineOfSight = false
+	prompt.Parent = root
+	prompt.Triggered:Connect(function(by)
+		challenge(by, player)
+	end)
+end
+local function watchCharacters(player: Player)
+	player.CharacterAdded:Connect(function(char)
+		addPrompt(player, char)
+	end)
+	if player.Character then
+		task.spawn(addPrompt, player, player.Character)
+	end
+end
+Players.PlayerAdded:Connect(watchCharacters)
+for _, p in Players:GetPlayers() do
+	watchCharacters(p)
+end
+
+------------------------------------------------------------------ rewarded video ads
+-- Roblox shows a short ad; on completion Roblox grants Config.AD_REWARD's developer product, which
+-- ProcessReceipt (Energy.luau) turns into energy. Roblox pays the creator for the ad view.
+local AdService = game:GetService("AdService")
+local adBusy: { [Player]: boolean } = {}
+
+watchAd = function(player: Player)
+	local A = Config.AD_REWARD
+	if A.id == 0 then
+		return toast({ player }, "Ads aren't set up yet")
+	end
+	if adBusy[player] then
+		return
+	end
+	local blocked = Energy.adBlocked(player)
+	if blocked then
+		return toast({ player }, blocked)
+	end
+	adBusy[player] = true
+	local ok, err = pcall(function()
+		local avail = AdService:GetAdAvailabilityNowAsync(Enum.AdFormat.RewardedVideo)
+		if avail.AdAvailabilityResult ~= Enum.AdAvailabilityResult.IsAvailable then
+			error("unavailable")
+		end
+		local reward = AdService:CreateAdRewardFromDevProductId(A.id)
+		local result = AdService:ShowRewardedVideoAdAsync(player, reward)
+		if result == Enum.ShowAdResult.ShowCompleted then
+			Energy.adWatched(player)
+		else
+			error("notcompleted")
+		end
+	end)
+	adBusy[player] = nil
+	if not ok then
+		if tostring(err):find("notcompleted") then
+			toast({ player }, "Watch the whole ad to get your energy")
+		else
+			toast({ player }, "No ads available right now. Try again later!")
+		end
+	end
+end
+
+-- Simple flood guard: at most 12 intents per second per player.
+local budget: { [Player]: { t: number, n: number } } = {}
+local function allowed(player: Player): boolean
+	local b = budget[player]
+	local t = os.clock()
+	if not b or t - b.t >= 1 then
+		budget[player] = { t = t, n = 1 }
+		return true
+	end
+	b.n += 1
+	return b.n <= 12
+end
+
+ActionEvent.OnServerEvent:Connect(function(player: Player, msg)
+	if type(msg) ~= "table" or type(msg.type) ~= "string" or not allowed(player) then
+		return
+	end
+	if msg.type == "join" then
+		local id = tonumber(msg.table)
+		if id then
+			joinTable(player, id, true)
+		end
+	elseif msg.type == "quickPlay" then
+		-- First table with a free seat in its lobby, preferring one where someone is waiting.
+		local best, bestScore = nil, -1
+		for _, t in tables do
+			if t.mode == "lobby" then
+				local free = (if t.seats[1] then 0 else 1) + (if t.seats[2] then 0 else 1)
+				local score = if free == 1 then 2 elseif free == 2 then 1 else 0
+				if score > bestScore then
+					best, bestScore = t, score
+				end
+			end
+		end
+		if best and bestScore > 0 then
+			joinTable(player, best.id, true)
+			local seat = if best.seats[1] then 2 else 1
+			best:handle(player, { type = "sit", seat = seat })
+		else
+			toast({ player }, "Every table is busy: pick one to watch")
+		end
+	elseif msg.type == "challenge" then
+		challenge(player, Players:GetPlayerByUserId(tonumber(msg.userId) or 0))
+	elseif msg.type == "duelReply" then
+		answer(player, tonumber(msg.from) or 0, msg.accept == true)
+	elseif msg.type == "watchAd" then
+		task.spawn(watchAd, player)
+	elseif msg.type == "leave" then
+		leaveTable(player)
+		moveTo(player, map.spawn)
+	else
+		local t = playerTable[player]
+		if t then
+			t:handle(player, msg)
+		end
+	end
 end)
 
-broadcast()
+GetState.OnServerInvoke = function(player)
+	local t = playerTable[player]
+	return { tables = summaries(), state = if t then t:snapshot() else nil }
+end
+
+Players.PlayerRemoving:Connect(function(player)
+	leaveTable(player)
+	budget[player] = nil
+	pending[player] = nil
+	lastChallenge[player] = nil
+	adBusy[player] = nil
+end)

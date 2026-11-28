@@ -46,6 +46,7 @@ def folder(name: str, directory: Path) -> str:
 
 place = (
     '<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" version="4">\n'
+    + item("ReplicatedFirst", "ReplicatedFirst", folder("Loading", ROOT / "src/first"))
     + item("ReplicatedStorage", "ReplicatedStorage", folder("Shared", ROOT / "src/shared"))
     + item("ServerScriptService", "ServerScriptService", folder("Server", ROOT / "src/server"))
     + item("StarterPlayer", "StarterPlayer", item("StarterPlayerScripts", "StarterPlayerScripts", folder("Client", ROOT / "src/client")))
@@ -54,3 +55,11 @@ place = (
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text(place, encoding="utf-8")
 print(f"Wrote {OUT} ({OUT.stat().st_size // 1024} KB)")
+
+# Also one model file per folder, for "Insert from File" into an already-published place
+# (right-click the service in Studio's Explorer → Insert from File…).
+HEAD = '<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" version="4">\n'
+for name, sub in (("Loading", "first"), ("Shared", "shared"), ("Server", "server"), ("Client", "client")):
+    model = OUT.parent / f"{name}.rbxmx"
+    model.write_text(HEAD + folder(name, ROOT / "src" / sub) + "</roblox>\n", encoding="utf-8")
+    print(f"Wrote {model}")
