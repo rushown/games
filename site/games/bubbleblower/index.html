@@ -96,6 +96,32 @@ canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
 .pick-top { text-align: center; }
 h1 { font-family: var(--display); font-weight: 400; font-size: clamp(46px, 12vw, 72px); line-height: .9; letter-spacing: .02em; }
 h1 span { color: var(--sea); }
+/* the title hangs on a wooden plank sign, like an old Saturday-morning cartoon title card */
+.plank {
+  position: relative; display: inline-block; padding: 10px 22px 8px; transform: rotate(-2deg);
+  background: repeating-linear-gradient(180deg, #b2733f 0 30%, #9c6233 30% 33%, #b87a45 33% 64%, #9c6233 64% 67%, #ad6f3c 67% 100%);
+  border: 3px solid #5a3417; border-radius: 10px 14px 9px 12px; box-shadow: 0 6px 0 rgba(0,0,0,.28), inset 0 2px 0 rgba(255,255,255,.18);
+  color: #fff3d6; -webkit-text-stroke: 1.5px #3d230f; text-shadow: 0 3px 0 #3d230f; animation: sway 4s ease-in-out infinite;
+}
+.plank span { color: #7fe8ff; }
+.plank::before, .plank::after { content: ""; position: absolute; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: #d9c7a0; box-shadow: inset -1px -1px 0 #6b5a3a; }
+.plank::before { left: 9px; } .plank::after { right: 9px; }
+@keyframes sway { 50% { transform: rotate(1.5deg) translateY(2px); } }
+.icons { display: flex; gap: 8px; }
+
+/* narrator card between levels */
+.card-ov { inset: 0; display: grid; place-items: center; opacity: 0; }
+.card-ov.show { animation: cardin 2.2s ease forwards; }
+.card-ov div { padding: 14px 26px 10px; text-align: center; transform: rotate(-3deg); background: repeating-linear-gradient(180deg, #b2733f 0 46%, #9c6233 46% 50%, #b87a45 50% 100%); border: 3px solid #5a3417; border-radius: 12px; box-shadow: 0 8px 0 rgba(0,0,0,.3); }
+.card-ov b { display: block; font-family: var(--display); font-weight: 400; font-size: clamp(30px, 8vw, 44px); line-height: 1; color: #fff3d6; -webkit-text-stroke: 1px #3d230f; text-shadow: 0 3px 0 #3d230f; }
+.card-ov small { font-weight: 600; font-size: 13px; color: #ffe9b8; letter-spacing: .08em; text-transform: uppercase; }
+@keyframes cardin { 0% { opacity: 0; transform: scale(.6) rotate(8deg); } 14% { opacity: 1; transform: scale(1.06) rotate(-1deg); } 22%, 80% { opacity: 1; transform: scale(1) rotate(0); } 100% { opacity: 0; transform: scale(.9) translateY(-20px); } }
+
+/* bubble wipe: a rush of big bubbles between scenes */
+.wipe { inset: 0; overflow: hidden; z-index: 5; }
+.wipe i { position: absolute; bottom: -40%; border-radius: 50%; border: 3px solid rgba(220,250,255,.9); background: radial-gradient(circle at 32% 30%, rgba(255,255,255,.75) 0 9%, rgba(190,240,255,.28) 10% 60%, rgba(150,200,255,.4) 100%); opacity: 0; }
+.wipe.go i { animation: rush .95s cubic-bezier(.3,.1,.5,1) forwards; }
+@keyframes rush { 0% { opacity: 1; transform: translateY(0) scale(.8); } 85% { opacity: 1; } 100% { opacity: 0; transform: translateY(-190vh) scale(1.15); } }
 .pick-top p { color: rgba(236,233,224,.8); font-size: 14px; margin-top: 6px; }
 .pick-card { width: 100%; max-width: 420px; margin: 0 auto; padding: 14px; border-radius: 20px; background: rgba(4,14,22,.62); border: 1px solid rgba(255,255,255,.12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); text-align: center; display: grid; gap: 8px; pointer-events: auto; }
 .sel { display: grid; grid-template-columns: 48px 1fr 48px; align-items: center; }
@@ -151,7 +177,10 @@ footer a:hover { color: var(--txt); }
 <body>
 <header class="top">
   <a class="ra-back" href="/games#games"><span class="ra-mark" aria-hidden="true">RA</span><span><span class="ra-arrow" aria-hidden="true">←</span> All games</span></a>
-  <button class="icon-btn" id="mute" type="button" aria-label="Sound on" aria-pressed="false">♪</button>
+  <div class="icons">
+    <button class="icon-btn" id="music" type="button" aria-label="Music on" aria-pressed="true">♫</button>
+    <button class="icon-btn" id="mute" type="button" aria-label="Sound on" aria-pressed="false">♪</button>
+  </div>
 </header>
 
 <main>
@@ -170,7 +199,7 @@ footer a:hover { color: var(--txt); }
 
     <div class="ov pick" id="pick">
       <div class="pick-top shadow-txt">
-        <h1>Bubble <span>Blower</span></h1>
+        <h1 class="plank">Bubble <span>Blower</span></h1>
         <p>Hold to blow. Let go when the bubble fills the glowing shape.</p>
       </div>
       <div class="pick-card">
@@ -205,6 +234,8 @@ footer a:hover { color: var(--txt); }
       </div>
     </div>
 
+    <div class="ov card-ov" id="card"><div><small id="cardSub"></small><b id="cardTxt"></b></div></div>
+    <div class="ov wipe" id="wipe"></div>
     <div class="ov loading" id="loading">Diving in…</div>
   </div>
 </main>
@@ -376,6 +407,32 @@ const rays = [];
     world.add(m); rays.push({ m, ph: rand(0, 6) });
   }
 }
+// a sunken tiki head and a treasure chest that pops open during Fever
+let chestLid = null;
+{
+  const tiki = new THREE.Group(); tiki.position.set(3.7, 0, -4.2); tiki.rotation.set(0, -.35, .08); world.add(tiki);
+  tiki.add(ink(mesh(new THREE.CylinderGeometry(.62, .7, 2.3, 10), 0x8a5a33, [0, 1.15, 0]), 1.04));
+  tiki.add(mesh(new THREE.CylinderGeometry(.72, .72, .22, 10), 0x6e4426, [0, 2.3, 0]));
+  for (const sx of [-1, 1]) {
+    tiki.add(mesh(new THREE.BoxGeometry(.34, .18, .1), 0x3a2414, [sx * .26, 1.65, .62]));
+    tiki.add(mesh(new THREE.BoxGeometry(.12, .2, .08), 0x2b1a0e, [sx * .26, 1.62, .66]));
+  }
+  tiki.add(mesh(new THREE.BoxGeometry(.24, .5, .14), 0x6e4426, [0, 1.3, .66]));
+  tiki.add(mesh(new THREE.BoxGeometry(.7, .22, .1), 0x3a2414, [0, .82, .64]));
+  for (let k = -2; k <= 2; k++) tiki.add(mesh(new THREE.BoxGeometry(.08, .1, .06), 0xf1e6c8, [k * .13, .86, .7]));
+  tiki.add(mesh(new THREE.TorusGeometry(.5, .06, 6, 24), 0x3fae6a, [0, 2.0, 0], [1.15, 1.15, 1.15], [Math.PI / 2, 0, 0]));
+
+  const chest = new THREE.Group(); chest.position.set(-3.4, 0, -2.6); chest.rotation.y = .45; world.add(chest);
+  chest.add(ink(mesh(new THREE.BoxGeometry(1.2, .6, .75), 0x8a5a33, [0, .3, 0]), 1.04));
+  chest.add(mesh(new THREE.BoxGeometry(1.24, .1, .79), 0xd9a63a, [0, .52, 0]));
+  chest.add(mesh(new THREE.BoxGeometry(.18, .22, .05), 0xd9a63a, [0, .42, .4]));
+  chest.add(mesh(SPH, 0xffd84a, [0, .6, 0], [.5, .12, .3]));
+  chestLid = new THREE.Group(); chestLid.position.set(0, .6, -.375); chest.add(chestLid);
+  const lidGeo = new THREE.CylinderGeometry(.375, .375, 1.2, 16, 1, false, 0, Math.PI); lidGeo.rotateZ(Math.PI / 2);
+  chestLid.add(ink(mesh(lidGeo, 0x9c6233, [0, 0, .375]), 1.04));
+  chestLid.userData.pos = new THREE.Vector3(-3.4, .9, -2.6);
+}
+
 // a school of background fish
 const fishes = [];
 {
@@ -687,6 +744,76 @@ function startBlowSound() {
 function setBlowPitch(r) { if (blowOsc) blowOsc.frequency.setTargetAtTime(160 + r * 520, actx.currentTime, .03); }
 function stopBlowSound() { if (blowOsc) { try { blowGain.gain.setTargetAtTime(0, actx.currentTime, .02); blowOsc.stop(actx.currentTime + .1); } catch {} blowOsc = null; } }
 const NOTES = [523, 587, 659, 784, 880, 988, 1047, 1175, 1319];
+/* Music: an original, made-up island ukulele loop. C – Am – F – G7, a strum, a walking bass and a little tune. */
+let musicOn = saved.music !== false, musicTimer = null, nextBeat = 0, beat = 0, musicGain = null;
+const BPM = 116, SPB = 60 / BPM;
+const CHORDS = [[60, 64, 67, 72], [57, 60, 64, 69], [53, 57, 60, 65], [55, 59, 62, 65]];
+const BASS = [[48, 55], [45, 52], [41, 48], [43, 50]];
+// [beat-in-4-bars (in eighths), midi, length in eighths]; written for this game
+const TUNE = [[0, 72, 2], [2, 76, 1], [3, 79, 3], [6, 76, 2], [8, 74, 2], [10, 72, 1], [11, 69, 3], [14, 72, 2],
+              [16, 69, 2], [18, 72, 1], [19, 77, 3], [22, 76, 2], [24, 74, 3], [27, 71, 1], [28, 74, 2], [30, 79, 2]];
+const midi = m => 440 * Math.pow(2, (m - 69) / 12);
+function pluck(freq, t, dur, vol, type = 'triangle') {
+  const a = actx, o = a.createOscillator(), o2 = a.createOscillator(), gn = a.createGain(), f = a.createBiquadFilter();
+  o.type = type; o2.type = 'sine'; o.frequency.setValueAtTime(freq, t); o2.frequency.setValueAtTime(freq * 2, t);
+  f.type = 'lowpass'; f.frequency.setValueAtTime(3200, t); f.frequency.exponentialRampToValueAtTime(900, t + dur);
+  gn.gain.setValueAtTime(.0001, t); gn.gain.exponentialRampToValueAtTime(vol, t + .006); gn.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(f); o2.connect(f); f.connect(gn).connect(musicGain);
+  o.start(t); o2.start(t); o.stop(t + dur + .02); o2.stop(t + dur + .02);
+}
+function shaker(t, vol) {
+  const a = actx, len = Math.floor(a.sampleRate * .05), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = a.createBufferSource(), gn = a.createGain(), f = a.createBiquadFilter();
+  src.buffer = buf; f.type = 'highpass'; f.frequency.value = 5000; gn.gain.value = vol;
+  src.connect(f).connect(gn).connect(musicGain); src.start(t);
+}
+function scheduleMusic() {
+  const a = actx; const fever = g && g.fever > 0;
+  const step = SPB / 2 * (fever ? .82 : 1); // eighth notes, a bit quicker during Fever
+  while (nextBeat < a.currentTime + .25) {
+    const e = beat % 32, bar = Math.floor(e / 8), inBar = e % 8, ch = CHORDS[bar];
+    // island strum: down on 1, down-up on 2&, up on 3&, down-up on 4
+    if ([0, 3, 4, 6, 7].includes(inBar)) ch.forEach((n, i) => pluck(midi(n), nextBeat + (inBar % 2 ? (3 - i) : i) * .012, .35, inBar % 2 ? .035 : .05));
+    if (inBar === 0 || inBar === 4) pluck(midi(BASS[bar][inBar ? 1 : 0] - 12), nextBeat, .4, .09, 'sine');
+    if (inBar % 2) shaker(nextBeat, .05);
+    const note = TUNE.find(n => n[0] === e);
+    if (note && beat >= 32) pluck(midi(note[1]), nextBeat, note[2] * step + .15, .06, 'square');
+    nextBeat += step; beat++;
+  }
+}
+function startMusic() {
+  if (!musicOn || musicTimer) return;
+  try {
+    ac(); musicGain = musicGain || actx.createGain(); musicGain.gain.value = .55; musicGain.connect(actx.destination);
+    nextBeat = actx.currentTime + .1; beat = 0;
+    musicTimer = setInterval(scheduleMusic, 60); scheduleMusic();
+  } catch {}
+}
+function stopMusic() { clearInterval(musicTimer); musicTimer = null; if (musicGain) { try { musicGain.disconnect(); } catch {} musicGain = null; } }
+const musicBtn = $('music');
+function syncMusic() { musicBtn.style.opacity = musicOn ? 1 : .4; musicBtn.setAttribute('aria-pressed', String(musicOn)); musicBtn.setAttribute('aria-label', musicOn ? 'Music on' : 'Music off'); }
+syncMusic();
+musicBtn.onclick = () => { musicOn = !musicOn; saved.music = musicOn; persist(); syncMusic(); musicOn ? startMusic() : stopMusic(); };
+// browsers only allow sound after a tap or key press
+['pointerdown', 'keydown'].forEach(ev => window.addEventListener(ev, () => startMusic(), { once: false, passive: true }));
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopMusic(); });
+
+function bubbleWipe() {
+  const w = $('wipe');
+  w.innerHTML = Array.from({ length: 16 }, (_, i) => { const s = 18 + Math.random() * 26; return `<i style="left:${(i / 16) * 100 - 6 + Math.random() * 8}%;width:${s}vmin;height:${s}vmin;animation-delay:${(Math.random() * .25).toFixed(2)}s"></i>`; }).join('');
+  w.classList.remove('go'); void w.offsetWidth; w.classList.add('go');
+  clearTimeout(bubbleWipe.t); bubbleWipe.t = setTimeout(() => { w.innerHTML = ''; w.classList.remove('go'); }, 1400);
+  tone(300, .5, 'sine', .06, 3);
+}
+const NARRATOR = ['Moments later…', 'Meanwhile, deeper down…', 'One soggy hour later…', 'Back at the reef…', 'Several bubbles later…', 'Elsewhere, near a rock…', 'The tide turns…', 'Much, much later…'];
+function narratorCard(level) {
+  $('cardSub').textContent = `Level ${level}`;
+  $('cardTxt').textContent = NARRATOR[(level - 2) % NARRATOR.length];
+  const c = $('card'); c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
+  tone(392, .12, 'triangle', .08); tone(523, .2, 'triangle', .08, 0, .12);
+}
+
 const sfx = {
   pop() { tone(700, .14, 'triangle', .22, .15); tone(180, .2, 'sine', .15, .5); },
   perfect(c) { const b = NOTES[Math.min(c, NOTES.length - 1)]; tone(b, .12, 'sine', .14); tone(b * 1.5, .22, 'sine', .12, 0, .08); },
@@ -766,6 +893,7 @@ function toPick() {
 function startGame() {
   const buddy = BUDDIES[buddyIdx];
   if (buddy.id === 'custom' && !customReady) return;
+  bubbleWipe();
   g = { buddy, n: -1, score: 0, lives: 3, combo: 0, bestCombo: 0, perfectRun: 0, fever: 0, fevers: 0, perfects: 0,
         state: 'wait', r: 0, hold: 0, round: null, lvl: 1, waitUntil: 0, jellySeen: false, breatheSeen: false };
   mode = 'play';
@@ -779,7 +907,7 @@ function nextRound() {
   g.n++;
   const n = g.n;
   const lvl = 1 + Math.floor(n / 5);
-  if (lvl !== g.lvl) { g.lvl = lvl; banner(`Level ${lvl}`, '#7fe3ff'); }
+  if (lvl !== g.lvl) { g.lvl = lvl; narratorCard(lvl); }
   let shape = n < 2 ? 'round' : SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)];
   if (g.round && shape === g.round.shape && n >= 2) shape = SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)];
   const golden = n >= 3 && Math.random() < .14;
@@ -857,6 +985,7 @@ function judge(popped) {
     burst(centre, 40, rd.golden ? [0xffd84a, 0xfff3a0] : [0xe8ff47, 0x7fe3ff, 0xff8fc0, 0xffffff], 5, .07, -1, R * sh.hx);
     react = { kind: 'happy', t: 0 };
     if (g.perfectRun >= 3) {
+      setTimeout(() => burst(chestLid.userData.pos, 50, [0xffd84a, 0xffe98a, 0xfff6c8], 5, .07, -3, .3), 350);
       g.perfectRun = 0; g.fever = 5; g.fevers++;
       const gained = g.lives < 5; if (gained) g.lives++;
       setTimeout(() => { sfx.fever(); banner(gained ? 'FEVER! ×2 points · +1 life' : 'FEVER! ×2 points', '#ffe066'); renderLives(true); }, 350);
@@ -900,6 +1029,7 @@ function gameOver() {
     .map(([v, l]) => `<div><b>${v}</b><small>${l}</small></div>`).join('');
   $('fever').hidden = true; $('hint').textContent = '';
   $('over').hidden = false;
+  bubbleWipe();
 }
 
 /* ---------- HUD helpers ---------- */
@@ -1063,8 +1193,9 @@ function step(dt) {
   });
   partMesh.instanceMatrix.needsUpdate = true;
 
-  // fever tint
+  // fever tint, and the treasure chest swings open while it lasts
   const fev = g && g.fever > 0;
+  chestLid.rotation.x += ((fev ? -1.9 : 0) + (fev ? Math.sin(t * 6) * .08 : 0) - chestLid.rotation.x) * Math.min(1, dt * 5);
   scene.fog.color.lerp(tmpCol.set(fev ? 0x3a2a6e : 0x0c3f5e), Math.min(1, dt * 2));
 
   // camera with gentle drift and shake
