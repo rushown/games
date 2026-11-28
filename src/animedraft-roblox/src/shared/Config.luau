@@ -56,7 +56,13 @@ Config.TANK = { id = 3737228612, name = "Bigger Tank", step = 5, cap = 30, robux
 
 -- Character portraits: Roblox image asset ids by character key (e.g. gojo = 1234567890). Upload only art you
 -- own or are licensed to use; characters without an id show a series-coloured emblem instead.
-Config.CHARACTER_IMAGES = {} :: { [string]: number }
+Config.CHARACTER_IMAGES = require(script.Parent.Portraits) :: { [string]: number }
+
+-- Image URL for a portrait id at a given size. rbxthumb works for both image and decal ids and serves a
+-- downsized copy, so portraits stay light on phones.
+function Config.portraitUrl(id: number, size: number?): string
+	return `rbxthumb://type=Asset&id={id}&w={size or 150}&h={size or 150}`
+end
 
 -- Rewarded video ads (Roblox AdService): watch an ad, get +`amount` energy. Roblox pays the creator for ad
 -- views. The reward is a developer product (players never pay for it; it's only granted through the ad).

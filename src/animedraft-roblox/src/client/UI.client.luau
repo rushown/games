@@ -404,7 +404,7 @@ local function portrait(parent, c, s, size, pos)
 	})
 	local imageId = Config.CHARACTER_IMAGES[c.key]
 	if imageId and imageId ~= 0 then
-		new("ImageLabel", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Image = "rbxassetid://" .. imageId, ScaleType = Enum.ScaleType.Crop, Parent = frame }, { corner(18) })
+		new("ImageLabel", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Image = Config.portraitUrl(imageId, 420), ScaleType = Enum.ScaleType.Crop, Parent = frame }, { corner(18) })
 	else
 		-- Light burst behind the emblem
 		for i = 0, 5 do
@@ -503,7 +503,7 @@ local function miniRow(parent, key, rightText, order, height)
 	})
 	local imageId = Config.CHARACTER_IMAGES[key]
 	if imageId and imageId ~= 0 then
-		new("ImageLabel", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Image = "rbxassetid://" .. imageId, ScaleType = Enum.ScaleType.Crop, Parent = thumb }, { corner(8) })
+		new("ImageLabel", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Image = Config.portraitUrl(imageId, 150), ScaleType = Enum.ScaleType.Crop, Parent = thumb }, { corner(8) })
 	else
 		text({ Text = c.initials, Size = UDim2.fromScale(1, 1), heading = true, TextSize = 14, Parent = thumb })
 	end

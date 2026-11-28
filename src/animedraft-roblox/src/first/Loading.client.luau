@@ -181,9 +181,11 @@ if okShared then
 	-- Character portraits: tiny (256 px) images, so preloading all of them keeps drafts pop-in free.
 	for _, id in Config.CHARACTER_IMAGES do
 		if id ~= 0 then
-			local img = Instance.new("ImageLabel")
-			img.Image = "rbxassetid://" .. id
-			table.insert(assets, img)
+			for _, size in { 150, 420 } do -- team-list thumb and big card
+				local img = Instance.new("ImageLabel")
+				img.Image = Config.portraitUrl(id, size)
+				table.insert(assets, img)
+			end
 		end
 	end
 	for _, id in Config.SOUNDS do
