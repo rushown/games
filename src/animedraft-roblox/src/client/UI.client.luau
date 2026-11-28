@@ -440,16 +440,240 @@ local TIER_COLOR = {
 	B = Color3.fromRGB(150, 220, 140),
 }
 
+------------------------------------------------------------------ burning border
+-- Top-tier characters burn: a fire-coloured border that flows around the card, and on big cards flame
+-- tongues licking up from the edges, rising embers and a pulsing glow. Every fire is animated from one
+-- Heartbeat loop and removes itself when its card is destroyed.
+
+local FIRE = {
+	B = { glowOnly = true, glow = Color3.fromRGB(150, 220, 140), bloom = 0.82 },
+	A = { glowOnly = true, glow = Color3.fromRGB(90, 200, 255), bloom = 0.78 },
+	S = { glowOnly = true, glow = Color3.fromRGB(255, 210, 70), bloom = 0.74 },
+	SS = { -- smouldering embers
+		colors = { Color3.fromRGB(255, 226, 120), Color3.fromRGB(255, 150, 40), Color3.fromRGB(220, 70, 20) },
+		glow = Color3.fromRGB(255, 130, 30),
+		top = 7, side = 2, flameH = 78, embers = 7, thickness = 4,
+	},
+	SSS = { -- full blaze
+		colors = { Color3.fromRGB(255, 244, 160), Color3.fromRGB(255, 160, 30), Color3.fromRGB(240, 50, 20) },
+		glow = Color3.fromRGB(255, 90, 20),
+		top = 9, side = 3, flameH = 108, embers = 12, thickness = 5,
+	},
+	BEYOND = { -- cosmic violet flame
+		colors = { Color3.fromRGB(245, 235, 255), Color3.fromRGB(190, 110, 255), Color3.fromRGB(90, 50, 255) },
+		glow = Color3.fromRGB(160, 80, 255),
+		top = 11, side = 4, flameH = 126, embers = 16, thickness = 6,
+		rays = 8, stars = 7, -- the greatest get a rotating sunburst and orbiting stars
+	},
+}
+
+local fires = {}
+
+-- Flame artwork: "Recolorable Big Fire Flipbook Texture 4x4" (Creator Store, VeryStrangeSituation), a white
+-- 512x512 sheet of 16 flame frames. A UIGradient colours each flame from a white-hot base to a dark tip.
+local FLAME_IMAGE = "rbxassetid://17703378809"
+local FLAME_CELL = 128
+local FLAME_FPS = 22
+task.spawn(function()
+	local img = Instance.new("ImageLabel")
+	img.Image = FLAME_IMAGE
+	game:GetService("ContentProvider"):PreloadAsync({ img })
+end)
+
+local function respawnEmber(e, first)
+	local px = 3 + math.random() * 4
+	e.frame.Size = UDim2.fromOffset(px, px)
+	e.x = math.random()
+	e.life = 0.9 + math.random() * 0.9
+	e.age = if first then math.random() * e.life else 0
+	e.drift = (math.random() - 0.5) * 50
+	e.rise = 60 + math.random() * 90
+end
+
+-- card: the Frame to set alight. opts.particles adds flames/embers/glow (big cards only); opts.z is the
+-- ZIndex for the effect (below the card's content); opts.radius matches the card's corner radius.
+local function addFire(card: Frame, tier: string, opts)
+	local spec = FIRE[tier]
+	if not spec then
+		return false
+	end
+	opts = opts or {}
+	if spec.glowOnly and not opts.particles then
+		return false
+	end
+	local fire = { card = card, t = math.random() * 10, flames = {}, embers = {}, glows = {}, rays = {}, stars = {} }
+	local cs = spec.colors
+	if not spec.glowOnly then
+		local border = new("UIStroke", { Color = Color3.new(1, 1, 1), Thickness = opts.thickness or spec.thickness, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, LineJoinMode = Enum.LineJoinMode.Round, Parent = card }, {
+			new("UIGradient", { Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, cs[1]),
+				ColorSequenceKeypoint.new(0.2, cs[2]),
+				ColorSequenceKeypoint.new(0.4, cs[3]),
+				ColorSequenceKeypoint.new(0.6, cs[2]),
+				ColorSequenceKeypoint.new(0.8, cs[1]),
+				ColorSequenceKeypoint.new(1, cs[2]),
+			}) }),
+		})
+		fire.border, fire.grad, fire.base = border, border:FindFirstChildOfClass("UIGradient"), border.Thickness
+	end
+	if opts.particles then
+		local z = opts.z or 0
+		local radius = opts.radius or 22
+		local holder = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, ZIndex = z, Parent = card })
+		-- Sunburst behind the greatest: long light beams slowly turning around the card
+		if spec.rays then
+			local span = opts.span or 500
+			for i = 1, spec.rays do
+				local ray = new("Frame", {
+					AnchorPoint = Vector2.new(0.5, 0.5),
+					Position = UDim2.fromScale(0.5, 0.5),
+					Size = UDim2.fromOffset(if i % 2 == 0 then 26 else 14, span * 1.55),
+					BackgroundColor3 = if i % 2 == 0 then cs[2] else cs[1],
+					BorderSizePixel = 0,
+					ZIndex = z,
+					Parent = holder,
+				}, {
+					new("UIGradient", { Rotation = 90, Transparency = NumberSequence.new({
+						NumberSequenceKeypoint.new(0, 1),
+						NumberSequenceKeypoint.new(0.25, 0.55),
+						NumberSequenceKeypoint.new(0.5, 0.35),
+						NumberSequenceKeypoint.new(0.75, 0.55),
+						NumberSequenceKeypoint.new(1, 1),
+					}) }),
+				})
+				table.insert(fire.rays, { frame = ray, base = (i - 1) * (180 / spec.rays) })
+			end
+		end
+		-- Layered bloom: three soft halos, each wider and fainter
+		local bloom = spec.bloom or 0.62
+		for n, grow in { 14, 32, 56 } do
+			table.insert(fire.glows, { frame = new("Frame", {
+				AnchorPoint = Vector2.new(0.5, 0.5),
+				Position = UDim2.fromScale(0.5, 0.5),
+				Size = UDim2.new(1, grow, 1, grow),
+				BackgroundColor3 = spec.glow,
+				BackgroundTransparency = bloom + (n - 1) * 0.1,
+				ZIndex = z,
+				Parent = holder,
+			}, { new("UICorner", { CornerRadius = UDim.new(0, radius + grow / 2) }) }), base = bloom + (n - 1) * 0.1 })
+		end
+		-- Orbiting star sparkles
+		for i = 1, spec.stars or 0 do
+			local star = new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Size = UDim2.fromOffset(9, 9), Rotation = 45, BackgroundColor3 = Color3.new(1, 1, 1), BorderSizePixel = 0, ZIndex = z, Parent = holder }, {
+				new("UIGradient", { Color = ColorSequence.new(Color3.new(1, 1, 1), cs[2]) }),
+			})
+			table.insert(fire.stars, { frame = star, phase = (i - 1) / spec.stars, speed = 0.08 + (i % 3) * 0.025 })
+		end
+		-- Flipbook flames along the top edge and up both sides, in two layers: a big dark one behind and
+		-- a smaller white-hot one in front, so the fire has depth. Every flame rises straight up.
+		local scale = opts.size or 1
+		local function flame(px, py, h, front)
+			local img = new("ImageLabel", {
+				AnchorPoint = Vector2.new(0.5, 1),
+				BackgroundTransparency = 1,
+				Image = FLAME_IMAGE,
+				ImageRectSize = Vector2.new(FLAME_CELL, FLAME_CELL),
+				ImageTransparency = if front then 0 else 0.15,
+				ZIndex = z,
+				Parent = holder,
+			}, {
+				new("UIGradient", {
+					Rotation = -90, -- colour runs from the base (bottom) to the tip (top)
+					Color = if front
+						then ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)), ColorSequenceKeypoint.new(0.35, cs[1]), ColorSequenceKeypoint.new(0.75, cs[2]), ColorSequenceKeypoint.new(1, cs[3]) })
+						else ColorSequence.new({ ColorSequenceKeypoint.new(0, cs[2]), ColorSequenceKeypoint.new(0.6, cs[3]), ColorSequenceKeypoint.new(1, cs[3]:Lerp(Color3.new(0, 0, 0), 0.4)) }),
+				}),
+			})
+			table.insert(fire.flames, { img = img, px = px, py = py, h = h * scale, frame = math.random() * 16, fps = FLAME_FPS * (0.8 + math.random() * 0.4), seed = math.random() * 10 })
+		end
+		local H = spec.flameH
+		for layer = 1, 2 do
+			local front = layer == 2
+			local n = spec.top + (if front then 1 else 0)
+			for i = 1, n do
+				local u = (i - 0.5) / n + (math.random() - 0.5) * 0.04
+				flame(UDim2.new(u, 0, 0, if front then 14 else 10), nil, H * (if front then 0.72 else 1) * (0.85 + math.random() * 0.3), front)
+			end
+			for _, side in { 0, 1 } do
+				for j = 1, spec.side do
+					local v = 0.15 + (j - 1) / math.max(spec.side, 1) * 0.75
+					flame(UDim2.new(side, if side == 0 then -10 else 10, v + 0.12, 0), nil, H * (if front then 0.55 else 0.75) * (0.8 + math.random() * 0.3), front)
+				end
+			end
+		end
+		for i = 1, spec.embers or 0 do
+			local e = { frame = new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Size = UDim2.fromOffset(4, 4), BackgroundColor3 = cs[1], BorderSizePixel = 0, ZIndex = z, Parent = holder }, { new("UICorner", { CornerRadius = UDim.new(1, 0) }) }) }
+			respawnEmber(e, true)
+			fire.embers[i] = e
+		end
+	end
+	table.insert(fires, fire)
+	return true
+end
+
+RunService.Heartbeat:Connect(function(dt)
+	for i = #fires, 1, -1 do
+		local fire = fires[i]
+		if not fire.card:IsDescendantOf(game) then
+			table.remove(fires, i)
+			continue
+		end
+		fire.t += dt
+		local t = fire.t
+		if fire.border then
+			fire.grad.Rotation = (t * 110) % 360
+			fire.border.Thickness = fire.base + math.sin(t * 13) * 0.8 + math.sin(t * 29) * 0.5
+		end
+		local pulse = math.sin(t * 3) * 0.05 + math.sin(t * 11) * 0.02
+		for _, g in fire.glows do
+			g.frame.BackgroundTransparency = math.clamp(g.base + pulse, 0, 1)
+		end
+		for _, r in fire.rays do
+			r.frame.Rotation = r.base + t * 14
+			r.frame.BackgroundTransparency = 0.15 + math.sin(t * 2 + r.base) * 0.15
+		end
+		for _, st in fire.stars do
+			-- run around the card's outline (an ellipse just outside it), twinkling as they go
+			local a = (st.phase + t * st.speed) * math.pi * 2
+			st.frame.Position = UDim2.new(0.5 + math.cos(a) * 0.56, 0, 0.5 + math.sin(a) * 0.56, 0)
+			local tw = 0.6 + math.abs(math.sin(t * 5 + st.phase * 13)) * 0.9
+			st.frame.Size = UDim2.fromOffset(9 * tw, 9 * tw)
+			st.frame.Rotation = 45 + t * 90
+		end
+		for _, f in fire.flames do
+			f.frame = (f.frame + dt * f.fps) % 16
+			local n = math.floor(f.frame)
+			f.img.ImageRectOffset = Vector2.new((n % 4) * FLAME_CELL, math.floor(n / 4) * FLAME_CELL)
+			-- breathe: each flame swells and shrinks a little on its own rhythm
+			local h = f.h * (0.92 + math.sin(t * 6 + f.seed) * 0.08 + math.sin(t * 15 + f.seed * 3) * 0.04)
+			f.img.Size = UDim2.fromOffset(h * 0.85, h)
+			f.img.Position = f.px
+		end
+		for _, e in fire.embers do
+			e.age += dt
+			if e.age >= e.life then
+				respawnEmber(e)
+			end
+			local k = e.age / e.life
+			e.frame.Position = UDim2.new(e.x, e.drift * k + math.sin(t * 4 + e.x * 30) * 6, 0, -e.rise * k)
+			e.frame.BackgroundTransparency = k
+		end
+	end
+end)
+
 local function characterCard(parent, key, size, pos, anchor)
 	local c = Data.get(key)
 	local s = Data.SERIES[c.series]
 	local tierColor = TIER_COLOR[c.tier] or C.gold
 	local card = new("Frame", { Size = size, Position = pos, AnchorPoint = anchor or Vector2.zero, BackgroundColor3 = Color3.new(1, 1, 1), Parent = parent }, {
 		corner(22),
-		stroke(tierColor, 5),
 		new("UIGradient", { Color = ColorSequence.new(s.c1, s.c2), Rotation = 35 }),
 	})
-	local shade = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.4, Parent = card }, { corner(22), pad(14) })
+	local shade = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.4, ZIndex = 2, Parent = card }, { corner(22), pad(14) })
+	addFire(card, c.tier, { particles = true, z = 1, radius = 22, span = 520 })
+	if not FIRE[c.tier] or FIRE[c.tier].glowOnly then
+		stroke(tierColor, 5).Parent = card
+	end
 	portrait(shade, c, s, UDim2.new(0, 196, 1, 0))
 	local info = new("Frame", { Position = UDim2.fromOffset(212, 0), Size = UDim2.new(1, -212, 1, 0), BackgroundTransparency = 1, Parent = shade })
 	text({ Text = s.name:upper(), Size = UDim2.new(1, -96, 0, 20), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = C.dim, TextSize = 14, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, Parent = info })
@@ -495,6 +719,14 @@ local function miniRow(parent, key, rightText, order, height)
 		corner(10),
 		new("UIGradient", { Color = ColorSequence.new(s.c1, s.c2) }),
 	})
+	if FIRE[c.tier] and not FIRE[c.tier].glowOnly then
+		-- Burning rows sit a few pixels in, so a scrolling list doesn't clip the flames on their border.
+		local slot = new("Frame", { Size = row.Size, BackgroundTransparency = 1, LayoutOrder = order, Parent = parent })
+		row.Position = UDim2.fromOffset(3, 3)
+		row.Size = UDim2.new(1, -6, 1, -6)
+		row.Parent = slot
+		addFire(row, c.tier, { thickness = 2.5 })
+	end
 	local shade = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.45, Parent = row }, { corner(10), pad(6) })
 	-- Small portrait (uploaded art, or the initials badge)
 	local thumb = new("Frame", { Size = UDim2.new(0, 32, 1, 0), BackgroundColor3 = Color3.new(1, 1, 1), ClipsDescendants = true, Parent = shade }, {
@@ -775,8 +1007,42 @@ local function renderDraft()
 		shownBid = nil
 		clear(cardHolder)
 		local card = characterCard(cardHolder, a.lot.key, UDim2.fromOffset(520, 318), UDim2.new(0.5, 0, 0, 62), Vector2.new(0.5, 0))
-		popIn(card)
-		play("lot")
+		if Data.get(a.lot.key).tier == "BEYOND" then
+			-- ∞ tier: a swift, loud entrance. Violet flash, the card spins up out of nowhere, a banner slams in.
+			local flash = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(190, 120, 255), BackgroundTransparency = 0.15, ZIndex = 40, Parent = cardHolder })
+			tween(flash, 0.5, { BackgroundTransparency = 1 })
+			task.delay(0.55, function()
+				flash:Destroy()
+			end)
+			local ps = new("UIScale", { Name = "PopScale", Scale = 0.05, Parent = card })
+			card.Rotation = -200
+			tween(ps, 0.45, { Scale = 1 }, Enum.EasingStyle.Back)
+			tween(card, 0.45, { Rotation = 0 }, Enum.EasingStyle.Quint)
+			local tag = text({ Text = "∞  INFINITE TIER  ∞", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0, 40), Size = UDim2.fromOffset(560, 56), heading = true, TextSize = 46, TextColor3 = Color3.fromRGB(225, 190, 255), ZIndex = 41, Parent = cardHolder })
+			local ts = new("UIScale", { Scale = 2.6, Parent = tag })
+			tween(ts, 0.3, { Scale = 1 }, Enum.EasingStyle.Back)
+			task.delay(1.3, function()
+				if tag.Parent then
+					tween(tag, 0.35, { TextTransparency = 1, Position = UDim2.new(0.5, 0, 0, 10) })
+					task.delay(0.4, function()
+						tag:Destroy()
+					end)
+				end
+			end)
+			task.spawn(function()
+				task.wait(0.4)
+				for _ = 1, 6 do
+					cardHolder.Position = UDim2.fromOffset(math.random(-8, 8), math.random(-6, 6))
+					task.wait(0.03)
+				end
+				cardHolder.Position = UDim2.new()
+			end)
+			play("open")
+			task.delay(0.4, play, "sold")
+		else
+			popIn(card)
+			play("lot")
+		end
 	end
 	if a.last and a.last.id ~= shownOutcome then
 		local first = shownOutcome == nil
@@ -981,9 +1247,12 @@ local function fighterCard(key, side, hp)
 		Parent = battleLayer,
 	}, {
 		corner(24),
-		stroke(tierColor, 6),
 		new("UIGradient", { Color = ColorSequence.new(s.c1, s.c2), Rotation = 45 }),
 	})
+	addFire(card, c.tier, { particles = true, z = 71, radius = 24, span = 400, size = 1.1 })
+	if not FIRE[c.tier] or FIRE[c.tier].glowOnly then
+		stroke(tierColor, 6).Parent = card
+	end
 	local shade = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.35, ZIndex = 72, Parent = card }, { corner(24), pad(14) })
 	local p = portrait(shade, c, s, UDim2.new(1, 0, 0, 200))
 	for _, d in p:GetDescendants() do
@@ -992,15 +1261,6 @@ local function fighterCard(key, side, hp)
 		end
 	end
 	p.ZIndex = 73
-	if c.tier == "BEYOND" then
-		local aura = new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.new(1, 40, 1, 40), BackgroundColor3 = Color3.fromRGB(170, 90, 255), BackgroundTransparency = 0.6, ZIndex = 71, Parent = card }, { corner(36) })
-		task.spawn(function()
-			while aura.Parent do
-				tween(aura, 0.6, { Size = UDim2.new(1, 64, 1, 64), BackgroundTransparency = 0.85 }, Enum.EasingStyle.Sine).Completed:Wait()
-				tween(aura, 0.6, { Size = UDim2.new(1, 36, 1, 36), BackgroundTransparency = 0.55 }, Enum.EasingStyle.Sine).Completed:Wait()
-			end
-		end)
-	end
 	text({ Text = c.name, Position = UDim2.fromOffset(0, 208), Size = UDim2.new(1, 0, 0, 38), heading = true, TextSize = 28, TextScaled = true, ZIndex = 74, Parent = shade })
 	text({ Text = `{s.short} · {c.title}`, Position = UDim2.fromOffset(0, 246), Size = UDim2.new(1, 0, 0, 20), FontFace = BODY_MED, TextSize = 14, TextColor3 = C.dim, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, ZIndex = 74, Parent = shade })
 	local tier = text({ Text = Battle.tierLabel(c.tier), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 4, 0, -4), Size = UDim2.fromOffset(70, 40), BackgroundColor3 = tierColor, BackgroundTransparency = 0, heading = true, TextSize = 28, ZIndex = 76, Parent = shade })
@@ -1028,6 +1288,7 @@ local function playBattle(r, done)
 		return my == battleToken
 	end
 	battlePlaying = true
+	setMusic("battleMusic")
 	clear(battleLayer)
 	battleLayer.Visible = true
 	local skip = false
@@ -1175,6 +1436,7 @@ local function playBattle(r, done)
 		battleLayer.Visible = false
 		clear(battleLayer)
 		battlePlaying = false
+		setMusic("lobbyMusic")
 		done()
 	end
 end
@@ -1561,7 +1823,7 @@ render = function()
 	-- At a table the screen belongs to the game: no player list or "join table" prompts on top.
 	core(Enum.CoreGuiType.PlayerList, mode == "browse" and not tablesPanel.Visible)
 	ProximityPromptService.Enabled = mode == "browse"
-	setMusic(if mode == "draft" then "draftMusic" else "lobbyMusic")
+	setMusic(if battlePlaying then "battleMusic" elseif mode == "draft" then "draftMusic" else "lobbyMusic")
 
 	if mode == "browse" then
 		if tablesPanel.Visible then

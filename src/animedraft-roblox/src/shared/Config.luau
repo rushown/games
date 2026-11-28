@@ -13,6 +13,7 @@ Config.TABLES = 8
 Config.SOUNDS = {
 	lobbyMusic = 87808736665214, -- "Anime Coffee Shop Chill"
 	draftMusic = 88274542544631, -- "Tempest Banner | Anime Taiko Festival"
+	battleMusic = 84037283619823, -- "Anime Charge (Cinematic Battle Music)" (DistroKid)
 	click = 15675059323, -- Roblox UI Bright Click
 	open = 15674975792, -- Roblox UI Whoosh
 	bid = 127645268874265, -- Roblox CoinTransfer
