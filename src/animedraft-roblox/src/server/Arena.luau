@@ -220,19 +220,68 @@ local function stage(id: number, cf: CFrame)
 	sg.Parent = sign
 	label(sg, { Size = UDim2.fromScale(1, 1), Text = "卓 " .. id, TextColor3 = Color3.fromRGB(255, 215, 120) })
 
-	-- Podiums
+	-- The draft table: two players sit on opposite sides facing each other, each with a row of glowing
+	-- card slots and a light strip on their edge (brightens for whoever leads), and a spotlight above.
+	part({ Size = Vector3.new(7.5, 0.5, 5.5), CFrame = cf * CFrame.new(0, 5.2, 8.5), Color = DARK_WOOD, Material = Enum.Material.Wood }, model)
+	part({ Size = Vector3.new(7.9, 0.25, 5.9), CFrame = cf * CFrame.new(0, 4.85, 8.5), Color = Color3.fromRGB(120, 60, 220), Material = Enum.Material.Neon, CanCollide = false }, model)
+	for _, x in { -3.2, 3.2 } do
+		for _, z in { 6.2, 10.8 } do
+			part({ Size = Vector3.new(0.6, 3, 0.6), CFrame = cf * CFrame.new(x, 3.5, z), Color = DARK_WOOD, Material = Enum.Material.Wood }, model)
+		end
+	end
+	local seats = {}
 	for i = 1, 2 do
-		local x = if i == 1 then -9 else 9
-		part({ Size = Vector3.new(7, 4, 4), CFrame = cf * CFrame.new(x, 4, 8), Color = Color3.fromRGB(40, 30, 50), Material = Enum.Material.Marble }, model)
-		local top = part({ Size = Vector3.new(7.4, 0.4, 4.4), CFrame = cf * CFrame.new(x, 6.2, 8), Color = SEAT_COLORS[i], Material = Enum.Material.Neon }, model)
-		L.lights[i] = light(top, SEAT_COLORS[i], 16, 1)
+		local side = if i == 1 then -1 else 1
+		local x = side * 6
+		-- A column of five card slots on this player's side
+		for k = 0, 4 do
+			part({
+				Size = Vector3.new(1.3, 0.06, 0.85),
+				CFrame = cf * CFrame.new(side * 1.9, 5.48, 6.6 + k * 0.95),
+				Color = SEAT_COLORS[i],
+				Material = Enum.Material.Neon,
+				Transparency = 0.45,
+				CanCollide = false,
+			}, model)
+		end
+		local strip = part({ Size = Vector3.new(0.3, 0.22, 5.3), CFrame = cf * CFrame.new(side * 3.6, 5.5, 8.5), Color = SEAT_COLORS[i], Material = Enum.Material.Neon, CanCollide = false }, model)
+		L.lights[i] = light(strip, SEAT_COLORS[i], 14, 1)
+
+		-- Chair facing the other player (only the server seats people in it)
+		part({ Size = Vector3.new(2.2, 1.2, 2.2), CFrame = cf * CFrame.new(x, 2.6, 8.5), Color = DARK_WOOD, Material = Enum.Material.Wood }, model)
+		local seat = Instance.new("Seat")
+		seat.Name = "DraftSeat" .. i
+		seat.Anchored = true
+		seat.CanTouch = false
+		seat.Size = Vector3.new(2.8, 0.6, 2.8)
+		seat.CFrame = cf * CFrame.new(x, 3.5, 8.5) * CFrame.Angles(0, side * math.pi / 2, 0)
+		seat.Color = SEAT_COLORS[i]
+		seat.Material = Enum.Material.Fabric
+		seat.TopSurface = Enum.SurfaceType.Smooth
+		seat.Parent = model
+		seats[i] = seat
+		local back = part({ Size = Vector3.new(0.5, 3.4, 2.8), CFrame = cf * CFrame.new(x + side * 1.25, 5.4, 8.5), Color = SEAT_COLORS[i], Material = Enum.Material.Fabric }, model)
+		part({ Size = Vector3.new(0.7, 0.3, 3), CFrame = cf * CFrame.new(x + side * 1.25, 7.2, 8.5), Color = Color3.fromRGB(255, 205, 90), Material = Enum.Material.Neon, CanCollide = false }, model)
+
+		-- Name + budget sign above the chair
 		local bb = Instance.new("BillboardGui")
 		bb.Size = UDim2.fromScale(9, 2.4) -- studs, so it shrinks with distance like a real sign
-		bb.StudsOffset = Vector3.new(0, 3, 0)
+		bb.StudsOffset = Vector3.new(0, 4.2, 0)
 		bb.MaxDistance = 70
 		bb.LightInfluence = 0
-		bb.Parent = top
+		bb.Parent = back
 		L.podium[i] = label(bb, { Size = UDim2.fromScale(1, 1), TextColor3 = SEAT_COLORS[i], TextStrokeTransparency = 0.2 })
+
+		-- Spotlight from above
+		local rig = part({ Size = Vector3.new(1, 1, 1), CFrame = cf * CFrame.new(x, 17, 8.5), Transparency = 1, CanCollide = false, CanQuery = false, CanTouch = false }, model)
+		local spot = Instance.new("SpotLight")
+		spot.Face = Enum.NormalId.Bottom
+		spot.Angle = 40
+		spot.Range = 22
+		spot.Brightness = 2.5
+		spot.Color = Color3.fromRGB(255, 235, 210)
+		spot.Shadows = true
+		spot.Parent = rig
 	end
 
 	-- Join prompt at the foot of the steps
@@ -251,6 +300,7 @@ local function stage(id: number, cf: CFrame)
 	screens[id] = L
 	return {
 		prompt = prompt,
+		seats = seats,
 		-- Where joining players appear: in front of the steps, facing the screen.
 		stand = CFrame.lookAt((cf * CFrame.new(rng:NextNumber(-4, 4), 3, -9)).Position, (cf * CFrame.new(0, 3, 20)).Position),
 	}

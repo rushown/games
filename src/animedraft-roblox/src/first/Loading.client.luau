@@ -178,6 +178,14 @@ local okShared, Config = pcall(function()
 	return require(ReplicatedStorage.Shared.Config)
 end)
 if okShared then
+	-- Character portraits: tiny (256 px) images, so preloading all of them keeps drafts pop-in free.
+	for _, id in Config.CHARACTER_IMAGES do
+		if id ~= 0 then
+			local img = Instance.new("ImageLabel")
+			img.Image = "rbxassetid://" .. id
+			table.insert(assets, img)
+		end
+	end
 	for _, id in Config.SOUNDS do
 		if id ~= 0 then
 			local s = Instance.new("Sound")

@@ -119,9 +119,19 @@ end
 local function moveTo(player: Player, cf: CFrame?)
 	local char = player.Character
 	local root = char and char:FindFirstChild("HumanoidRootPart")
-	if root and cf then
-		char:PivotTo(cf)
+	if not (root and cf) then
+		return
 	end
+	-- Get out of any chair first, or the seat weld drags the character back.
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	if hum and hum.SeatPart then
+		local weld = hum.SeatPart:FindFirstChild("SeatWeld")
+		if weld then
+			weld:Destroy()
+		end
+		hum.Sit = false
+	end
+	char:PivotTo(cf)
 end
 
 local function leaveTable(player: Player)
@@ -151,6 +161,37 @@ for id, st in stations do
 		joinTable(player, id, false)
 	end)
 end
+
+-- Keep characters in the right chairs: a player holding seat i sits in that table's chair i (re-seated if
+-- they jump out or respawn); anyone else in a draft chair is stood up. Bots leave their chair empty.
+local function humanoidOf(p: Player): Humanoid?
+	local char = p.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	return if hum and hum.Health > 0 then hum else nil
+end
+task.spawn(function()
+	while true do
+		task.wait(0.4)
+		for _, t in tables do
+			local chairs = stations[t.id].seats
+			for i = 1, 2 do
+				local chair = chairs[i]
+				local s = t.seats[i]
+				local hum = if s and s.kind == "player" then humanoidOf(s.player) else nil
+				local occupant = chair.Occupant
+				if occupant and occupant ~= hum then
+					occupant.Sit = false
+					occupant.Jump = true
+				end
+				if hum and hum.SeatPart ~= chair then
+					pcall(function()
+						chair:Sit(hum)
+					end)
+				end
+			end
+		end
+	end
+end)
 
 ------------------------------------------------------------------ duels
 -- Walk up to someone and use their "Challenge" prompt, or pick them in the Players list.

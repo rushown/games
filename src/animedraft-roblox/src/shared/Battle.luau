@@ -45,7 +45,7 @@ function Battle.duelReason(winner, loser): string
 	local Wn, Ln = winner.name, loser.name
 	local w, l = winner.scaling, loser.scaling
 	if w.ap >= BEYOND and l.ap < BEYOND then
-		return `{Wn} is {levelName(w.ap)}: beyond every scale {Ln} can even reach.`
+		return `{Wn} is {levelName(w.ap)}: beyond every scale {Ln} can even reach. {Ln}'s {levelName(l.ap)} power doesn't register.`
 	end
 	local best, bestD = "none", 0
 	local counter, counterD = nil, 0
@@ -64,9 +64,9 @@ function Battle.duelReason(winner, loser): string
 	elseif best == "hax" then
 		why = `{Wn}'s {string.lower(Data.HAX[w.hax + 1])} abilities skip past {Ln}'s raw power.`
 	elseif best == "dur" then
-		why = `{Wn} can tank {levelName(w.dur)} attacks; {Ln} can't break through.`
+		why = `{Wn} can tank {levelName(w.dur)} attacks; {Ln}'s {levelName(l.ap)} offence can't break through.`
 	elseif best == "spd" then
-		why = `{Wn} is {Data.SPEEDS[w.spd + 1]} against {Ln}'s {Data.SPEEDS[l.spd + 1]}.`
+		why = `{Wn} is {Data.SPEEDS[w.spd + 1]} against {Ln}'s {Data.SPEEDS[l.spd + 1]}: {Ln} never lands a clean hit.`
 	elseif best == "iq" then
 		why = `{Wn} ({Data.INTELLECT[w.iq + 1]}) out-thinks {Ln} ({Data.INTELLECT[l.iq + 1]}).`
 	else

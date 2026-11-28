@@ -79,3 +79,20 @@ Copy `AnimeDraft.rbxlx` into the VM (drag it into the Boxes window, or use a sha
 
 In Studio: **File → Publish to Roblox**. Then turn on API services in Game Settings so records save.
 Character names are used as text only. The game includes no artwork from the series.
+
+## Character portraits
+
+Cards show a portrait for any character with an image id in `Config.CHARACTER_IMAGES` (others show a
+series-coloured emblem). Use art you own or are licensed to use:
+
+1. Put one image per character in `portraits/raw/`, named by key (`gojo.png`, `luffy.jpg`; keys are in `src/shared/Data.luau`).
+2. `python3 scripts/prepare-portraits.py` shrinks them to 256x256 JPEGs in `portraits/upload/` (small = fast on phones).
+3. In Studio: Asset Manager → Bulk Import the files, copy each asset id into `Config.CHARACTER_IMAGES`.
+
+The loading screen preloads every portrait, so drafts never pop in.
+
+## Updating the live game
+
+Overwriting the published place from a local file ("Publish As") hangs, so update the live place instead:
+`python3 scripts/build-place.py` also writes `build/{Loading,Shared,Server,Client}.rbxmx`; open the live
+place in Studio, replace those four folders with the models, then File → Publish.

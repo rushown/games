@@ -496,10 +496,55 @@ local function miniRow(parent, key, rightText, order, height)
 		new("UIGradient", { Color = ColorSequence.new(s.c1, s.c2) }),
 	})
 	local shade = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.45, Parent = row }, { corner(10), pad(6) })
-	text({ Text = c.name, Size = UDim2.new(1, -54, 0, 18), TextXAlignment = Enum.TextXAlignment.Left, TextSize = 15, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, Parent = shade })
-	text({ Text = `{Battle.tierLabel(c.tier)} · {c.rating} · {s.short}`, Position = UDim2.fromOffset(0, 18), Size = UDim2.new(1, -54, 0, 14), TextXAlignment = Enum.TextXAlignment.Left, TextSize = 12, FontFace = BODY_MED, TextColor3 = C.dim, Parent = shade })
+	-- Small portrait (uploaded art, or the initials badge)
+	local thumb = new("Frame", { Size = UDim2.new(0, 32, 1, 0), BackgroundColor3 = Color3.new(1, 1, 1), ClipsDescendants = true, Parent = shade }, {
+		corner(8),
+		new("UIGradient", { Color = ColorSequence.new(s.c2, s.c1), Rotation = 60 }),
+	})
+	local imageId = Config.CHARACTER_IMAGES[key]
+	if imageId and imageId ~= 0 then
+		new("ImageLabel", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Image = "rbxassetid://" .. imageId, ScaleType = Enum.ScaleType.Crop, Parent = thumb }, { corner(8) })
+	else
+		text({ Text = c.initials, Size = UDim2.fromScale(1, 1), heading = true, TextSize = 14, Parent = thumb })
+	end
+	text({ Text = c.name, Position = UDim2.fromOffset(38, 0), Size = UDim2.new(1, -92, 0, 18), TextXAlignment = Enum.TextXAlignment.Left, TextSize = 15, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, Parent = shade })
+	text({ Text = `{Battle.tierLabel(c.tier)} · {c.rating} · {s.short}`, Position = UDim2.fromOffset(38, 18), Size = UDim2.new(1, -92, 0, 14), TextXAlignment = Enum.TextXAlignment.Left, TextSize = 12, FontFace = BODY_MED, TextColor3 = C.dim, Parent = shade })
 	text({ Text = rightText, Position = UDim2.new(1, -54, 0, 0), Size = UDim2.new(0, 54, 1, 0), TextXAlignment = Enum.TextXAlignment.Right, heading = true, TextSize = 17, TextColor3 = C.gold, Parent = shade })
 	return row
+end
+
+-- Round avatar headshot for a player (cached), or a robot for bots.
+local headshots: { [number]: string } = {}
+local function headshot(parent, userId: number?, size: number, pos: UDim2, z: number?)
+	local img = new("ImageLabel", {
+		Size = UDim2.fromOffset(size, size),
+		Position = pos,
+		BackgroundColor3 = C.ink,
+		BackgroundTransparency = 0.1,
+		ScaleType = Enum.ScaleType.Crop,
+		ZIndex = z or 1,
+		Parent = parent,
+	}, { new("UICorner", { CornerRadius = UDim.new(1, 0) }), stroke(Color3.new(1, 1, 1), 2) })
+	if userId and userId > 0 then
+		if headshots[userId] then
+			img.Image = headshots[userId]
+		else
+			task.spawn(function()
+				local ok, url = pcall(function()
+					return Players:GetUserThumbnailAsync(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
+				end)
+				if ok and url then
+					headshots[userId] = url
+					if img.Parent then
+						img.Image = url
+					end
+				end
+			end)
+		end
+	else
+		text({ Text = "🤖", Size = UDim2.fromScale(1, 1), TextScaled = true, ZIndex = (z or 1) + 1, Parent = img })
+	end
+	return img
 end
 
 ------------------------------------------------------------------ screens
@@ -596,9 +641,9 @@ local function renderLobby()
 		local box = new("Frame", { Position = UDim2.new((i - 1) * 0.5, if i == 1 then 28 else 8, 0, 100), Size = UDim2.new(0.5, -36, 0, 150), BackgroundColor3 = C.card, Parent = lobbyPanel }, { corner(18), stroke(C.seat[i], 4), pad(14) })
 		text({ Text = "SEAT " .. i, Size = UDim2.new(0.5, 0, 0, 20), TextColor3 = C.seat[i], heading = true, TextSize = 18, TextXAlignment = Enum.TextXAlignment.Left, Parent = box })
 		text({
-			Text = if seat.kind == "empty" then "Open seat" else seat.name .. (if seat.kind == "bot" then " 🤖" else ""),
-			Position = UDim2.fromOffset(0, 24),
-			Size = UDim2.new(1, 0, 0, 40),
+			Text = if seat.kind == "empty" then "Open seat" else seat.name,
+			Position = UDim2.fromOffset(if seat.kind == "empty" then 0 else 52, 26),
+			Size = UDim2.new(1, if seat.kind == "empty" then 0 else -52, 0, 40),
 			heading = true,
 			TextSize = 30,
 			TextXAlignment = Enum.TextXAlignment.Left,
@@ -607,6 +652,9 @@ local function renderLobby()
 			TextColor3 = if seat.kind == "empty" then C.dim else C.text,
 			Parent = box,
 		})
+		if seat.kind ~= "empty" then
+			headshot(box, if seat.kind == "player" then seat.userId else nil, 44, UDim2.fromOffset(0, 24))
+		end
 		if seat.kind == "player" then
 			local e = energyOf(seat.userId)
 			text({ Text = if e then `⚡ {e}` else "⚡ …", Position = UDim2.new(0.5, 0, 0, 0), Size = UDim2.new(0.5, 0, 0, 20), TextXAlignment = Enum.TextXAlignment.Right, TextColor3 = if e and e < Config.ENERGY.draftCost then C.red else C.gold, heading = true, Parent = box })
@@ -699,7 +747,9 @@ local function seatPanel(i)
 		BackgroundTransparency = 0.08,
 		Parent = dyn,
 	}, { corner(20), stroke(if leading then C.gold else C.seat[i], if leading then 5 else 3), pad(12) })
-	text({ Text = p.name .. (if mySeat == i then " (you)" else ""), Size = UDim2.new(1, 0, 0, 26), TextColor3 = C.seat[i], heading = true, TextSize = 22, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, Parent = box })
+	local seatInfo = state.seats[i]
+	headshot(box, if seatInfo.kind == "player" then seatInfo.userId else nil, 36, UDim2.new(1, -36, 0, -4))
+	text({ Text = p.name .. (if mySeat == i then " (you)" else ""), Size = UDim2.new(1, -42, 0, 26), TextColor3 = C.seat[i], heading = true, TextSize = 22, TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, Parent = box })
 	text({ Text = "$" .. p.budget, Position = UDim2.fromOffset(0, 28), Size = UDim2.new(0.5, 0, 0, 46), heading = true, TextSize = 42, TextColor3 = C.gold, TextXAlignment = Enum.TextXAlignment.Left, Parent = box })
 	text({ Text = `{#p.team}/{a.config.teamSize}\n` .. (if p.skipUsed then "skip used" else "⛔ 1 skip"), Position = UDim2.new(0.5, 0, 0, 28), Size = UDim2.new(0.5, 0, 0, 46), TextXAlignment = Enum.TextXAlignment.Right, TextColor3 = C.dim, TextSize = 15, Parent = box })
 	local list = new("ScrollingFrame", { Position = UDim2.fromOffset(0, 84), Size = UDim2.new(1, 0, 1, -84), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 4, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), Parent = box }, {
@@ -1137,7 +1187,8 @@ local function renderPlayers()
 		if p ~= player then
 			others += 1
 			local row = new("Frame", { Name = p.DisplayName, Size = UDim2.new(1, -8, 0, 60), BackgroundColor3 = C.card, ZIndex = 32, Parent = playersList }, { corner(14), pad(8) })
-			text({ Text = p.DisplayName, Size = UDim2.new(1, -150, 1, 0), TextXAlignment = Enum.TextXAlignment.Left, heading = true, TextSize = 22, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, ZIndex = 33, Parent = row })
+			headshot(row, p.UserId, 44, UDim2.fromOffset(0, 0), 33)
+			text({ Text = p.DisplayName, Position = UDim2.fromOffset(54, 0), Size = UDim2.new(1, -204, 1, 0), TextXAlignment = Enum.TextXAlignment.Left, heading = true, TextSize = 22, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, ZIndex = 33, Parent = row })
 			button({ Text = "DUEL", Position = UDim2.new(1, 0, 0.5, 0), AnchorPoint = Vector2.new(1, 0.5), Size = UDim2.fromOffset(130, 44), BackgroundColor3 = C.red, ZIndex = 33, Parent = row }, function()
 				send("challenge", { userId = p.UserId })
 			end)
