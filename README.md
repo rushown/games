@@ -11,7 +11,7 @@ party games for one phone passed around a room, a physics puzzle, a quiz ladder,
 | [Trench Dive](#trench-dive) | 1–2 | Name anything that fits; the rarer your answer, the deeper you sink |
 | [PokeDraft](#pokedraft) | 1–2 | Six stat reels roll random Pokémon; lock one per spin to out-stat Arceus or sink under Magikarp |
 | [Quiz Duel](#quiz-duel) | 2–6 groups | A timed classroom quiz: 900 easy questions across 9 subjects, turn by turn |
-| [Bubble Blower](#bubble-blower) | 1 | Pick an undersea buddy, hold to blow, let go when the bubble fills the shape |
+| [Bubble Blower](#bubble-blower) | 1 | 3D undersea timing: hold to blow, let go when the bubble fills the shape; combos, Fever, jellyfish |
 | [Tic Tac Toe](#tic-tac-toe) | 1–2 | The classic, against a friend or a computer that never loses |
 
 ---
@@ -130,18 +130,21 @@ A group quiz in the style of a Nepali school quiz contest, for a classroom, a pr
 Each file in `questions/` holds one subject as `[question, answer, wrong, wrong, wrong]`. The game shuffles the options.
 
 ### Bubble Blower
-`site/games/bubbleblower/` · a single HTML file
+`site/games/bubbleblower/` · a single HTML file, 3D with [three.js](https://threejs.org/) (loaded from jsDelivr)
 
-A one-button timing game. Pick a buddy, then hold (mouse, touch, `Space` or `Enter`) to blow a bubble out of the wand
-and let go when it fills the yellow dotted shape. The faint orange line is where it pops.
+A one-button timing game on a toon-shaded sea floor. Pick a buddy, then hold (mouse, touch, `Space` or `Enter`) to blow
+a bubble out of the wand and let go when it fills the glowing yellow shape. The faint orange shape is where it pops.
 
-- **Ten bubbles a game.** The first two are round; the rest are random from Round, Heart, Star, Fish and Cube, at random
-  sizes. Each bubble blows a little faster than the last, and holding longer speeds it up.
-- **Scoring:** within 3% of the target is **Perfect** (100, plus 25 for each Perfect in a row), 7% **Great** (75),
-  12% **Good** (50), 20% **Okay** (25), anything else 5. Past 130% of the target it pops for 0.
-- **Buddies** (original characters, drawn in SVG): **Puff** the pufferfish blows 30% faster and scores ×1.3,
-  **Shellby** the hermit crab is normal, **Tide** the sea turtle blows 25% slower and scores ×0.8.
-- Best score per buddy, the chosen buddy and the sound setting are saved in the browser (`localStorage`).
+- **Endless, with 3 lives.** A pop, or a bubble more than 22% off, costs a life. Shapes are Round, Heart, Star, Fish,
+  Cube and Donut at random sizes. Every bubble blows a little faster, and holding longer speeds it up. A level is 5 bubbles.
+- **Grades:** Perfect (100), Great within 8% (60), Good within 14% (35), Okay within 22% (15).
+- **Combo:** each Perfect or Great adds to the combo. Every 2 in a row raises the multiplier, up to ×5.
+- **Fever:** 3 Perfects in a row gives 5 bubbles at double points and a bonus life (up to 5).
+- **Twists that start later in a run:** golden bubbles (×3, from bubble 4), a jellyfish that patrols across and pops
+  any bubble it touches (from bubble 6), and shapes that breathe in and out (from bubble 9).
+- **Buddies** (original characters, built from three.js shapes): **Puff** the pufferfish blows 25% faster, ×1.3 points;
+  **Shellby** the hermit crab is the baseline; **Tide** the sea turtle blows 22% slower with a wider Perfect window, ×0.8.
+- Best score per buddy, the chosen buddy and the sound setting are saved in the browser (`localStorage`). `←`/`→` change buddy on the picker.
 
 ### Tic Tac Toe
 `site/games/tictactoe/` · a single HTML file
