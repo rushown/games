@@ -957,6 +957,183 @@ local function renderResults()
 	end)
 end
 
+
+------------------------------------------------------------------ battle reveal
+-- When a draft ends, the bouts play out one by one (strongest matchup first) before the results:
+-- cards slam in, power ratings race up, a clash flash and shake, then the winner is stamped.
+
+local battleLayer = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(8, 4, 16), BackgroundTransparency = 0.25, Visible = false, ZIndex = 70, Parent = root })
+local battleToken = 0
+local battlePlaying = false
+local heldToast = nil -- the Victory/Defeat toast waits until the reveal is over
+
+local function fighterCard(key, side)
+	local c = Data.get(key)
+	local s = Data.SERIES[c.series]
+	local tierColor = TIER_COLOR[c.tier] or C.gold
+	local card = new("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(if side == 1 then -0.3 else 1.3, 0.47),
+		Size = UDim2.fromOffset(300, 390),
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		ZIndex = 72,
+		Parent = battleLayer,
+	}, {
+		corner(24),
+		stroke(tierColor, 6),
+		new("UIGradient", { Color = ColorSequence.new(s.c1, s.c2), Rotation = 45 }),
+	})
+	local shade = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.35, ZIndex = 72, Parent = card }, { corner(24), pad(14) })
+	local p = portrait(shade, c, s, UDim2.new(1, 0, 0, 200))
+	for _, d in p:GetDescendants() do
+		if d:IsA("GuiObject") then
+			d.ZIndex = 74
+		end
+	end
+	p.ZIndex = 73
+	if c.tier == "BEYOND" then
+		-- Purple aura for outerversal fighters
+		local aura = new("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.new(1, 40, 1, 40), BackgroundColor3 = Color3.fromRGB(170, 90, 255), BackgroundTransparency = 0.6, ZIndex = 71, Parent = card }, { corner(36) })
+		task.spawn(function()
+			while aura.Parent do
+				tween(aura, 0.6, { Size = UDim2.new(1, 64, 1, 64), BackgroundTransparency = 0.85 }, Enum.EasingStyle.Sine).Completed:Wait()
+				tween(aura, 0.6, { Size = UDim2.new(1, 36, 1, 36), BackgroundTransparency = 0.55 }, Enum.EasingStyle.Sine).Completed:Wait()
+			end
+		end)
+	end
+	text({ Text = c.name, Position = UDim2.fromOffset(0, 208), Size = UDim2.new(1, 0, 0, 40), heading = true, TextSize = 28, TextScaled = true, ZIndex = 74, Parent = shade })
+	text({ Text = `{s.short} · {c.title}`, Position = UDim2.fromOffset(0, 248), Size = UDim2.new(1, 0, 0, 20), FontFace = BODY_MED, TextSize = 14, TextColor3 = C.dim, TextTruncate = Enum.TextTruncate.AtEnd, TextWrapped = false, ZIndex = 74, Parent = shade })
+	local tier = text({ Text = Battle.tierLabel(c.tier), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 4, 0, -4), Size = UDim2.fromOffset(70, 40), BackgroundColor3 = tierColor, BackgroundTransparency = 0, heading = true, TextSize = 28, ZIndex = 76, Parent = shade })
+	corner(12).Parent = tier
+	stroke(C.ink, 3).Parent = tier
+	local num = text({ Text = "0", Position = UDim2.fromOffset(0, 274), Size = UDim2.new(1, 0, 0, 52), heading = true, TextSize = 50, TextColor3 = tierColor, ZIndex = 74, Parent = shade })
+	local track = new("Frame", { Position = UDim2.fromOffset(0, 332), Size = UDim2.new(1, 0, 0, 18), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.3, ZIndex = 74, Parent = shade }, { corner(9) })
+	local bar = new("Frame", { Size = UDim2.fromScale(0, 1), BackgroundColor3 = tierColor, ZIndex = 75, Parent = track }, { corner(9), shine() })
+	local scale = new("UIScale", { Parent = card })
+	return { frame = card, num = num, bar = bar, scale = scale, c = c, shade = shade }
+end
+
+local function playBattle(r, done)
+	battleToken += 1
+	local my = battleToken
+	local alive = function()
+		return my == battleToken
+	end
+	battlePlaying = true
+	clear(battleLayer)
+	battleLayer.Visible = true
+	local skip = false
+	button({ Text = "SKIP ▶", AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -20, 1, -20), Size = UDim2.fromOffset(140, 54), BackgroundColor3 = C.grey, ZIndex = 80, Parent = battleLayer }, function()
+		skip = true
+	end)
+	local header = text({ Text = "", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 16), Size = UDim2.fromOffset(700, 50), heading = true, TextSize = 40, TextColor3 = C.gold, ZIndex = 78, Parent = battleLayer })
+	local score = text({ Text = "", AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 66), Size = UDim2.fromOffset(700, 34), heading = true, TextSize = 26, ZIndex = 78, Parent = battleLayer })
+	local wins = { 0, 0 }
+	local function wait(t)
+		local untilT = os.clock() + t
+		while os.clock() < untilT and not skip and alive() do
+			task.wait()
+		end
+	end
+
+	for n, b in r.bouts do
+		if skip or not alive() then
+			break
+		end
+		header.Text = if n == 1 then "MAIN EVENT" else "BOUT " .. n
+		score.Text = `{state.seats[1].name}  {wins[1]} – {wins[2]}  {state.seats[2].name}`
+		local L, R = fighterCard(b.a, 1), fighterCard(b.b, 2)
+		play("lot")
+		tween(L.frame, 0.4, { Position = UDim2.fromScale(0.27, 0.47) }, Enum.EasingStyle.Back)
+		tween(R.frame, 0.4, { Position = UDim2.fromScale(0.73, 0.47) }, Enum.EasingStyle.Back)
+		local vs = text({ Text = "VS", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.45), Size = UDim2.fromOffset(200, 120), heading = true, TextSize = 96, TextColor3 = C.gold, ZIndex = 77, Parent = battleLayer })
+		local vsScale = new("UIScale", { Scale = 3, Parent = vs })
+		wait(0.35)
+		tween(vsScale, 0.3, { Scale = 1 }, Enum.EasingStyle.Back)
+		wait(0.35)
+
+		-- Power ratings race up
+		play("bid")
+		local t0 = os.clock()
+		local dur = 0.9
+		for _, f in { L, R } do
+			tween(f.bar, dur, { Size = UDim2.fromScale(math.clamp(f.c.rating / 100, 0.03, 1), 1) }, Enum.EasingStyle.Quart)
+		end
+		while os.clock() - t0 < dur and not skip and alive() do
+			local k = math.min(1, (os.clock() - t0) / dur)
+			k = 1 - (1 - k) ^ 3
+			L.num.Text = string.format("%.1f", L.c.rating * k)
+			R.num.Text = string.format("%.1f", R.c.rating * k)
+			task.wait()
+		end
+		L.num.Text, R.num.Text = tostring(L.c.rating), tostring(R.c.rating)
+		wait(0.25)
+
+		-- Clash: flash + shake
+		play("sold")
+		local flash = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 0.1, ZIndex = 79, Parent = battleLayer })
+		tween(flash, 0.35, { BackgroundTransparency = 1 })
+		task.delay(0.4, function()
+			flash:Destroy()
+		end)
+		for _ = 1, 8 do
+			battleLayer.Position = UDim2.fromOffset(math.random(-14, 14), math.random(-10, 10))
+			task.wait(0.03)
+		end
+		battleLayer.Position = UDim2.new()
+
+		-- Winner and loser
+		local W, Lo = if b.winner == 1 then L else R, if b.winner == 1 then R else L
+		wins[b.winner] += 1
+		score.Text = `{state.seats[1].name}  {wins[1]} – {wins[2]}  {state.seats[2].name}`
+		tween(W.scale, 0.3, { Scale = 1.1 }, Enum.EasingStyle.Back)
+		local edge = W.frame:FindFirstChildOfClass("UIStroke")
+		if edge then
+			edge.Color = C.gold
+			tween(edge, 0.3, { Thickness = 11 })
+		end
+		tween(Lo.scale, 0.4, { Scale = 0.88 })
+		tween(Lo.frame, 0.5, { Rotation = if Lo == L then -8 else 8, Position = Lo.frame.Position + UDim2.fromScale(0, 0.06) }, Enum.EasingStyle.Quad)
+		tween(Lo.shade, 0.4, { BackgroundTransparency = 0.05 })
+		local stamp = text({ Text = "WIN!", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.12), Size = UDim2.fromOffset(200, 80), Rotation = -12, heading = true, TextSize = 64, TextColor3 = C.gold, ZIndex = 78, Parent = W.frame })
+		local stampScale = new("UIScale", { Scale = 2.5, Parent = stamp })
+		tween(stampScale, 0.25, { Scale = 1 }, Enum.EasingStyle.Back)
+		local reason = text({ Text = b.reason, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.84, 0), Size = UDim2.fromOffset(820, 60), FontFace = BODY_MED, TextSize = 19, ZIndex = 78, Parent = battleLayer })
+		play("click")
+		wait(2.1)
+		for _, x in { L.frame, R.frame, vs, reason } do
+			x:Destroy()
+		end
+	end
+
+	if alive() then
+		-- Final verdict
+		clear(battleLayer)
+		local title = if r.winner == 0 then "DRAW!" else `{state.seats[r.winner].name} WINS!`
+		local big = text({ Text = title, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.45), Size = UDim2.fromOffset(900, 120), heading = true, TextSize = 90, TextColor3 = if r.winner == 0 then C.text else C.gold, ZIndex = 78, Parent = battleLayer })
+		local bs = new("UIScale", { Scale = 3, Parent = big })
+		tween(bs, 0.35, { Scale = 1 }, Enum.EasingStyle.Back)
+		text({ Text = `{r.wins[1]} – {r.wins[2]} in bouts`, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0.56), Size = UDim2.fromOffset(600, 40), heading = true, TextSize = 32, ZIndex = 78, Parent = battleLayer })
+		play(if r.winner ~= 0 and r.winner == mySeat then "victory" elseif mySeat and r.winner ~= 0 then "defeat" else "sold")
+		skip = false
+		wait(1.6)
+	end
+	if alive() then
+		battleLayer.Visible = false
+		clear(battleLayer)
+		battlePlaying = false
+		done()
+	end
+end
+
+local function cancelBattle()
+	battleToken += 1
+	battlePlaying = false
+	battleLayer.Visible = false
+	battleLayer.Position = UDim2.new()
+	clear(battleLayer)
+end
+
 ------------------------------------------------------------------ energy pill, side menu, shop
 
 local shopDim = new("TextButton", { Text = "", AutoButtonColor = false, Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.4, Visible = false, ZIndex = 30, Parent = root })
@@ -1310,7 +1487,23 @@ render = function()
 	tablesPanel.Visible = mode == "browse" and browserOpen
 	lobbyPanel.Visible = mode == "lobby"
 	draftLayer.Visible = mode == "draft"
-	resultsPanel.Visible = mode == "results"
+	if changed and mode ~= "results" and battlePlaying then
+		cancelBattle()
+	end
+	if changed and mode == "results" and state.result then
+		task.spawn(playBattle, state.result, function()
+			if lastMode == "results" then
+				resultsPanel.Visible = true
+				renderResults()
+				popIn(resultsPanel)
+				if heldToast then
+					toast(heldToast)
+					heldToast = nil
+				end
+			end
+		end)
+	end
+	resultsPanel.Visible = mode == "results" and not battlePlaying
 	side.Visible = mode == "browse"
 	-- At a table the screen belongs to the game: no player list or "join table" prompts on top.
 	core(Enum.CoreGuiType.PlayerList, mode == "browse" and not tablesPanel.Visible)
@@ -1348,6 +1541,10 @@ TablesEvent.OnClientEvent:Connect(function(list)
 	end
 end)
 ToastEvent.OnClientEvent:Connect(function(msg, kind)
+	if (kind == "win" or kind == "lose") and battlePlaying then
+		heldToast = msg -- don't spoil the battle reveal
+		return
+	end
 	toast(msg)
 	if kind == "shop" then
 		openShop()
